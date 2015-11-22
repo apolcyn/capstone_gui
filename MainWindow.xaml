@@ -5,12 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApplication1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="74" Margin="65,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="158"/>
-        <Button x:Name="button" Content="Clear" HorizontalAlignment="Left" Margin="65,184,0,0" VerticalAlignment="Top" Width="75" Click="buttonClick"/>
-        <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="74" Margin="277,88,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="141"/>
-        <Button x:Name="button1" Content="RunCommand" HorizontalAlignment="Left" Height="22" Margin="174,184,0,0" VerticalAlignment="Top" Width="92" Click="button1_Click"/>
+        Title="MainWindow" Height="350" Width="731">
+    <Grid Margin="0,0,0,-119" Height="439" VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="159*"/>
+            <ColumnDefinition Width="265*"/>
+            <ColumnDefinition Width="299*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="85,19,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111" TextChanged="textBox_TextChanged"/>
+        <Slider x:Name="slider" Grid.Column="1" HorizontalAlignment="Left" Margin="85,58,0,0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Voltage Offset" Maximum="4"/>
+        <Slider x:Name="slider1" Grid.Column="1" HorizontalAlignment="Left" Margin="85,96,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voltage peak-to-peak" SmallChange="0.01" Maximum="4"/>
+        <ListBox x:Name="listBox" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="85,144,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="textBox1" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="85,259,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>

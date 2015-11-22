@@ -22,6 +22,8 @@ namespace WpfApplication1
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
     public class FunctionGeneratorConfiguration
     {
         // First letter of configuration command for function generator
@@ -67,7 +69,6 @@ namespace WpfApplication1
             // start commands
             StringBuilder config = new StringBuilder();
             config.Append(FIRST_CHAR);
-            config.Append(START_COMMAND);
 
             // wave type configuration
             config.Append(WAVE_TYPE_COMMAND);
@@ -88,8 +89,6 @@ namespace WpfApplication1
             // duty cycle configuration
             config.Append(DUTY_CYCLE_COMMAND);
             config.Append(getDutyCycle());
-
-            config.Append(STOP_COMMAND);
 
             return config.ToString();
         }
@@ -202,8 +201,6 @@ namespace WpfApplication1
             config.Append(KSAMPLES_PER_SECOND_COMMAND);
             config.Append(kSamplesPerSecond);
 
-            config.Append(STOP_COMMAND);
-
             return config.ToString();
         }
 
@@ -244,6 +241,14 @@ namespace WpfApplication1
     public partial class MainWindow : Window
     {
         SerialPort serialPort;
+
+        const char COMMAND_OUTER_CHAR = '#';
+
+        private FunctionGeneratorConfiguration curFunctionGeneratorConfiguration = new FunctionGeneratorConfiguration();
+        private FunctionGeneratorConfiguration nextFunctionGeneratorConfiguration = new FunctionGeneratorConfiguration();
+
+        private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
+        private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
         public MainWindow()
         {
@@ -288,5 +293,15 @@ namespace WpfApplication1
         }
 
         private void si_DataReceived(string data) { textBox1.Text = data.Trim(); }
+
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
