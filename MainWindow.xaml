@@ -1,9 +1,10 @@
-﻿<Window x:Class="WpfApplication1.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApplication1"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="WpfApplication1.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="731">
     <Grid Margin="0,0,0,-119" Height="439" VerticalAlignment="Top">
@@ -11,15 +12,38 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="159*"/>
-            <ColumnDefinition Width="265*"/>
-            <ColumnDefinition Width="299*"/>
+            <ColumnDefinition Width="236*"/>
+            <ColumnDefinition Width="225*"/>
+            <ColumnDefinition Width="262*"/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="85,19,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="111" TextChanged="textBox_TextChanged"/>
-        <Slider x:Name="slider" Grid.Column="1" HorizontalAlignment="Left" Margin="85,58,0,0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Voltage Offset" Maximum="4"/>
-        <Slider x:Name="slider1" Grid.Column="1" HorizontalAlignment="Left" Margin="85,96,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voltage peak-to-peak" SmallChange="0.01" Maximum="4"/>
-        <ListBox x:Name="listBox" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="85,144,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="textBox1" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="85,259,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Slider x:Name="DAC_vpp_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,87,0,0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Vpp" Maximum="4" ValueChanged="DAC_vpp_updated"/>
+        <Slider x:Name="DAC_voffset_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,124,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voffset" SmallChange="0.01" Maximum="4" ValueChanged="DAC_voffset_updated"/>
+        <Slider x:Name="DAC_duty_cycle" Grid.Column="1" HorizontalAlignment="Left" Margin="22,160,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="duty cycle" ValueChanged="DAC_duty_cycle_updated" Maximum="100" SmallChange="1" LargeChange="10"/>
+        <TextBox x:Name="Vpp_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,85,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <TextBox x:Name="Voffset_text_dispaly" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="153,124,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <TextBox x:Name="duty_cycle_text_dispaly" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="153,160,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <Slider x:Name="DAC_frequency_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,49,0,0" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
+        <TextBox x:Name="DAC_frequency_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,47,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,207,0,0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
+            <ComboBoxItem>Sine</ComboBoxItem>
+            <ComboBoxItem>Sqaure</ComboBoxItem>
+            <ComboBoxItem>Sawtooth</ComboBoxItem>
+            <ComboBoxItem>Arbitrary</ComboBoxItem>
+        </ComboBox>
+        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,245,0,0" VerticalAlignment="Top" Width="173" Click="DAC_start_btn_click"/>
+        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,284,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="173"/>
+        <Label x:Name="label" Content="Function Generator Settings" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="22,10,0,0" VerticalAlignment="Top" Width="173"/>
+        <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="2" HorizontalAlignment="Left" Margin="38,10,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
+        <Slider x:Name="oscope_ksamples_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="38,48,0,0" VerticalAlignment="Top" Width="123" ValueChanged="oscope_ksamples_updated" LargeChange="10" SmallChange="1" Maximum="1000" Minimum="56" Height="22"/>
+        <TextBox x:Name="oscope_ksamples_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="166,49,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="86"/>
+        <ComboBox x:Name="oscope_resolution_dropdown" Grid.Column="2" HorizontalAlignment="Left" Margin="38,86,0,0" VerticalAlignment="Top" Width="123" SelectionChanged="oscope_resolution_updated" Height="22">
+            <ComboBoxItem>8</ComboBoxItem>
+            <ComboBoxItem>10</ComboBoxItem>
+            <ComboBoxItem>12</ComboBoxItem>
+        </ComboBox>
+        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,160,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
+        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,207,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
+        <Canvas HorizontalAlignment="Left" Height="123" Margin="29,87,0,0" VerticalAlignment="Top" Width="197"/>
 
     </Grid>
 </Window>

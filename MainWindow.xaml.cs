@@ -39,25 +39,25 @@ namespace WpfApplication1
         const WaveType DEFAULT_WAVE_TYPE = WaveType.Sine;
         WaveType waveType = DEFAULT_WAVE_TYPE;
 
-        const decimal MIN_VPP = 0;
-        const decimal MAX_VPP = 4;
-        const string VPP_FORMAT_STR = "D2"; // precion of 10^-2
-        const decimal DEFAULT_VPP = 0;
+        public const decimal MIN_VPP = 0;
+        public const decimal MAX_VPP = 4;
+        public const string VPP_FORMAT_STR = "F2"; // precion of 10^-2
+        public const decimal DEFAULT_VPP = 0;
         decimal vpp = DEFAULT_VPP;
         const char VPP_COMMAND = 'V';
 
-        decimal frequency;
-        const int MIN_FREQ = 0;
-        const int MAX_FREQ = 240000;
+        int frequency;
+        public const int MIN_FREQ = 0;
+        public const int MAX_FREQ = 240000;
         const int DEFAULT_FREQ = 1;
-        const char FREQUENCY_COMMAND = 'F';
+        public const char FREQUENCY_COMMAND = 'F';
 
         decimal vOffset;
-        const decimal MIN_OFFSET = 0;
-        const decimal MAX_OFFSET = 4;
-        const string VOFFSET_FORMAT_STR = "D2"; // precision of 10^-2
+        public const decimal MIN_OFFSET = 0;
+        public const decimal MAX_OFFSET = 4;
+        public const string VOFFSET_FORMAT_STR = "F2"; // precision of 10^-2
         const decimal DEFAULT_OFFSET = 0;
-        const char VOFFSET_COMMAND = 'O';
+        public const char VOFFSET_COMMAND = 'O';
 
         int dutyCycle;
         const int MIN_DUTY_CYCLE = 0;
@@ -76,7 +76,7 @@ namespace WpfApplication1
 
             // vpp configuration
             config.Append(VPP_COMMAND);
-            config.Append(String.Format(VPP_FORMAT_STR, getVpp()));
+            config.Append(getVpp().ToString(VPP_FORMAT_STR));
 
             // frequency configuration
             config.Append(FREQUENCY_COMMAND);
@@ -84,7 +84,7 @@ namespace WpfApplication1
 
             // vOffset configuration
             config.Append(VOFFSET_COMMAND);
-            config.Append(String.Format(VOFFSET_FORMAT_STR, getVOffset()));
+            config.Append(getVOffset().ToString(VOFFSET_FORMAT_STR));
 
             // duty cycle configuration
             config.Append(DUTY_CYCLE_COMMAND);
@@ -109,7 +109,7 @@ namespace WpfApplication1
             return vpp;
         }
 
-        public bool setFrequency(decimal frequency)
+        public bool setFrequency(int frequency)
         {
             if(frequency < MIN_FREQ || frequency > MAX_FREQ)
             {
@@ -120,7 +120,7 @@ namespace WpfApplication1
             return true;
         }
 
-        public decimal getFrequency()
+        public int getFrequency()
         {
             return frequency;
         }
@@ -193,25 +193,24 @@ namespace WpfApplication1
             StringBuilder config = new StringBuilder();
 
             config.Append(FIRST_CHAR);
-            config.Append(START_COMMAND);
 
             config.Append(RESOLUTION_COMMAND);
-            config.Append(resolution);
+            config.Append(getResolution());
 
             config.Append(KSAMPLES_PER_SECOND_COMMAND);
-            config.Append(kSamplesPerSecond);
+            config.Append(getKSamplesPerSecond());
 
             return config.ToString();
         }
 
-        public bool setResolution(int resolution)
+        public bool setResolution(int resolutionIndex)
         {
-            if(!resolutionOptions.Contains(resolution))
+            if(resolutionIndex < 0 || resolutionIndex > resolutionOptions.Length)
             {
                 return false;
             }
 
-            this.resolution = resolution;
+            this.resolution = resolutionOptions[resolutionIndex];
             return true;
         }
 
@@ -253,13 +252,13 @@ namespace WpfApplication1
         public MainWindow()
         {
             InitializeComponent();
-            serialPort = new SerialPort("COM8", 115200, Parity.None, 8, StopBits.One);
+            /*serialPort = new SerialPort("COM8", 115200, Parity.None, 8, StopBits.One);
             serialPort.Handshake = Handshake.None;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
-            serialPort.Open();
+            serialPort.Open();*/
         }
 
-        private void buttonClick(object sender, RoutedEventArgs e)
+      /*  private void buttonClick(object sender, RoutedEventArgs e)
         {
             this.textBox.Clear();
         }
@@ -292,7 +291,7 @@ namespace WpfApplication1
             this.Dispatcher.BeginInvoke(new SetTextDeleg(si_DataReceived), new object[] { data });
         }
 
-        private void si_DataReceived(string data) { textBox1.Text = data.Trim(); }
+        private void si_DataReceived(string data) { textBox1.Text = data.Trim(); }*/
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -303,5 +302,74 @@ namespace WpfApplication1
         {
 
         }
+
+        private void DAC_vpp_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            nextFunctionGeneratorConfiguration.setVpp((decimal)this.DAC_vpp_slider.Value);
+            this.DAC_vpp_slider.Value = (double)nextFunctionGeneratorConfiguration.getVpp();
+            this.Vpp_text_display.Text 
+                = nextFunctionGeneratorConfiguration.getVpp().ToString(FunctionGeneratorConfiguration.VPP_FORMAT_STR);
+        }
+
+        private void DAC_voffset_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            nextFunctionGeneratorConfiguration.setVOffset((decimal)this.DAC_voffset_slider.Value);
+            this.DAC_voffset_slider.Value = (double)nextFunctionGeneratorConfiguration.getVOffset();
+            this.Voffset_text_dispaly.Text
+                = nextFunctionGeneratorConfiguration.getVOffset().ToString(FunctionGeneratorConfiguration.VOFFSET_FORMAT_STR);
+        }
+
+        private void DAC_duty_cycle_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            nextFunctionGeneratorConfiguration.setDutyCycle((int)this.DAC_duty_cycle.Value);
+            this.DAC_duty_cycle.Value = nextFunctionGeneratorConfiguration.getDutyCycle();
+            this.duty_cycle_text_dispaly.Text = nextFunctionGeneratorConfiguration.getDutyCycle() + "%";
+        }
+
+        private void DAC_frequency_slider_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            nextFunctionGeneratorConfiguration.setFrequency((int)this.DAC_frequency_slider.Value);
+            this.DAC_frequency_slider.Value = nextFunctionGeneratorConfiguration.getFrequency();
+            this.DAC_frequency_text_display.Text
+                = nextFunctionGeneratorConfiguration.getFrequency().ToString();
+        }
+
+        private void DAC_wavetype_selected(object sender, SelectionChangedEventArgs e)
+        {
+            nextFunctionGeneratorConfiguration
+                .setWaveType((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedIndex);
+        }
+
+        private void DAC_start_btn_click(object sender, RoutedEventArgs e)
+        {
+            this.DAC_config_command.Clear();
+            this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
+        }
+
+        private void oscope_ksamples_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (this.oscope_ksamples_text_display != null)
+            {
+                nextOscopeConfiguration.setkSamplesPerSecond((int)this.oscope_ksamples_slider.Value);
+                this.oscope_ksamples_slider.Value = nextOscopeConfiguration.getKSamplesPerSecond();
+                this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.getKSamplesPerSecond().ToString() + " K/sec";
+            }
+        }
+
+        private void start_oscope_btn_click(object sender, RoutedEventArgs e)
+        {
+            this.oscope_configuration_display.Text = nextOscopeConfiguration.getConfiguration();
+        }
+
+        private string FullPSoCCommand(string configuration)
+        {
+            return "#" + configuration + "#";
+        }
+
+        private void oscope_resolution_updated(object sender, SelectionChangedEventArgs e)
+        {
+            nextOscopeConfiguration.setResolution(this.oscope_resolution_dropdown.SelectedIndex);
+        }
+
     }
 }
