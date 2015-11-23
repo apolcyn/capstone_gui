@@ -43,7 +43,7 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,160,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,207,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
-        <Canvas HorizontalAlignment="Left" Height="123" Margin="29,87,0,0" VerticalAlignment="Top" Width="197"/>
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="200" Margin="29,87,0,0" VerticalAlignment="Top" Width="200" Background="Gray"/>
 
     </Grid>
 </Window>

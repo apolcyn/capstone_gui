@@ -249,6 +249,9 @@ namespace WpfApplication1
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
+        private const int SAMPLES_PER_WINDOW = 10;
+        private Queue<int> oscopeSamples = new Queue<int>(SAMPLES_PER_WINDOW);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -359,6 +362,64 @@ namespace WpfApplication1
         private void start_oscope_btn_click(object sender, RoutedEventArgs e)
         {
             this.oscope_configuration_display.Text = nextOscopeConfiguration.getConfiguration();
+            enqueueNewSamples(new int[] { 0, 50, 25, 0, 50, 25 });
+        }
+
+
+        private void enqueueNewSamples(int[] newSamples)
+        {
+            for(int i = 0; i < newSamples.Length; i++)
+            {
+                oscopeSamples.Enqueue(newSamples[i]);
+
+                if (oscopeSamples.Count > SAMPLES_PER_WINDOW)
+                {
+                    oscopeSamples.Dequeue();
+                }
+            }
+
+            drawOscopeLineGroup(oscopeSamples.ToArray());
+        }
+
+        private void drawOscopeLineGroup(int[] vals)
+        {
+            if(vals.Length < 2)
+            {
+                return;
+            }
+            else if(vals.Length > SAMPLES_PER_WINDOW)
+            {
+                throw new Exception("trying to add more samples than the horizontal resolution allows");
+            }
+
+            int spacing = (int) this.oscope_window_canvas.Width / (SAMPLES_PER_WINDOW - 1);
+            int curX = 0;
+            clearOscopeCanvas();
+
+            for(int i = 0; i < vals.Length - 1; i++)
+            {
+                drawOscopeLine(curX, vals[i], curX + spacing, vals[i + 1]);
+                curX += spacing;
+            }
+        }
+
+        private void clearOscopeCanvas()
+        {
+           this.oscope_window_canvas.Children.Clear() ;
+        }
+
+        private void drawOscopeLine(int prevX, int prevY, int curX, int curY)
+        {
+            Line myLine = new Line();
+            myLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
+            myLine.X1 = prevX;
+            myLine.X2 = curX;
+            myLine.Y1 = prevY;
+            myLine.Y2 = curY;
+            myLine.HorizontalAlignment = HorizontalAlignment.Left;
+            myLine.VerticalAlignment = VerticalAlignment.Center;
+            myLine.StrokeThickness = 2;
+            this.oscope_window_canvas.Children.Add(myLine);
         }
 
         private string FullPSoCCommand(string configuration)
