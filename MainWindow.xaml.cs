@@ -237,9 +237,163 @@ namespace WpfApplication1
 
     }
 
+    public class SampleReceiver
+    {
+        private ushort numBytesInNext;
+        private const int NUM_BYTES_PER_SAMPLE = 2;
+        private ushort sampleBuf;
+
+        public bool nextSampleReady()
+        {
+            return numBytesInNext == NUM_BYTES_PER_SAMPLE;
+        }
+        
+        public ushort nextSample()
+        {
+            if(numBytesInNext != NUM_BYTES_PER_SAMPLE)
+            {
+                throw new Exception("illegal state. trying to get next sample when next sample not ready");
+            }
+            numBytesInNext = 0;
+            ushort val = sampleBuf;
+            sampleBuf = 0;
+            return val;
+        }
+
+        public void addReceivedByte(byte newByte)
+        {
+            if(numBytesInNext == NUM_BYTES_PER_SAMPLE)
+            {
+                throw new Exception("illegal state. overwriting received data");
+            }
+            sampleBuf = (ushort)(sampleBuf + (newByte << (numBytesInNext * 8)));
+            numBytesInNext++;
+        }
+    }
+
+    public class DataReceiver {
+        private SerialPort serialPort;
+        private int numSamplesExpected;
+        private int numSamplesReceived;
+        private UInt16[] samplesBuffer = new UInt16[10000];
+        private byte[] numSamplesHeader = new byte[100];
+        private int numSamplesHeaderIndex;
+
+        private enum ReceiveState { NOT_STARTED, FINDING_NUM_SAMPLES, RECEIVING_SAMPLES};
+        private ReceiveState curState = ReceiveState.NOT_STARTED, nextState;
+
+        private MainWindow mainWindow;
+        private SampleReceiver samplesReceiver = new SampleReceiver();
+
+        public DataReceiver(MainWindow mainWindow)
+        {
+            this.mainWindow = mainWindow;
+            serialPort = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
+            serialPort.Handshake = Handshake.None;
+            serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
+            serialPort.Open();
+        }
+
+        public int getExpectedSamples(byte[] numSamplesHeader, int len)
+        {
+            if(len <= 0)
+            {
+                throw new Exception("invalid argument, passed a length of " + len);
+            }
+
+            int total = 0;
+            int i = 0;
+            while(i < len)
+            {
+                total *= 10;
+                if(numSamplesHeader[i] < '0' || numSamplesHeader[i] > '9')
+                {
+                    throw new Exception("parsing the num samples count. got an unexpected character");
+                }
+                total += numSamplesHeader[i++] - '0';
+            }
+
+            return total;
+        }
+
+        public void byteReceived(byte newByte)
+        {
+            switch(curState)
+            {
+                case ReceiveState.NOT_STARTED:
+                    if(newByte == 'F')
+                    {
+                        numSamplesHeaderIndex = 0;
+                        nextState = ReceiveState.FINDING_NUM_SAMPLES;
+                    }
+                    break;
+
+                case ReceiveState.FINDING_NUM_SAMPLES:
+                    if(newByte >= '0' && newByte <= '9')
+                    {
+                        numSamplesHeader[numSamplesHeaderIndex++] = newByte;
+                    }
+                    else if(newByte == 'D')
+                    {
+                        if(numSamplesHeaderIndex == 0)
+                        {
+                            throw new Exception("ending the num samples header, but haven't got the number yet");
+                        }
+                        else
+                        {
+                            numSamplesReceived = 0;
+                            numSamplesExpected = getExpectedSamples(numSamplesHeader, numSamplesHeaderIndex);
+                            nextState = ReceiveState.RECEIVING_SAMPLES;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("received invalid byte. filling in the header, but received =" + newByte + "=");
+                    }
+                    break;
+
+                case ReceiveState.RECEIVING_SAMPLES:
+                    samplesReceiver.addReceivedByte(newByte);
+                    if(samplesReceiver.nextSampleReady())
+                    {
+                        samplesBuffer[numSamplesReceived++] = samplesReceiver.nextSample();
+                    }
+                    if(numSamplesReceived == numSamplesExpected)
+                    {
+                        mainWindow.newSamplesReceived(samplesBuffer, numSamplesReceived);
+                        numSamplesExpected = 0;
+                        numSamplesReceived = 0;
+                        numSamplesHeaderIndex = 0;
+                        nextState = ReceiveState.NOT_STARTED;
+                    }
+                    break;
+
+                default:
+                    throw new Exception("in an invalid state");
+                    break;
+            }
+
+            curState = nextState;
+        }
+
+        /* An arbitrary byte or set of bytes is ready */
+        void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            int newVal = serialPort.ReadByte();
+
+            if (newVal != -1) {
+                byteReceived((byte)newVal);
+            }
+            else
+            {
+                throw new Exception("end of UART stream seems to have been reached");
+            }
+        }
+    }
+
     public partial class MainWindow : Window
     {
-        SerialPort serialPort;
+        DataReceiver dataReceiver;
 
         const char COMMAND_OUTER_CHAR = '#';
 
@@ -250,51 +404,41 @@ namespace WpfApplication1
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
         private const int SAMPLES_PER_WINDOW = 10;
-        private Queue<int> oscopeSamples = new Queue<int>(SAMPLES_PER_WINDOW);
+        private Queue<ushort> oscopeSamples = new Queue<ushort>(SAMPLES_PER_WINDOW);
 
         public MainWindow()
         {
             InitializeComponent();
-            /*serialPort = new SerialPort("COM8", 115200, Parity.None, 8, StopBits.One);
-            serialPort.Handshake = Handshake.None;
-            serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
-            serialPort.Open();*/
+            dataReceiver = new DataReceiver(this);
         }
 
-      /*  private void buttonClick(object sender, RoutedEventArgs e)
-        {
-            this.textBox.Clear();
-        }
-
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void sendPsoCCommand()
         {
             // Makes sure serial port is open before trying to write
-            try
+            /*try
             {
                 if (!(serialPort.IsOpen))
                     serialPort.Open();
 
-                String command = this.textBox.Text;
-                serialPort.Write(command + "\r\n");
+                serialPort.Write("e");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening/writing to serial port :: " + ex.Message, "Error!");
-            }
+            }*/
+        }
 
+        public void newSamplesReceived(ushort[] samplesBuf, int numSamples)
+        {
+            this.Dispatcher.BeginInvoke(new SetDeleg(si_DataReceived), new object[] { samplesBuf, numSamples });
         }
 
         // delegate is used to write to a UI control from a non-UI thread
-        private delegate void SetTextDeleg(string text);
+        public delegate void SetDeleg(ushort[] nums, int numSamples);
 
-        void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            string data = serialPort.ReadLine();
-
-            this.Dispatcher.BeginInvoke(new SetTextDeleg(si_DataReceived), new object[] { data });
+        private void si_DataReceived(ushort[] data, int numSamples) {
+            enqueueNewSamples(data, numSamples);
         }
-
-        private void si_DataReceived(string data) { textBox1.Text = data.Trim(); }*/
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -362,13 +506,13 @@ namespace WpfApplication1
         private void start_oscope_btn_click(object sender, RoutedEventArgs e)
         {
             this.oscope_configuration_display.Text = nextOscopeConfiguration.getConfiguration();
-            enqueueNewSamples(new int[] { 0, 50, 25, 0, 50, 25 });
+            sendPsoCCommand();
         }
 
 
-        private void enqueueNewSamples(int[] newSamples)
+        private void enqueueNewSamples(ushort[] newSamples, int numSamples)
         {
-            for(int i = 0; i < newSamples.Length; i++)
+            for(int i = 0; i < numSamples; i++)
             {
                 oscopeSamples.Enqueue(newSamples[i]);
 
@@ -381,7 +525,7 @@ namespace WpfApplication1
             drawOscopeLineGroup(oscopeSamples.ToArray());
         }
 
-        private void drawOscopeLineGroup(int[] vals)
+        private void drawOscopeLineGroup(ushort[] vals)
         {
             if(vals.Length < 2)
             {
