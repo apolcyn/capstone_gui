@@ -320,6 +320,9 @@ namespace WpfApplication1
         {
             switch(curState)
             {
+                /* TODO: Note that checking for first byte of 'F' leaves open possibility of reading
+                a random number whos value happens to equal ASCII 'F' value, and then thinking that it's
+                a start, when its not. Could mitigate this with a slightly longer special character sequence for starts. */
                 case ReceiveState.NOT_STARTED:
                     if(newByte == 'F')
                     {
@@ -440,42 +443,60 @@ namespace WpfApplication1
             enqueueNewSamples(data, numSamples);
         }
 
-        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
+        // event handler for DAC vpp slider updates
         private void DAC_vpp_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            nextFunctionGeneratorConfiguration.setVpp((decimal)this.DAC_vpp_slider.Value);
+            update_DAC_vpp((decimal)this.DAC_vpp_slider.Value);
+        }
+
+        // updates value of DAC vpp
+        private void update_DAC_vpp(decimal newVpp)
+        {
+            nextFunctionGeneratorConfiguration.setVpp(newVpp);
             this.DAC_vpp_slider.Value = (double)nextFunctionGeneratorConfiguration.getVpp();
-            this.Vpp_text_display.Text 
+            this.Vpp_text_display.Text
                 = nextFunctionGeneratorConfiguration.getVpp().ToString(FunctionGeneratorConfiguration.VPP_FORMAT_STR);
         }
 
+        // event handler for DAC voffset slider updates
         private void DAC_voffset_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            nextFunctionGeneratorConfiguration.setVOffset((decimal)this.DAC_voffset_slider.Value);
+            update_DAC_voffset((decimal)this.DAC_voffset_slider.Value);
+        }
+
+        // updates DAC voffset value
+        private void update_DAC_voffset(decimal newOffset)
+        {
+            nextFunctionGeneratorConfiguration.setVOffset(newOffset);
             this.DAC_voffset_slider.Value = (double)nextFunctionGeneratorConfiguration.getVOffset();
-            this.Voffset_text_dispaly.Text
+            this.Voffset_text_display.Text
                 = nextFunctionGeneratorConfiguration.getVOffset().ToString(FunctionGeneratorConfiguration.VOFFSET_FORMAT_STR);
         }
 
+        // event handler for DAC duty cycle slider updates
         private void DAC_duty_cycle_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            nextFunctionGeneratorConfiguration.setDutyCycle((int)this.DAC_duty_cycle.Value);
-            this.DAC_duty_cycle.Value = nextFunctionGeneratorConfiguration.getDutyCycle();
-            this.duty_cycle_text_dispaly.Text = nextFunctionGeneratorConfiguration.getDutyCycle() + "%";
+            update_DAC_duty_cycle((int)this.DAC_duty_cycle.Value);
         }
 
+        // updates actual duty cycle for DAC waveform
+        private void update_DAC_duty_cycle(int newDutyCycle)
+        {
+            nextFunctionGeneratorConfiguration.setDutyCycle(newDutyCycle);
+            this.DAC_duty_cycle.Value = nextFunctionGeneratorConfiguration.getDutyCycle();
+            this.duty_cycle_text_display.Text = nextFunctionGeneratorConfiguration.getDutyCycle() + "%";
+        }
+
+        // event handler for DAC frequenecy slider udpates
         private void DAC_frequency_slider_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            nextFunctionGeneratorConfiguration.setFrequency((int)this.DAC_frequency_slider.Value);
+            update_DAC_frequency((int)this.DAC_frequency_slider.Value);
+        }
+
+        // updates the actual frequency of the DAC wave
+        private void update_DAC_frequency(int newFreq)
+        {
+            nextFunctionGeneratorConfiguration.setFrequency(newFreq);
             this.DAC_frequency_slider.Value = nextFunctionGeneratorConfiguration.getFrequency();
             this.DAC_frequency_text_display.Text
                 = nextFunctionGeneratorConfiguration.getFrequency().ToString();
@@ -493,11 +514,18 @@ namespace WpfApplication1
             this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
         }
 
+        // event handler for samples/second slider update
         private void oscope_ksamples_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            update_oscope_ksamples((int)this.oscope_ksamples_slider.Value);
+        }
+
+        // updates actual oscope ksamples/sec
+        private void update_oscope_ksamples(int val)
         {
             if (this.oscope_ksamples_text_display != null)
             {
-                nextOscopeConfiguration.setkSamplesPerSecond((int)this.oscope_ksamples_slider.Value);
+                nextOscopeConfiguration.setkSamplesPerSecond(val);
                 this.oscope_ksamples_slider.Value = nextOscopeConfiguration.getKSamplesPerSecond();
                 this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.getKSamplesPerSecond().ToString() + " K/sec";
             }
@@ -577,5 +605,30 @@ namespace WpfApplication1
             nextOscopeConfiguration.setResolution(this.oscope_resolution_dropdown.SelectedIndex);
         }
 
+        private void DAC_Frequency_update_btn_click(object sender, RoutedEventArgs e)
+        {
+            string[] vals = this.DAC_frequency_text_display.Text.Split();
+            update_DAC_frequency(int.Parse(vals[0]));
+        }
+
+        private void Vpp_update_btn_Click(object sender, RoutedEventArgs e)
+        {
+            update_DAC_vpp(decimal.Parse(this.Vpp_text_display.Text.Split()[0]));
+        }
+
+        private void Voffset_update_btn_Click(object sender, RoutedEventArgs e)
+        {
+            update_DAC_voffset(decimal.Parse(this.Voffset_text_display.Text.Split()[0]));
+        }
+
+        private void duty_cycle_update_btn_Click(object sender, RoutedEventArgs e)
+        {
+            update_DAC_duty_cycle(int.Parse(this.duty_cycle_text_display.Text.Split()[0]));
+        }
+
+        private void oscope_ksamples_update_btn_Click(object sender, RoutedEventArgs e)
+        {
+            update_oscope_ksamples(int.Parse(this.oscope_ksamples_text_display.Text.Split()[0]));
+        }
     }
 }

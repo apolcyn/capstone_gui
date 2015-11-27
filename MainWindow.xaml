@@ -6,44 +6,65 @@
         xmlns:local="clr-namespace:WpfApplication1"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="WpfApplication1.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="1000">
+        Title="MainWindow" Height="500" Width="1200">
     <Grid Margin="10,0,-8,-20" Height="490" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="230*"/>
-            <ColumnDefinition Width="127*"/>
-            <ColumnDefinition Width="138*"/>
+            <ColumnDefinition Width="104*"/>
+            <ColumnDefinition Width="63*"/>
+            <ColumnDefinition Width="71*"/>
         </Grid.ColumnDefinitions>
-        <Slider x:Name="DAC_vpp_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,87,0,0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Vpp" Maximum="4" ValueChanged="DAC_vpp_updated"/>
-        <Slider x:Name="DAC_voffset_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,124,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voffset" SmallChange="0.01" Maximum="4" ValueChanged="DAC_voffset_updated"/>
-        <Slider x:Name="DAC_duty_cycle" Grid.Column="1" HorizontalAlignment="Left" Margin="22,160,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="duty cycle" ValueChanged="DAC_duty_cycle_updated" Maximum="100" SmallChange="1" LargeChange="10"/>
-        <TextBox x:Name="Vpp_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,85,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
-        <TextBox x:Name="Voffset_text_dispaly" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="153,124,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
-        <TextBox x:Name="duty_cycle_text_dispaly" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="153,160,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
-        <Slider x:Name="DAC_frequency_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,49,0,0" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
-        <TextBox x:Name="DAC_frequency_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,47,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
-        <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,207,0,0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
+        <Slider x:Name="DAC_vpp_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,128,0,0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Vpp" Maximum="4" ValueChanged="DAC_vpp_updated"/>
+        <Slider x:Name="DAC_voffset_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,185,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voffset" SmallChange="0.01" Maximum="4" ValueChanged="DAC_voffset_updated"/>
+        <Slider x:Name="DAC_duty_cycle" Grid.Column="1" HorizontalAlignment="Left" Margin="22,235,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="duty cycle" ValueChanged="DAC_duty_cycle_updated" Maximum="100" SmallChange="1" LargeChange="10"/>
+        <TextBox x:Name="Vpp_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,127,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <TextBox x:Name="Voffset_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="153,185,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <TextBox x:Name="duty_cycle_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="147,235,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <Slider x:Name="DAC_frequency_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,69,0,0" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
+        <TextBox x:Name="DAC_frequency_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,68,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="62"/>
+        <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,307,0,0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
             <ComboBoxItem>Sine</ComboBoxItem>
             <ComboBoxItem>Sqaure</ComboBoxItem>
             <ComboBoxItem>Sawtooth</ComboBoxItem>
             <ComboBoxItem>Arbitrary</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,245,0,0" VerticalAlignment="Top" Width="173" Click="DAC_start_btn_click"/>
-        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,284,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="173"/>
-        <Label x:Name="label" Content="Function Generator Settings" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="22,10,0,0" VerticalAlignment="Top" Width="173"/>
-        <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="2" HorizontalAlignment="Left" Margin="38,10,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
-        <Slider x:Name="oscope_ksamples_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="38,48,0,0" VerticalAlignment="Top" Width="123" ValueChanged="oscope_ksamples_updated" LargeChange="10" SmallChange="1" Maximum="1000" Minimum="56" Height="22"/>
-        <TextBox x:Name="oscope_ksamples_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="166,49,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="86"/>
-        <ComboBox x:Name="oscope_resolution_dropdown" Grid.Column="2" HorizontalAlignment="Left" Margin="38,86,0,0" VerticalAlignment="Top" Width="123" SelectionChanged="oscope_resolution_updated" Height="22">
+        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,348,0,0" VerticalAlignment="Top" Width="173" Click="DAC_start_btn_click"/>
+        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,378,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="173"/>
+        <Label x:Name="label" Content="Function Generator Settings" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
+        <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="2" HorizontalAlignment="Left" Margin="38,3,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
+        <Slider x:Name="oscope_ksamples_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="38,69,0,0" VerticalAlignment="Top" Width="123" ValueChanged="oscope_ksamples_updated" LargeChange="10" SmallChange="1" Maximum="1000" Minimum="56" Height="22"/>
+        <TextBox x:Name="oscope_ksamples_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="166,69,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="86"/>
+        <ComboBox x:Name="oscope_resolution_dropdown" Grid.Column="2" HorizontalAlignment="Left" Margin="38,128,0,0" VerticalAlignment="Top" Width="123" SelectionChanged="oscope_resolution_updated" Height="22">
             <ComboBoxItem>8</ComboBoxItem>
             <ComboBoxItem>10</ComboBoxItem>
             <ComboBoxItem>12</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,160,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
-        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,207,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
+        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,185,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
+        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,234,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
         <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="Gray"/>
+        <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
+        <Button x:Name="Vpp_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="21" Margin="220,129,0,0" VerticalAlignment="Top" Width="52" Click="Vpp_update_btn_Click"/>
+        <Button x:Name="Voffset_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="221,185,0,0" VerticalAlignment="Top" Width="52" Click="Voffset_update_btn_Click"/>
+        <Button x:Name="duty_cycle_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="221,235,0,0" VerticalAlignment="Top" Width="52" Click="duty_cycle_update_btn_Click"/>
+        <Button x:Name="oscope_ksamples_update_btn" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Height="21" Margin="267,71,0,0" VerticalAlignment="Top" Width="52" Click="oscope_ksamples_update_btn_Click"/>
+        <Label x:Name="Duty_Cycle" Content="Duty Cycle:" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,207,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="label2" Content="Voltage Offset:" Grid.Column="1" HorizontalAlignment="Left" Height="30" Margin="22,155,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="label3" Content="Peak-to-Peak Voltage:" Grid.Column="1" HorizontalAlignment="Left" Height="37" Margin="21,96,0,0" VerticalAlignment="Top" Width="132"/>
+        <Label x:Name="label4" Content="Frequency:" Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="22,41,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label x:Name="label5" Content="Wave Type:" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,277,0,0" VerticalAlignment="Top" Width="173"/>
+        <Label x:Name="label6" Content="Horizontal Resolution:" Grid.Column="2" HorizontalAlignment="Left" Margin="38,97,0,0" VerticalAlignment="Top" Width="133"/>
+        <Label x:Name="label7" Content="KiloSamples/Second" Grid.Column="2" HorizontalAlignment="Left" Margin="35,44,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="131">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="0.707"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Label.RenderTransform>
+        </Label>
 
     </Grid>
 </Window>
