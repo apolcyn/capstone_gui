@@ -403,7 +403,7 @@ namespace WpfApplication1
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
-        private const int SAMPLES_PER_WINDOW = 10;
+        private const int SAMPLES_PER_WINDOW = 200;
         private Queue<ushort> oscopeSamples = new Queue<ushort>(SAMPLES_PER_WINDOW);
 
         public MainWindow()
@@ -542,7 +542,8 @@ namespace WpfApplication1
 
             for(int i = 0; i < vals.Length - 1; i++)
             {
-                drawOscopeLine(curX, vals[i], curX + spacing, vals[i + 1]);
+                drawOscopeLine(curX, (int)this.oscope_window_canvas.Height - vals[i]
+                    , curX + spacing, (int)this.oscope_window_canvas.Height - vals[i + 1]);
                 curX += spacing;
             }
         }

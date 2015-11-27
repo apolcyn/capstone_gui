@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:WpfApplication1"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="WpfApplication1.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="731">
-    <Grid Margin="0,0,0,-119" Height="439" VerticalAlignment="Top">
+        Title="MainWindow" Height="500" Width="1000">
+    <Grid Margin="10,0,-8,-20" Height="490" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="236*"/>
-            <ColumnDefinition Width="225*"/>
-            <ColumnDefinition Width="262*"/>
+            <ColumnDefinition Width="230*"/>
+            <ColumnDefinition Width="127*"/>
+            <ColumnDefinition Width="138*"/>
         </Grid.ColumnDefinitions>
         <Slider x:Name="DAC_vpp_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,87,0,0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Vpp" Maximum="4" ValueChanged="DAC_vpp_updated"/>
         <Slider x:Name="DAC_voffset_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,124,0,0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voffset" SmallChange="0.01" Maximum="4" ValueChanged="DAC_voffset_updated"/>
@@ -43,7 +43,7 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,160,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,207,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="200" Margin="29,87,0,0" VerticalAlignment="Top" Width="200" Background="Gray"/>
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="Gray"/>
 
     </Grid>
 </Window>
