@@ -257,6 +257,7 @@ namespace WpfApplication1
             numBytesInNext = 0;
             ushort val = sampleBuf;
             sampleBuf = 0;
+            val = (ushort)(val / 4095.0 * 300);
             return val;
         }
 
@@ -266,7 +267,7 @@ namespace WpfApplication1
             {
                 throw new Exception("illegal state. overwriting received data");
             }
-            sampleBuf = (ushort)(sampleBuf + (newByte << (numBytesInNext * 8)));
+            sampleBuf = (ushort)(newByte + (sampleBuf << 8));
             numBytesInNext++;
         }
     }
@@ -288,7 +289,7 @@ namespace WpfApplication1
         public DataReceiver(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
-            serialPort = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
+            serialPort = new SerialPort("COM8", 57600, Parity.None, 8, StopBits.One);
             serialPort.Handshake = Handshake.None;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
             serialPort.Open();
@@ -392,6 +393,22 @@ namespace WpfApplication1
                 throw new Exception("end of UART stream seems to have been reached");
             }
         }
+
+        public void sendPsoCCommand(String command)
+        {
+            // Makes sure serial port is open before trying to write
+            try
+            {
+                if (!(serialPort.IsOpen))
+                    serialPort.Open();
+
+                serialPort.Write(command);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening/writing to serial port :: " + ex.Message, "Error!");
+            }
+        }
     }
 
     public partial class MainWindow : Window
@@ -413,22 +430,6 @@ namespace WpfApplication1
         {
             InitializeComponent();
             dataReceiver = new DataReceiver(this);
-        }
-
-        private void sendPsoCCommand()
-        {
-            // Makes sure serial port is open before trying to write
-            /*try
-            {
-                if (!(serialPort.IsOpen))
-                    serialPort.Open();
-
-                serialPort.Write("e");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error opening/writing to serial port :: " + ex.Message, "Error!");
-            }*/
         }
 
         public void newSamplesReceived(ushort[] samplesBuf, int numSamples)
@@ -512,6 +513,7 @@ namespace WpfApplication1
         {
             this.DAC_config_command.Clear();
             this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
+            dataReceiver.sendPsoCCommand("#PC_REQ_CONNECT#");
         }
 
         // event handler for samples/second slider update
@@ -534,7 +536,8 @@ namespace WpfApplication1
         private void start_oscope_btn_click(object sender, RoutedEventArgs e)
         {
             this.oscope_configuration_display.Text = nextOscopeConfiguration.getConfiguration();
-            sendPsoCCommand();
+            //dataReceiver.sendPsoCCommand(nextOscopeConfiguration.getConfiguration());
+            dataReceiver.sendPsoCCommand("#DA##AA#");
         }
 
 

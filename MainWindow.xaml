@@ -30,7 +30,7 @@
             <ComboBoxItem>Sawtooth</ComboBoxItem>
             <ComboBoxItem>Arbitrary</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,348,0,0" VerticalAlignment="Top" Width="173" Click="DAC_start_btn_click"/>
+        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="21,348,0,0" VerticalAlignment="Top" Width="173" Click="DAC_start_btn_click"/>
         <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,378,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="173"/>
         <Label x:Name="label" Content="Function Generator Settings" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
         <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="2" HorizontalAlignment="Left" Margin="38,3,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
