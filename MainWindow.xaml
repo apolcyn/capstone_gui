@@ -36,13 +36,13 @@
         <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="2" HorizontalAlignment="Left" Margin="38,3,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
         <Slider x:Name="oscope_ksamples_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="38,69,0,0" VerticalAlignment="Top" Width="123" ValueChanged="oscope_ksamples_updated" LargeChange="10" SmallChange="1" Maximum="1000" Minimum="56" Height="22"/>
         <TextBox x:Name="oscope_ksamples_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="166,69,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="86"/>
-        <ComboBox x:Name="oscope_resolution_dropdown" Grid.Column="2" HorizontalAlignment="Left" Margin="38,128,0,0" VerticalAlignment="Top" Width="123" SelectionChanged="oscope_resolution_updated" Height="22">
+        <ComboBox x:Name="oscope_resolution_dropdown" Grid.Column="2" HorizontalAlignment="Left" Margin="38,185,0,0" VerticalAlignment="Top" Width="123" SelectionChanged="oscope_resolution_updated" Height="22">
             <ComboBoxItem>8</ComboBoxItem>
             <ComboBoxItem>10</ComboBoxItem>
             <ComboBoxItem>12</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,185,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
-        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,234,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
+        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,235,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
+        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,307,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
         <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="Gray"/>
         <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
         <Button x:Name="Vpp_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="21" Margin="220,129,0,0" VerticalAlignment="Top" Width="52" Click="Vpp_update_btn_Click"/>
@@ -54,8 +54,8 @@
         <Label x:Name="label3" Content="Peak-to-Peak Voltage:" Grid.Column="1" HorizontalAlignment="Left" Height="37" Margin="21,96,0,0" VerticalAlignment="Top" Width="132"/>
         <Label x:Name="label4" Content="Frequency:" Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="22,41,0,0" VerticalAlignment="Top" Width="120"/>
         <Label x:Name="label5" Content="Wave Type:" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,277,0,0" VerticalAlignment="Top" Width="173"/>
-        <Label x:Name="label6" Content="Horizontal Resolution:" Grid.Column="2" HorizontalAlignment="Left" Margin="38,97,0,0" VerticalAlignment="Top" Width="133"/>
-        <Label x:Name="label7" Content="KiloSamples/Second" Grid.Column="2" HorizontalAlignment="Left" Margin="35,44,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="131">
+        <Label x:Name="label6" Content="Horizontal Resolution:" Grid.Column="2" HorizontalAlignment="Left" Margin="38,155,0,0" VerticalAlignment="Top" Width="133"/>
+        <Label x:Name="label7" Content="KiloSamples/Second:" Grid.Column="2" HorizontalAlignment="Left" Margin="35,44,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="131">
             <Label.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -65,6 +65,10 @@
                 </TransformGroup>
             </Label.RenderTransform>
         </Label>
+        <Slider x:Name="trigger_slider_button" Grid.Column="2" HorizontalAlignment="Left" Margin="38,127,0,0" VerticalAlignment="Top" Width="123" ValueChanged="trigger_slider_button_ValueChanged" SmallChange="1" LargeChange="10" Maximum="300"/>
+        <TextBox x:Name="trigger_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="166,127,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="86"/>
+        <Button x:Name="trigger_apply_button" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Margin="267,129,0,0" VerticalAlignment="Top" Width="52" Height="20" Click="trigger_apply_button_Click"/>
+        <Label x:Name="label8" Content="Trigger:" Grid.Column="2" HorizontalAlignment="Left" Height="26" Margin="38,96,0,0" VerticalAlignment="Top" Width="123"/>
 
     </Grid>
 </Window>

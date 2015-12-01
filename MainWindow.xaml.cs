@@ -24,6 +24,9 @@ namespace WpfApplication1
     /// </summary>
     /// 
 
+    /* An object that contains all of the configuration relevant to the function generator.
+    Always have a configuration that has been send and is currently being used, as well as a "next configuration", 
+    which s being built up. */
     public class FunctionGeneratorConfiguration
     {
         // First letter of configuration command for function generator
@@ -165,8 +168,11 @@ namespace WpfApplication1
         {
             return dutyCycle;
         }
-    } 
+    }
 
+    /* An object that contains all of the configuration relevant to the oscope.
+    Always have a configuration that has been send and is currently being used, as well as a "next configuration", 
+    which s being built up. */
     public class OscopeConfiguration
     {
         const char FIRST_CHAR = 'A';
@@ -187,6 +193,10 @@ namespace WpfApplication1
 
         const int SAMPLES_PER_FRAME = 1000;
         const char SAMPLES_PER_FRAME_COMMAND = 'F';
+
+        const int MIN_TRIGGER_LEVEL = 0;
+        const int MAX_TRIGGER_LEVEL = 300;
+        int triggerLevel;
 
         public string getConfiguration()
         {
@@ -219,6 +229,21 @@ namespace WpfApplication1
             return resolution;
         }
 
+        public bool setTriggerLevel(int triggerLevel)
+        {
+            if(triggerLevel > MAX_TRIGGER_LEVEL || triggerLevel < MIN_TRIGGER_LEVEL)
+            {
+                return false;
+            }
+            this.triggerLevel = triggerLevel;
+            return true;
+        }
+
+        public int getTriggerLevel()
+        {
+            return this.triggerLevel;
+        }
+
         public bool setkSamplesPerSecond(int kSamplesPerSecond)
         {
             if(kSamplesPerSecond < KSAMPLES_PER_SECOND_MIN || kSamplesPerSecond > KSAMPLES_PER_SECOND_MAX)
@@ -237,6 +262,8 @@ namespace WpfApplication1
 
     }
 
+    /* An object that receives bytes and turns them into samples when they're ready.
+    Can add bytes from UART to it and get the next sample when its ready.*/
     public class SampleReceiver
     {
         private ushort numBytesInNext;
@@ -272,6 +299,10 @@ namespace WpfApplication1
         }
     }
 
+    /* An object that receives frames of samples from PSoC over UART. This object keeps track of 
+    the state of the sample frames, and parses the UART bytes into a list of samples to display.
+    When it's received a full frame of samples, it calls a callback method to display all of the samples
+    on the main window display. */
     public class DataReceiver {
         private SerialPort serialPort;
         private int numSamplesExpected;
@@ -323,7 +354,7 @@ namespace WpfApplication1
             {
                 /* TODO: Note that checking for first byte of 'F' leaves open possibility of reading
                 a random number whos value happens to equal ASCII 'F' value, and then thinking that it's
-                a start, when its not. Could mitigate this with a slightly longer special character sequence for starts. */
+                a start, when its not. Could fix this with a slightly longer special character sequence for starts. */
                 case ReceiveState.NOT_STARTED:
                     if(newByte == 'F')
                     {
@@ -411,6 +442,7 @@ namespace WpfApplication1
         }
     }
 
+    /* Main window object, contains references to all of the visual components on the GUI display. */
     public partial class MainWindow : Window
     {
         DataReceiver dataReceiver;
@@ -441,7 +473,7 @@ namespace WpfApplication1
         public delegate void SetDeleg(ushort[] nums, int numSamples);
 
         private void si_DataReceived(ushort[] data, int numSamples) {
-            enqueueNewSamples(data, numSamples);
+            enqueueNewSamples(data, 0, numSamples);
         }
 
         // event handler for DAC vpp slider updates
@@ -540,22 +572,49 @@ namespace WpfApplication1
             dataReceiver.sendPsoCCommand("#DA##AA#");
         }
 
-
-        private void enqueueNewSamples(ushort[] newSamples, int numSamples)
+        /* Finds the index in the new samples buffer that sets off the trigger, if there are any samples that do. */
+        private int findTriggerStartIndex(ushort[] newSamples, int startIndex, int numSamples)
         {
-            for(int i = 0; i < numSamples; i++)
-            {
-                oscopeSamples.Enqueue(newSamples[i]);
+            int triggerLevel = nextOscopeConfiguration.getTriggerLevel();
 
-                if (oscopeSamples.Count > SAMPLES_PER_WINDOW)
+            for(int i = startIndex; i < numSamples - 1; i++)
+            {
+                if(newSamples[i] < newSamples[i + 1] && newSamples[i + 1] >= triggerLevel)
                 {
-                    oscopeSamples.Dequeue();
+                    return i + 1;
                 }
             }
 
-            drawOscopeLineGroup(oscopeSamples.ToArray());
+            return -1;
         }
 
+        /* Adds in new samples and redraws the current display frame. */
+        private void enqueueNewSamples(ushort[] newSamples, int startIndex, int numSamples)
+        {
+            if(oscopeSamples.Count < SAMPLES_PER_WINDOW)
+            {
+                for (int i = startIndex; i < numSamples && oscopeSamples.Count < SAMPLES_PER_WINDOW; i++)
+                {
+                    oscopeSamples.Enqueue(newSamples[i]);
+                }
+
+                drawOscopeLineGroup(oscopeSamples.ToArray());
+            }
+            else if (oscopeSamples.Count == SAMPLES_PER_WINDOW)
+            {
+                int triggerIndex = findTriggerStartIndex(newSamples, startIndex, numSamples);
+
+                /* Found a triggering edge if trigger index is not -1 */
+                if(triggerIndex != -1)
+                {
+                    // clear display and draw the new points starting at the trigger
+                    oscopeSamples.Clear();
+                    enqueueNewSamples(newSamples, triggerIndex, numSamples - triggerIndex);
+                }
+            }
+        }
+
+        /* Draws lines on the canvas display between a list of points. */
         private void drawOscopeLineGroup(ushort[] vals)
         {
             if(vals.Length < 2)
@@ -584,6 +643,7 @@ namespace WpfApplication1
            this.oscope_window_canvas.Children.Clear() ;
         }
 
+        /* Draws a line on the canvas between two points. */
         private void drawOscopeLine(int prevX, int prevY, int curX, int curY)
         {
             Line myLine = new Line();
@@ -632,6 +692,23 @@ namespace WpfApplication1
         private void oscope_ksamples_update_btn_Click(object sender, RoutedEventArgs e)
         {
             update_oscope_ksamples(int.Parse(this.oscope_ksamples_text_display.Text.Split()[0]));
+        }
+
+        private void update_oscope_trigger_level(int triggerLevel)
+        {
+            nextOscopeConfiguration.setTriggerLevel(triggerLevel);
+            this.trigger_slider_button.Value = nextOscopeConfiguration.getTriggerLevel();
+            this.trigger_text_display.Text = nextOscopeConfiguration.getTriggerLevel() + " V";
+        }
+
+        private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            update_oscope_trigger_level((int)this.trigger_slider_button.Value);
+        }
+
+        private void trigger_apply_button_Click(object sender, RoutedEventArgs e)
+        {
+            update_oscope_trigger_level(int.Parse(this.trigger_text_display.Text.Split()[0]));
         }
     }
 }
