@@ -284,7 +284,7 @@ namespace WpfApplication1
             numBytesInNext = 0;
             ushort val = sampleBuf;
             sampleBuf = 0;
-            val = (ushort)(val / 4095.0 * 300);
+            val = 222;// (ushort)(val / 4095.0 * 300);
             return val;
         }
 
@@ -310,12 +310,14 @@ namespace WpfApplication1
         private UInt16[] samplesBuffer = new UInt16[10000];
         private byte[] numSamplesHeader = new byte[100];
         private int numSamplesHeaderIndex;
+        private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         private enum ReceiveState { NOT_STARTED, FINDING_NUM_SAMPLES, RECEIVING_SAMPLES};
         private ReceiveState curState = ReceiveState.NOT_STARTED, nextState;
 
         private MainWindow mainWindow;
         private SampleReceiver samplesReceiver = new SampleReceiver();
+        File
 
         public DataReceiver(MainWindow mainWindow)
         {
@@ -360,6 +362,7 @@ namespace WpfApplication1
                     {
                         numSamplesHeaderIndex = 0;
                         nextState = ReceiveState.FINDING_NUM_SAMPLES;
+                        stopwatch.Restart();
                     }
                     break;
 
@@ -400,6 +403,7 @@ namespace WpfApplication1
                         numSamplesReceived = 0;
                         numSamplesHeaderIndex = 0;
                         nextState = ReceiveState.NOT_STARTED;
+                        stopwatch.Stop();
                     }
                     break;
 
@@ -455,8 +459,11 @@ namespace WpfApplication1
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
-        private const int SAMPLES_PER_WINDOW = 200;
+        private const int SAMPLES_PER_WINDOW = 100;
         private Queue<ushort> oscopeSamples = new Queue<ushort>(SAMPLES_PER_WINDOW);
+        private ushort[] samplesDisplayBuffer = new ushort[SAMPLES_PER_WINDOW];
+
+        private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         public MainWindow()
         {
@@ -588,49 +595,52 @@ namespace WpfApplication1
             return -1;
         }
 
-        /* Adds in new samples and redraws the current display frame. */
+        int min(int a, int b)
+        {
+            if(a < b)
+            {
+                return a;
+            }
+            return b;
+        }
+
+        /* Adds in new samples and redraws the current display frame. Assumes that
+        the nuber of samples given to it is at least the number of samples needed to fill the window. */
         private void enqueueNewSamples(ushort[] newSamples, int startIndex, int numSamples)
         {
-            if(oscopeSamples.Count < SAMPLES_PER_WINDOW)
+            stopwatch.Restart();
+            int triggerIndex = findTriggerStartIndex(newSamples, startIndex, numSamples);
+
+            /* If we've found a trigger index, draw the wave starting at the closest possible point up to the trigger */
+            if(triggerIndex != -1)
             {
-                for (int i = startIndex; i < numSamples && oscopeSamples.Count < SAMPLES_PER_WINDOW; i++)
+                int k = 0;
+                int i = min(triggerIndex, (startIndex + numSamples) - SAMPLES_PER_WINDOW);
+
+                while(k < SAMPLES_PER_WINDOW)
                 {
-                    oscopeSamples.Enqueue(newSamples[i]);
+                    samplesDisplayBuffer[k++] = newSamples[i++];
                 }
 
-                drawOscopeLineGroup(oscopeSamples.ToArray());
+                drawOscopeLineGroup(samplesDisplayBuffer, k);
             }
-            else if (oscopeSamples.Count == SAMPLES_PER_WINDOW)
-            {
-                int triggerIndex = findTriggerStartIndex(newSamples, startIndex, numSamples);
-
-                /* Found a triggering edge if trigger index is not -1 */
-                if(triggerIndex != -1)
-                {
-                    // clear display and draw the new points starting at the trigger
-                    oscopeSamples.Clear();
-                    enqueueNewSamples(newSamples, triggerIndex, numSamples - triggerIndex);
-                }
-            }
+            stopwatch.Stop();
         }
 
         /* Draws lines on the canvas display between a list of points. */
-        private void drawOscopeLineGroup(ushort[] vals)
+        private void drawOscopeLineGroup(ushort[] vals, int numVals)
         {
-            if(vals.Length < 2)
+            if(numVals != SAMPLES_PER_WINDOW)
             {
-                return;
-            }
-            else if(vals.Length > SAMPLES_PER_WINDOW)
-            {
-                throw new Exception("trying to add more samples than the horizontal resolution allows");
+                throw new Exception("trying to add " + numVals + " samples but need " + SAMPLES_PER_WINDOW
+                    + " samples per window"); 
             }
 
             int spacing = (int) this.oscope_window_canvas.Width / (SAMPLES_PER_WINDOW - 1);
             int curX = 0;
             clearOscopeCanvas();
 
-            for(int i = 0; i < vals.Length - 1; i++)
+            for(int i = 0; i < numVals - 1; i++)
             {
                 drawOscopeLine(curX, (int)this.oscope_window_canvas.Height - vals[i]
                     , curX + spacing, (int)this.oscope_window_canvas.Height - vals[i + 1]);
