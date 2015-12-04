@@ -43,7 +43,12 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,185,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,241,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9"/>
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9">
+            <Line Name="triggerLine" X1="0" X2="401" 
+                  Y1="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
+                  Y2="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                  Stroke="DarkGray" StrokeThickness="3" />
+        </Canvas>
         <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
         <Button x:Name="Vpp_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="21" Margin="220,129,0,0" VerticalAlignment="Top" Width="52" Click="Vpp_update_btn_Click"/>
         <Button x:Name="Voffset_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="221,185,0,0" VerticalAlignment="Top" Width="52" Click="Voffset_update_btn_Click"/>
@@ -66,12 +71,12 @@
             </Label.RenderTransform>
         </Label>
         <Label x:Name="label8" Content="Trigger:" HorizontalAlignment="Left" Height="26" Margin="433,18,0,0" VerticalAlignment="Top" Width="77"/>
-        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="311,178,0,0" VerticalAlignment="Top" Height="42" Width="299" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" Maximum="300" LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged">
+        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="306,183,0,0" VerticalAlignment="Top" Height="32" Width="299" RenderTransformOrigin="0.5,0.5" Grid.ColumnSpan="2" Maximum="300" LargeChange="10" Value="300" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" >
             <Slider.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
                     <SkewTransform/>
-                    <RotateTransform Angle="269.819"/>
+                    <RotateTransform Angle="89.585"/>
                     <TranslateTransform/>
                 </TransformGroup>
             </Slider.RenderTransform>

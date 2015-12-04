@@ -488,8 +488,6 @@ namespace WpfApplication1
 
         private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
-        private Line triggerLine;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -675,7 +673,7 @@ namespace WpfApplication1
 
         private void clearOscopeCanvas()
         {
-           this.oscope_window_canvas.Children.Clear() ;
+            this.oscope_window_canvas.Children.RemoveRange(1, this.oscope_window_canvas.Children.Count - 1);
         }
 
         /* Draws a line on the canvas between two points. */
@@ -731,18 +729,8 @@ namespace WpfApplication1
 
         private void update_oscope_trigger_level(int triggerLevel)
         {
-            nextOscopeConfiguration.setTriggerLevel(triggerLevel);
-
-            this.oscope_window_canvas.Children.Remove(triggerLine);
-            this.trigger_slider_button.Value = nextOscopeConfiguration.getTriggerLevel();
-            this.triggerLine = new Line();
-            this.triggerLine.Stroke = System.Windows.Media.Brushes.DarkSalmon;
-            this.triggerLine.StrokeThickness = 1;
-            this.triggerLine.X1 = 0;
-            this.triggerLine.X2 = 401;
-            this.triggerLine.Y1 = nextOscopeConfiguration.getTriggerLevel();
-            this.triggerLine.Y2 = this.triggerLine.Y1;
-            this.oscope_window_canvas.Children.Add(triggerLine);
+            nextOscopeConfiguration.setTriggerLevel((int)this.trigger_slider_button.Maximum - triggerLevel);
+            this.trigger_slider_button.Value = this.trigger_slider_button.Maximum - nextOscopeConfiguration.getTriggerLevel();
         }
 
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
