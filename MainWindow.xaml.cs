@@ -512,6 +512,8 @@ namespace WpfApplication1
         private FallingEdgeTrigger fallingEdgeTrigger = new FallingEdgeTrigger();
         private TriggerType curTrigger;
 
+        private int verticalTriggerIndex;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -610,9 +612,7 @@ namespace WpfApplication1
 
         private void DAC_start_btn_click(object sender, RoutedEventArgs e)
         {
-            this.DAC_config_command.Clear();
-            this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
-            dataReceiver.sendPsoCCommand("#PC_REQ_CONNECT#");
+            dataReceiver.sendPsoCCommand("#DA#");
         }
 
         // event handler for samples/second slider update
@@ -636,17 +636,18 @@ namespace WpfApplication1
         {
             this.oscope_configuration_display.Text = nextOscopeConfiguration.getConfiguration();
             //dataReceiver.sendPsoCCommand(nextOscopeConfiguration.getConfiguration());
-            dataReceiver.sendPsoCCommand("#DA##AA#");
+            dataReceiver.sendPsoCCommand("#AA#");
         }
 
         /* Finds the index in the new samples buffer that sets off the trigger, if there are any samples that do. */
         private int findTriggerStartIndex(ushort[] newSamples, int startIndex, int numSamples)
         {
             int triggerLevel = nextOscopeConfiguration.getTriggerLevel();
+            int count = 0;
 
             for(int i = startIndex; i < numSamples - 1; i++)
             {
-                if(curTrigger.trigger(newSamples[i], newSamples[i + 1], triggerLevel))
+                if(curTrigger.trigger(newSamples[i], newSamples[i + 1], triggerLevel) && (++count == 2))
                 {
                     return i + 1;
                 }
@@ -676,6 +677,7 @@ namespace WpfApplication1
             {
                 int k = 0;
                 int i = min(triggerIndex, (startIndex + numSamples) - SAMPLES_PER_WINDOW);
+                i = Math.Max(triggerIndex - verticalTriggerIndex, startIndex);
 
                 while(k < SAMPLES_PER_WINDOW)
                 {
@@ -710,7 +712,7 @@ namespace WpfApplication1
 
         private void clearOscopeCanvas()
         {
-            this.oscope_window_canvas.Children.RemoveRange(1, this.oscope_window_canvas.Children.Count - 1);
+            this.oscope_window_canvas.Children.RemoveRange(2, this.oscope_window_canvas.Children.Count - 1);
         }
 
         /* Draws a line on the canvas between two points. */
@@ -795,6 +797,28 @@ namespace WpfApplication1
             {
                 curTrigger = fallingEdgeTrigger;
             }
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            this.DAC_config_command.Clear();
+            this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
+            dataReceiver.sendPsoCCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            dataReceiver.sendPsoCCommand("#PC_REQ_CONNECT#");
+        }
+
+        private void button3_Click(object sender, RoutedEventArgs e)
+        {
+            dataReceiver.sendPsoCCommand("#DZ#");
+        }
+
+        private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            this.verticalTriggerIndex = (int)this.vertical_trigger_slider.Value / 4;
         }
     }
 }

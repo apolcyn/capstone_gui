@@ -24,14 +24,23 @@
         <TextBox x:Name="duty_cycle_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="147,235,0,0" TextWrapping="Wrap" Text="50" VerticalAlignment="Top" Width="62"/>
         <Slider x:Name="DAC_frequency_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,69,0,0" Value="100" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
         <TextBox x:Name="DAC_frequency_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,68,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="62"/>
-        <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,307,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
+        <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,303,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
             <ComboBoxItem>Sine</ComboBoxItem>
             <ComboBoxItem>Sqaure</ComboBoxItem>
             <ComboBoxItem>Sawtooth</ComboBoxItem>
             <ComboBoxItem>Arbitrary</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="21,348,0,0" VerticalAlignment="Top" Width="173" Click="DAC_start_btn_click"/>
-        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,378,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173"/>
+        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="25,337,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click"/>
+        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,432,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" RenderTransformOrigin="0.5,0.5">
+            <TextBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.153"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBox.RenderTransform>
+        </TextBox>
         <Label x:Name="label" Content="Function Generator Settings" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
         <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="2" HorizontalAlignment="Left" Margin="38,3,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
         <Slider x:Name="oscope_ksamples_slider" Grid.Column="2" HorizontalAlignment="Left" Value="100" Margin="38,69,0,0" VerticalAlignment="Top" Width="123" ValueChanged="oscope_ksamples_updated" LargeChange="10" SmallChange="1" Maximum="1000" Minimum="56" Height="22"/>
@@ -41,12 +50,16 @@
             <ComboBoxItem>10</ComboBoxItem>
             <ComboBoxItem>12</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="43,232,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.415,0.5"/>
+        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="43,232,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="44,271,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
         <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9">
             <Line Name="triggerLine" X1="0" X2="401" 
                   Y1="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                   Y2="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                  Stroke="DarkGray" StrokeThickness="3" />
+            <Line Name="triggerVerticalLine" Y1="0" Y2="301" 
+                  X1="{Binding ElementName=vertical_trigger_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
+                  X2="{Binding ElementName=vertical_trigger_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                   Stroke="DarkGray" StrokeThickness="3" />
         </Canvas>
         <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
@@ -58,7 +71,7 @@
         <Label x:Name="label2" Content="Voltage Offset: (V)" Grid.Column="1" HorizontalAlignment="Left" Height="30" Margin="22,155,0,0" VerticalAlignment="Top" Width="120"/>
         <Label x:Name="label3" Content="Peak-to-Peak Voltage: (V)" Grid.Column="1" HorizontalAlignment="Left" Height="37" Margin="21,96,0,0" VerticalAlignment="Top" Width="148"/>
         <Label x:Name="label4" Content="Frequency: (Hz)" Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="22,41,0,0" VerticalAlignment="Top" Width="120"/>
-        <Label x:Name="label5" Content="Wave Type:" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,277,0,0" VerticalAlignment="Top" Width="173"/>
+        <Label x:Name="label5" Content="Wave Type:" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="22,266,0,0" VerticalAlignment="Top" Width="173"/>
         <Label x:Name="label6" Content="Horizontal Resolution:" Grid.Column="2" HorizontalAlignment="Left" Margin="38,96,0,0" VerticalAlignment="Top" Width="133"/>
         <Label x:Name="label7" Content="KiloSamples/Second:" Grid.Column="2" HorizontalAlignment="Left" Margin="35,44,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="131">
             <Label.RenderTransform>
@@ -86,6 +99,19 @@
             <ComboBoxItem>Falling Edge</ComboBoxItem>
         </ComboBox>
         <Label x:Name="label9" Content="Trigger Type:" Grid.Column="2" HorizontalAlignment="Left" Margin="39,158,0,0" VerticalAlignment="Top" Width="119"/>
+        <Button x:Name="button1" Content="Apply Configuration" Grid.Column="1" HorizontalAlignment="Left" Margin="23,398,0,0" VerticalAlignment="Top" Width="173" Height="27" Click="button1_Click"/>
+        <Button x:Name="button2" Content="Connect" Grid.Column="2" HorizontalAlignment="Left" Margin="45,300,0,0" VerticalAlignment="Top" Width="190" Height="25" Click="button2_Click"/>
+        <Button x:Name="button3" Content="Stop Function Generator" Grid.Column="1" HorizontalAlignment="Left" Margin="24,368,0,0" VerticalAlignment="Top" Width="171" RenderTransformOrigin="0.5,0.5" Height="25" Click="button3_Click">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="0.099"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+        <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Left" Margin="29,13,0,0" VerticalAlignment="Top" Width="400" Minimum="0" Maximum="400" SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged"/>
 
     </Grid>
 </Window>
