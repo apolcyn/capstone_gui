@@ -488,6 +488,8 @@ namespace WpfApplication1
 
         private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
+        private Line triggerLine;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -730,18 +732,22 @@ namespace WpfApplication1
         private void update_oscope_trigger_level(int triggerLevel)
         {
             nextOscopeConfiguration.setTriggerLevel(triggerLevel);
+
+            this.oscope_window_canvas.Children.Remove(triggerLine);
             this.trigger_slider_button.Value = nextOscopeConfiguration.getTriggerLevel();
-            this.trigger_text_display.Text = nextOscopeConfiguration.getTriggerLevel() + " V";
+            this.triggerLine = new Line();
+            this.triggerLine.Stroke = System.Windows.Media.Brushes.DarkSalmon;
+            this.triggerLine.StrokeThickness = 1;
+            this.triggerLine.X1 = 0;
+            this.triggerLine.X2 = 401;
+            this.triggerLine.Y1 = nextOscopeConfiguration.getTriggerLevel();
+            this.triggerLine.Y2 = this.triggerLine.Y1;
+            this.oscope_window_canvas.Children.Add(triggerLine);
         }
 
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             update_oscope_trigger_level((int)this.trigger_slider_button.Value);
-        }
-
-        private void trigger_apply_button_Click(object sender, RoutedEventArgs e)
-        {
-            update_oscope_trigger_level(int.Parse(this.trigger_text_display.Text.Split()[0]));
         }
 
         private void log(String str)
