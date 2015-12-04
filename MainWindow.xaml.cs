@@ -517,8 +517,11 @@ namespace WpfApplication1
         {
             nextFunctionGeneratorConfiguration.setVpp(newVpp);
             this.DAC_vpp_slider.Value = (double)nextFunctionGeneratorConfiguration.getVpp();
-            this.Vpp_text_display.Text
-                = nextFunctionGeneratorConfiguration.getVpp().ToString(FunctionGeneratorConfiguration.VPP_FORMAT_STR);
+            if (this.Vpp_text_display != null)
+            {
+                this.Vpp_text_display.Text
+                    = nextFunctionGeneratorConfiguration.getVpp().ToString(FunctionGeneratorConfiguration.VPP_FORMAT_STR);
+            }
         }
 
         // event handler for DAC voffset slider updates
@@ -532,8 +535,11 @@ namespace WpfApplication1
         {
             nextFunctionGeneratorConfiguration.setVOffset(newOffset);
             this.DAC_voffset_slider.Value = (double)nextFunctionGeneratorConfiguration.getVOffset();
-            this.Voffset_text_display.Text
-                = nextFunctionGeneratorConfiguration.getVOffset().ToString(FunctionGeneratorConfiguration.VOFFSET_FORMAT_STR);
+            if (this.Voffset_text_display != null)
+            {
+                this.Voffset_text_display.Text
+                    = nextFunctionGeneratorConfiguration.getVOffset().ToString(FunctionGeneratorConfiguration.VOFFSET_FORMAT_STR);
+            }
         }
 
         // event handler for DAC duty cycle slider updates
@@ -547,7 +553,10 @@ namespace WpfApplication1
         {
             nextFunctionGeneratorConfiguration.setDutyCycle(newDutyCycle);
             this.DAC_duty_cycle.Value = nextFunctionGeneratorConfiguration.getDutyCycle();
-            this.duty_cycle_text_display.Text = nextFunctionGeneratorConfiguration.getDutyCycle() + "%";
+            if (this.duty_cycle_text_display != null)
+            {
+                this.duty_cycle_text_display.Text = nextFunctionGeneratorConfiguration.getDutyCycle().ToString();
+            }
         }
 
         // event handler for DAC frequenecy slider udpates
@@ -561,8 +570,11 @@ namespace WpfApplication1
         {
             nextFunctionGeneratorConfiguration.setFrequency(newFreq);
             this.DAC_frequency_slider.Value = nextFunctionGeneratorConfiguration.getFrequency();
-            this.DAC_frequency_text_display.Text
-                = nextFunctionGeneratorConfiguration.getFrequency().ToString();
+            if (this.DAC_frequency_text_display != null)
+            {
+                this.DAC_frequency_text_display.Text
+                    = nextFunctionGeneratorConfiguration.getFrequency().ToString();
+            }
         }
 
         private void DAC_wavetype_selected(object sender, SelectionChangedEventArgs e)
@@ -591,7 +603,7 @@ namespace WpfApplication1
             {
                 nextOscopeConfiguration.setkSamplesPerSecond(val);
                 this.oscope_ksamples_slider.Value = nextOscopeConfiguration.getKSamplesPerSecond();
-                this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.getKSamplesPerSecond().ToString() + " K/sec";
+                this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.getKSamplesPerSecond().ToString();
             }
         }
 
