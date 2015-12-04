@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.IO.Ports;
 using System.Threading;
 using System.Windows.Threading;
+using System.IO;
 
 namespace WpfApplication1
 {
@@ -284,7 +285,7 @@ namespace WpfApplication1
             numBytesInNext = 0;
             ushort val = sampleBuf;
             sampleBuf = 0;
-            val = 222;// (ushort)(val / 4095.0 * 300);
+            val = (ushort)(val / 4095.0 * 300);
             return val;
         }
 
@@ -312,12 +313,13 @@ namespace WpfApplication1
         private int numSamplesHeaderIndex;
         private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
-        private enum ReceiveState { NOT_STARTED, FINDING_NUM_SAMPLES, RECEIVING_SAMPLES};
+        private Queue<byte> topSerialBuffer = new Queue<byte>();
+
+        private enum ReceiveState { NOT_STARTED, FINDING_NUM_SAMPLES, RECEIVING_SAMPLES, GETTING_HEADER_F};
         private ReceiveState curState = ReceiveState.NOT_STARTED, nextState;
 
         private MainWindow mainWindow;
         private SampleReceiver samplesReceiver = new SampleReceiver();
-        File
 
         public DataReceiver(MainWindow mainWindow)
         {
@@ -358,11 +360,22 @@ namespace WpfApplication1
                 a random number whos value happens to equal ASCII 'F' value, and then thinking that it's
                 a start, when its not. Could fix this with a slightly longer special character sequence for starts. */
                 case ReceiveState.NOT_STARTED:
+                    if(newByte == '#')
+                    {
+                        nextState = ReceiveState.GETTING_HEADER_F;
+                        stopwatch.Restart();
+                    }
+                    break;
+
+                case ReceiveState.GETTING_HEADER_F:
                     if(newByte == 'F')
                     {
                         numSamplesHeaderIndex = 0;
                         nextState = ReceiveState.FINDING_NUM_SAMPLES;
-                        stopwatch.Restart();
+                    }
+                    else
+                    {
+                        throw new Exception("invalid state. expecting header 'F' but got:" + newByte);
                     }
                     break;
 
@@ -404,6 +417,7 @@ namespace WpfApplication1
                         numSamplesHeaderIndex = 0;
                         nextState = ReceiveState.NOT_STARTED;
                         stopwatch.Stop();
+                        log(stopwatch.ElapsedMilliseconds.ToString());
                     }
                     break;
 
@@ -415,17 +429,26 @@ namespace WpfApplication1
             curState = nextState;
         }
 
+        void log(String str)
+        {
+            using (System.IO.StreamWriter w = File.AppendText("data_receiver_log" + DateTime.Now.Hour + ".txt"))
+            {
+                w.WriteLineAsync(str);
+            }
+        }
+
         /* An arbitrary byte or set of bytes is ready */
         void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            int newVal = serialPort.ReadByte();
-
-            if (newVal != -1) {
+            int newVal = 0;
+            for(int i = 0; i < serialPort.BytesToRead && ((newVal = serialPort.ReadByte()) != -1); i++)
+            {
                 byteReceived((byte)newVal);
             }
-            else
+
+            if(newVal == -1)
             {
-                throw new Exception("end of UART stream seems to have been reached");
+                throw new Exception("end of UART stream seems to have been reached. strange");
             }
         }
 
@@ -657,14 +680,14 @@ namespace WpfApplication1
         private void drawOscopeLine(int prevX, int prevY, int curX, int curY)
         {
             Line myLine = new Line();
-            myLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
+            myLine.Stroke = System.Windows.Media.Brushes.Gold;
             myLine.X1 = prevX;
             myLine.X2 = curX;
             myLine.Y1 = prevY;
             myLine.Y2 = curY;
             myLine.HorizontalAlignment = HorizontalAlignment.Left;
             myLine.VerticalAlignment = VerticalAlignment.Center;
-            myLine.StrokeThickness = 2;
+            myLine.StrokeThickness = 4;
             this.oscope_window_canvas.Children.Add(myLine);
         }
 
@@ -719,6 +742,14 @@ namespace WpfApplication1
         private void trigger_apply_button_Click(object sender, RoutedEventArgs e)
         {
             update_oscope_trigger_level(int.Parse(this.trigger_text_display.Text.Split()[0]));
+        }
+
+        private void log(String str)
+        {
+            using (StreamWriter w = File.AppendText("main_window_log-" + DateTime.Now.Hour + ".txt"))
+            {
+                w.WriteLineAsync(str);
+            }
         }
     }
 }

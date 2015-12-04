@@ -43,7 +43,7 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,235,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,307,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="182"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="Gray"/>
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9"/>
         <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
         <Button x:Name="Vpp_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="21" Margin="220,129,0,0" VerticalAlignment="Top" Width="52" Click="Vpp_update_btn_Click"/>
         <Button x:Name="Voffset_update_btn" Content="Apply" Grid.Column="1" HorizontalAlignment="Left" Height="22" Margin="221,185,0,0" VerticalAlignment="Top" Width="52" Click="Voffset_update_btn_Click"/>
