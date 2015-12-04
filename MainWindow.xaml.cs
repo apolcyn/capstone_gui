@@ -469,6 +469,27 @@ namespace WpfApplication1
         }
     }
 
+    public interface TriggerType
+    {
+        bool trigger(ushort firstSample, ushort secondSample, int trigger);
+    }
+
+    public class RisingEdgeTrigger : TriggerType
+    {
+        public bool trigger(ushort firstSample, ushort secondSample, int trigger)
+        {
+            return firstSample < trigger && secondSample >= trigger;
+        }
+    }
+
+    public class FallingEdgeTrigger : TriggerType
+    {
+        public bool trigger(ushort firstSample, ushort secondSample, int trigger)
+        {
+            return firstSample > trigger && secondSample <= trigger;
+        }
+    }
+
     /* Main window object, contains references to all of the visual components on the GUI display. */
     public partial class MainWindow : Window
     {
@@ -487,11 +508,15 @@ namespace WpfApplication1
         private ushort[] samplesDisplayBuffer = new ushort[SAMPLES_PER_WINDOW];
 
         private System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+        private RisingEdgeTrigger risingEdgeTrigger = new RisingEdgeTrigger();
+        private FallingEdgeTrigger fallingEdgeTrigger = new FallingEdgeTrigger();
+        private TriggerType curTrigger;
 
         public MainWindow()
         {
             InitializeComponent();
             dataReceiver = new DataReceiver(this);
+            curTrigger = risingEdgeTrigger;
         }
 
         public void newSamplesReceived(ushort[] samplesBuf, int numSamples)
@@ -621,7 +646,7 @@ namespace WpfApplication1
 
             for(int i = startIndex; i < numSamples - 1; i++)
             {
-                if(newSamples[i] < triggerLevel && newSamples[i + 1] >= triggerLevel)
+                if(curTrigger.trigger(newSamples[i], newSamples[i + 1], triggerLevel))
                 {
                     return i + 1;
                 }
@@ -750,11 +775,25 @@ namespace WpfApplication1
             update_oscope_trigger_level((int)this.trigger_slider_button.Value);
         }
 
+
+
         private void log(String str)
         {
             using (StreamWriter w = File.AppendText("main_window_log-" + DateTime.Now.Hour + ".txt"))
             {
                 w.WriteLineAsync(str);
+            }
+        }
+
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(this.trigger_selection.SelectedIndex == 0)
+            {
+                curTrigger = risingEdgeTrigger;
+            }
+            else if(this.trigger_selection.SelectedIndex == 1)
+            {
+                curTrigger = fallingEdgeTrigger;
             }
         }
     }

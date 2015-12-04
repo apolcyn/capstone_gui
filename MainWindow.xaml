@@ -41,8 +41,8 @@
             <ComboBoxItem>10</ComboBoxItem>
             <ComboBoxItem>12</ComboBoxItem>
         </ComboBox>
-        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="38,185,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22"/>
-        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="38,241,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
+        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="43,232,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.415,0.5"/>
+        <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="44,271,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
         <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9">
             <Line Name="triggerLine" X1="0" X2="401" 
                   Y1="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
@@ -81,6 +81,11 @@
                 </TransformGroup>
             </Slider.RenderTransform>
         </Slider>
+        <ComboBox x:Name="trigger_selection" Grid.Column="2" HorizontalAlignment="Left" Margin="41,186,0,0" SelectedIndex="0"  VerticalAlignment="Top" Width="120" SelectionChanged="comboBox_SelectionChanged">
+            <ComboBoxItem>Rising Edge</ComboBoxItem>
+            <ComboBoxItem>Falling Edge</ComboBoxItem>
+        </ComboBox>
+        <Label x:Name="label9" Content="Trigger Type:" Grid.Column="2" HorizontalAlignment="Left" Margin="39,158,0,0" VerticalAlignment="Top" Width="119"/>
 
     </Grid>
 </Window>
