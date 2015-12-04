@@ -324,7 +324,7 @@ namespace WpfApplication1
         public DataReceiver(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
-            serialPort = new SerialPort("COM8", 57600, Parity.None, 8, StopBits.One);
+            serialPort = new SerialPort("COM10", 57600, Parity.None, 8, StopBits.One);
             serialPort.Handshake = Handshake.None;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
             serialPort.Open();
@@ -609,7 +609,7 @@ namespace WpfApplication1
 
             for(int i = startIndex; i < numSamples - 1; i++)
             {
-                if(newSamples[i] < newSamples[i + 1] && newSamples[i + 1] >= triggerLevel)
+                if(newSamples[i] < triggerLevel && newSamples[i + 1] >= triggerLevel)
                 {
                     return i + 1;
                 }
