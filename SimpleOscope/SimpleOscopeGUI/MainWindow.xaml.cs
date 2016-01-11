@@ -300,6 +300,11 @@ namespace WpfApplication1
         }
     }
 
+    public interface SampleDisplayer
+    {
+        void newSamplesReceived(UInt16[] samplesBuffer, int numSamplesReceived);
+    }
+
     /* An object that receives frames of samples from PSoC over UART. This object keeps track of 
     the state of the sample frames, and parses the UART bytes into a list of samples to display.
     When it's received a full frame of samples, it calls a callback method to display all of the samples
@@ -318,12 +323,12 @@ namespace WpfApplication1
         private enum ReceiveState { NOT_STARTED, FINDING_NUM_SAMPLES, RECEIVING_SAMPLES, GETTING_HEADER_F};
         private ReceiveState curState = ReceiveState.NOT_STARTED, nextState;
 
-        private MainWindow mainWindow;
+        private SampleDisplayer sampleDisplayer;
         private SampleReceiver samplesReceiver = new SampleReceiver();
 
-        public DataReceiver(MainWindow mainWindow)
+        public DataReceiver(SampleDisplayer sampleDisplayer)
         {
-            this.mainWindow = mainWindow;
+            this.sampleDisplayer = sampleDisplayer;
             serialPort = new SerialPort("COM10", 57600, Parity.None, 8, StopBits.One);
             serialPort.Handshake = Handshake.None;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
@@ -411,7 +416,7 @@ namespace WpfApplication1
                     }
                     if(numSamplesReceived == numSamplesExpected)
                     {
-                        mainWindow.newSamplesReceived(samplesBuffer, numSamplesReceived);
+                        sampleDisplayer.newSamplesReceived(samplesBuffer, numSamplesReceived);
                         numSamplesExpected = 0;
                         numSamplesReceived = 0;
                         numSamplesHeaderIndex = 0;
@@ -491,7 +496,7 @@ namespace WpfApplication1
     }
 
     /* Main window object, contains references to all of the visual components on the GUI display. */
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, SampleDisplayer
     {
         DataReceiver dataReceiver;
 
