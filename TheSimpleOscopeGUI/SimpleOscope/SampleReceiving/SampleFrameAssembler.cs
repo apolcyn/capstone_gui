@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope.SampleReceiving
 {
+    /* Receives assembled samples. An implementation should be provided a SampleFrameReceiver
+    callback to be called when a sample frame has been assembled. */
     public interface SampleFrameAssembler
     {
         void SampleAssembled(ushort nextSample);

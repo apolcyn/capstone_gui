@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\SimpleOscope.csproj">
+    <ProjectReference Include="..\SimpleOscope\SimpleOscope.csproj">
       <Project>{73702fb0-7a6a-4bf5-a6fa-dbbbb7a13eda}</Project>
       <Name>SimpleOscope</Name>
     </ProjectReference>

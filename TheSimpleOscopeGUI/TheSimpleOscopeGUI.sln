@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOscope", "SimpleOscope\SimpleOscope.csproj", "{73702FB0-7A6A-4BF5-A6FA-DBBBB7A13EDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOscopeGUI", "SimpleOscopeGUI\SimpleOscopeGUI.csproj", "{08A1CA36-9680-4B86-AFE9-76C7AF7C6282}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOscopeUnitTests", "SimpleOscopeUnitTests\SimpleOscopeUnitTests.csproj", "{6E3FB4A7-F6A3-4A05-B650-2651DFD15308}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73702FB0-7A6A-4BF5-A6FA-DBBBB7A13EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73702FB0-7A6A-4BF5-A6FA-DBBBB7A13EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73702FB0-7A6A-4BF5-A6FA-DBBBB7A13EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73702FB0-7A6A-4BF5-A6FA-DBBBB7A13EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08A1CA36-9680-4B86-AFE9-76C7AF7C6282}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A1CA36-9680-4B86-AFE9-76C7AF7C6282}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A1CA36-9680-4B86-AFE9-76C7AF7C6282}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A1CA36-9680-4B86-AFE9-76C7AF7C6282}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E3FB4A7-F6A3-4A05-B650-2651DFD15308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E3FB4A7-F6A3-4A05-B650-2651DFD15308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E3FB4A7-F6A3-4A05-B650-2651DFD15308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E3FB4A7-F6A3-4A05-B650-2651DFD15308}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
