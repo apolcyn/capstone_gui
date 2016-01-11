@@ -51,6 +51,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImplTests.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImplTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

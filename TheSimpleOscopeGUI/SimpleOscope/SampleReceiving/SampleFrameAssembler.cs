@@ -11,5 +11,7 @@ namespace SimpleOscope.SampleReceiving
     public interface SampleFrameAssembler
     {
         void SampleAssembled(ushort nextSample);
+
+        void SetNumSamplesExpected(uint numSamplesExpected);
     }
 }

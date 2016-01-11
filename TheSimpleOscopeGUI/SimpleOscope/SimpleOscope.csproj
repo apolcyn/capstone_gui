@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImpl.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameReceiverImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameReceiving\SampleFrameReceiverImpl.cs" />
     <Compile Include="SampleReceiving\SampleAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />

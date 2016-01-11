@@ -21,6 +21,11 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleAssembly
             {
                 list[curIndex++] = nextSample;
             }
+
+            public void SetNumSamplesExpected(uint numSamplesExpected)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private void VerifyListsAreEqual(MockSampleFrameAssembler receiver, ushort[] b)

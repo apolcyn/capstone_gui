@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope.SampleReceiving
 {
-    interface SampleFrameReceiver
+    public interface SampleFrameReceiver
     {
+        void FrameAssembled(ushort[] samples, uint numSamples);
     }
 }
