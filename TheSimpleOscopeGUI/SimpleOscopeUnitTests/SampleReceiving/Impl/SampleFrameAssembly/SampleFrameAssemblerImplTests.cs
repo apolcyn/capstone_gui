@@ -37,7 +37,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             assembler = new SampleFrameAssemblerImpl(mockFrameReceiver);
         }
 
-        private void VerifySamplesList(MockSampleFrameReceiver mockFrameReceiver, ushort[] expected)
+        private void VerifySamplesList(ushort[] expected)
         {
             Assert.AreEqual(mockFrameReceiver.numSamplesJustReceived, (uint)expected.Length);
 
@@ -54,7 +54,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             {
                 assembler.SampleAssembled(samples[i]);
             }
-            VerifySamplesList(mockFrameReceiver, samples);
+            VerifySamplesList(samples);
         }
 
         [TestMethod]
@@ -122,6 +122,33 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
                 expected[i] = i;
             }
             TestFrameAssembly(SampleFrameAssemblerImpl.SAMPLES_BUF_SIZE, expected);
+        }
+
+        [TestMethod]
+        public void TestNumSampleExpectedLoweredBelowAmountInBuffer()
+        {
+            assembler.SetNumSamplesExpected(10);
+            for(ushort i = 0; i < 9; i++)
+            {
+                assembler.SampleAssembled(i);
+            }
+            assembler.SetNumSamplesExpected(8);
+            assembler.SampleAssembled(4);
+            VerifySamplesList(new ushort[] { 0, 1, 2, 3, 4, 5, 6, 7 });
+        }
+
+        [TestMethod]
+        public void TestNumSampleExpectedLoweredToAmountInCurrentBuffer()
+        {
+            assembler.SetNumSamplesExpected(10);
+            for (ushort i = 0; i < 9; i++)
+            {
+                assembler.SampleAssembled(i);
+            }
+            assembler.SetNumSamplesExpected(9);
+            assembler.SampleAssembled(4);
+            VerifySamplesList(new ushort[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
+
         }
     }
 }
