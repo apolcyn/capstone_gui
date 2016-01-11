@@ -30,8 +30,15 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
 
         public void SampleAssembled(ushort nextSample)
         {
+            if(curBufIndex >= numSamplesExpected)
+            {
+                sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
+                curBufIndex = 0;
+            }
+
             samplesBuf[curBufIndex++] = nextSample;
-            if(curBufIndex == numSamplesExpected)
+
+            if (curBufIndex >= numSamplesExpected)
             {
                 sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
                 curBufIndex = 0;
