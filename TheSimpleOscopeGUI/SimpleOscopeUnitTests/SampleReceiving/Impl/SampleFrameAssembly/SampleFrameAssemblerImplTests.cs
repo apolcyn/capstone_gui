@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly;
 using SimpleOscope.SampleReceiving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,7 +20,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
 
             public void FrameAssembled(ushort[] samples, uint numSamples)
             {
-                for(int i = 0; i < numSamples; i++)
+                for (int i = 0; i < numSamples; i++)
                 {
                     receivedBuf[i] = samples[i];
                 }
@@ -66,14 +67,14 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         [TestMethod]
         public void TestOneExpectedSample()
         {
-            TestFrameAssembly(1, new ushort[] { 50});
+            TestFrameAssembly(1, new ushort[] { 50 });
         }
 
         [TestMethod]
         public void TestRespondsToIncreasedExpectedSamplesCount()
         {
             TestFrameAssembly(4, new ushort[] { 0, 1, 2, 3 });
-            TestFrameAssembly(6, new ushort[] { 1, 3, 3, 7, 5, 8});
+            TestFrameAssembly(6, new ushort[] { 1, 3, 3, 7, 5, 8 });
         }
 
         [TestMethod]
@@ -82,8 +83,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             TestFrameAssembly(3, new ushort[] { 0, 1, 2 });
             TestFrameAssembly(6, new ushort[] { 8, 1, 3, 1, 2, 5 });
             TestFrameAssembly(5, new ushort[] { 8, 1, 3, 6, 2 });
-            TestFrameAssembly(6, new ushort[] { 8, 1, 2, 6, 2, 9});
-            TestFrameAssembly(2, new ushort[] {48, 4 });
+            TestFrameAssembly(6, new ushort[] { 8, 1, 2, 6, 2, 9 });
+            TestFrameAssembly(2, new ushort[] { 48, 4 });
             TestFrameAssembly(3, new ushort[] { 4, 5, 7 });
             TestFrameAssembly(1, new ushort[] { 99 });
         }
@@ -92,7 +93,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         public void TestWaitsUntilFrameReady()
         {
             assembler.SetNumSamplesExpected(10);
-            for(ushort i = 0; i < 9; i++)
+            for (ushort i = 0; i < 9; i++)
             {
                 assembler.SampleAssembled(i);
             }
@@ -117,7 +118,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         public void TestWorksAtMaxBufSize()
         {
             ushort[] expected = new ushort[SampleFrameAssemblerImpl.SAMPLES_BUF_SIZE];
-            for(ushort i = 0; i < expected.Length; i++)
+            for (ushort i = 0; i < expected.Length; i++)
             {
                 expected[i] = i;
             }
@@ -128,7 +129,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         public void TestNumSampleExpectedLoweredBelowAmountInBuffer()
         {
             assembler.SetNumSamplesExpected(10);
-            for(ushort i = 0; i < 9; i++)
+            for (ushort i = 0; i < 9; i++)
             {
                 assembler.SampleAssembled(i);
             }
@@ -149,6 +150,55 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             assembler.SampleAssembled(4);
             VerifySamplesList(new ushort[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
 
+        }
+    }
+
+    [TestClass]
+    public class SampleFrameAssemblerImplSynchronizationTests
+    {
+        private class SleepingMockSampleFrameReceiver : SampleFrameReceiver
+        {
+            SampleFrameAssemblerImplSynchronizationTests outer;
+            Thread setExpectedSamplesThread;
+
+            public SleepingMockSampleFrameReceiver(SampleFrameAssemblerImplSynchronizationTests outer, Thread setExpectedSamplesThread)
+            {
+                this.outer = outer;
+                this.setExpectedSamplesThread = setExpectedSamplesThread;
+            }
+
+            public void FrameAssembled(ushort[] samples, uint numSamples)
+            {
+                setExpectedSamplesThread.Priority = ThreadPriority.Highest;
+                Thread.CurrentThread.Priority = ThreadPriority.Lowest;
+                setExpectedSamplesThread.Start();
+                Thread.Sleep(100);
+                outer.val = -1;
+            }
+        }
+
+        private SampleFrameReceiver mockFrameReceiver;
+        private SampleFrameAssembler assembler;
+        int val;
+
+        private void CallSetExpectedNumSamplesAndThenSetVal()
+        {
+            assembler.SetNumSamplesExpected(10);
+            val = 2;
+        }
+
+        [TestMethod]
+        public void TestSetNumExpectedSamplesAndSampleAssembledCallsAreSynchronized()
+        {
+            Thread setExpectedNumSamplesThread = new Thread(new ThreadStart(CallSetExpectedNumSamplesAndThenSetVal));
+            mockFrameReceiver = 
+                new SleepingMockSampleFrameReceiver(this, setExpectedNumSamplesThread);
+
+            assembler = new SampleFrameAssemblerImpl(mockFrameReceiver);
+            assembler.SetNumSamplesExpected(1);
+            assembler.SampleAssembled(1);
+            setExpectedNumSamplesThread.Join();
+            Assert.AreEqual(2, this.val);
         }
     }
 }
