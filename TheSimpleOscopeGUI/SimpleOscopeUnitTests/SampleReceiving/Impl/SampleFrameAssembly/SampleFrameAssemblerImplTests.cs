@@ -177,7 +177,16 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             }
         }
 
-        private SampleFrameReceiver mockFrameReceiver;
+        private class DeadLockingMockSampleFrameReceiver : SampleFrameReceiver
+        {
+            public SampleFrameAssembler assembler { get; set; }
+
+            public void FrameAssembled(ushort[] samples, uint numSamples)
+            {
+                assembler.SetNumSamplesExpected(10);
+            }
+        }
+
         private SampleFrameAssembler assembler;
         int val;
 
@@ -191,7 +200,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         public void TestSetNumExpectedSamplesAndSampleAssembledCallsAreSynchronized()
         {
             Thread setExpectedNumSamplesThread = new Thread(new ThreadStart(CallSetExpectedNumSamplesAndThenSetVal));
-            mockFrameReceiver = 
+            SampleFrameReceiver mockFrameReceiver = 
                 new SleepingMockSampleFrameReceiver(this, setExpectedNumSamplesThread);
 
             assembler = new SampleFrameAssemblerImpl(mockFrameReceiver);
@@ -199,6 +208,19 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             assembler.SampleAssembled(1);
             setExpectedNumSamplesThread.Join();
             Assert.AreEqual(2, this.val);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void TestDeadLockExceptionOccursWhenSetFrameSizeFromWithinSampleAssembledCall()
+        {
+            DeadLockingMockSampleFrameReceiver mockFrameReceiver 
+                = new DeadLockingMockSampleFrameReceiver();
+            assembler = new SampleFrameAssemblerImpl(mockFrameReceiver);
+            mockFrameReceiver.assembler = assembler;
+
+            assembler.SetNumSamplesExpected(1);
+            assembler.SampleAssembled(2);
         }
     }
 }
