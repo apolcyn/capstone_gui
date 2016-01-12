@@ -15,7 +15,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
         private ushort[] samplesBuf = new ushort[SAMPLES_BUF_SIZE];
         private uint numSamplesExpected;
         private Object numSamplesLockingObject = new object();
-        Thread currentThreadCallingSampleAssemble;
+        private Thread currentThreadCallingSampleAssembled;
 
         public SampleFrameAssemblerImpl(SampleFrameReceiver sampleReceiver)
         {
@@ -24,7 +24,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
 
         public void SetNumSamplesExpected(uint numSamplesExpected)
         {
-            if(currentThreadCallingSampleAssemble == Thread.CurrentThread)
+            if(currentThreadCallingSampleAssembled == Thread.CurrentThread)
             {
                 throw new Exception("Deadlock error from circular wait.");
             }
@@ -42,7 +42,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
         {
             lock(numSamplesLockingObject)
             {
-                currentThreadCallingSampleAssemble = Thread.CurrentThread;
+                currentThreadCallingSampleAssembled = Thread.CurrentThread;
 
                 if (curBufIndex >= numSamplesExpected)
                 {
@@ -58,7 +58,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
                     curBufIndex = 0;
                 }
 
-                currentThreadCallingSampleAssemble = null;
+                currentThreadCallingSampleAssembled = null;
             }
         }
     }
