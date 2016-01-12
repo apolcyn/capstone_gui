@@ -13,6 +13,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
         public const int SAMPLES_BUF_SIZE = 10000;
         private ushort[] samplesBuf = new ushort[SAMPLES_BUF_SIZE];
         private uint numSamplesExpected;
+        private Object numSamplesLockingObject = new object();
 
         public SampleFrameAssemblerImpl(SampleFrameReceiver sampleReceiver)
         {
@@ -21,27 +22,33 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
 
         public void SetNumSamplesExpected(uint numSamplesExpected)
         {
-            if(numSamplesExpected == 0 || numSamplesExpected > SAMPLES_BUF_SIZE)
+            lock(numSamplesLockingObject)
             {
-                throw new ArgumentException();
+                if (numSamplesExpected == 0 || numSamplesExpected > SAMPLES_BUF_SIZE)
+                {
+                    throw new ArgumentException();
+                }
+                this.numSamplesExpected = numSamplesExpected;
             }
-            this.numSamplesExpected = numSamplesExpected;
         }
 
         public void SampleAssembled(ushort nextSample)
         {
-            if(curBufIndex >= numSamplesExpected)
+            lock(numSamplesLockingObject)
             {
-                sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
-                curBufIndex = 0;
-            }
+                if (curBufIndex >= numSamplesExpected)
+                {
+                    sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
+                    curBufIndex = 0;
+                }
 
-            samplesBuf[curBufIndex++] = nextSample;
+                samplesBuf[curBufIndex++] = nextSample;
 
-            if (curBufIndex >= numSamplesExpected)
-            {
-                sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
-                curBufIndex = 0;
+                if (curBufIndex >= numSamplesExpected)
+                {
+                    sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
+                    curBufIndex = 0;
+                }
             }
         }
     }
