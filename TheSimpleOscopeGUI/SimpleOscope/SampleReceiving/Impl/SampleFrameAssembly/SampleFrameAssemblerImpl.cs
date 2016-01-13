@@ -26,7 +26,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
         {
             if(currentThreadCallingSampleAssembled == Thread.CurrentThread)
             {
-                throw new Exception("Deadlock error from circular wait.");
+                throw new ThreadStateException("Deadlock error from circular wait.");
             }
             lock(numSamplesLockingObject)
             {
@@ -35,6 +35,11 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
                     throw new ArgumentException();
                 }
                 this.numSamplesExpected = numSamplesExpected;
+                if(this.curBufIndex > 0)
+                {
+                    throw new Exception("Getting this ready for an incoming frame but " + 
+                        " last frame hasn't been sent out yet");
+                }
             }
         }
 
@@ -46,16 +51,16 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
 
                 if (curBufIndex >= numSamplesExpected)
                 {
-                    sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
                     curBufIndex = 0;
+                    sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
                 }
 
                 samplesBuf[curBufIndex++] = nextSample;
 
                 if (curBufIndex >= numSamplesExpected)
                 {
-                    sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
                     curBufIndex = 0;
+                    sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
                 }
 
                 currentThreadCallingSampleAssembled = null;

@@ -126,6 +126,28 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void TestNumSampleExpectedSetWhileBufferNotEmpty()
+        {
+            assembler.SetNumSamplesExpected(2);
+            assembler.SampleAssembled(4);
+            assembler.SetNumSamplesExpected(2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void TestNumSampleExpectedRaisedAboveAmountInBuffer()
+        {
+            assembler.SetNumSamplesExpected(10);
+            for (ushort i = 0; i < 9; i++)
+            {
+                assembler.SampleAssembled(i);
+            }
+            assembler.SetNumSamplesExpected(11);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void TestNumSampleExpectedLoweredBelowAmountInBuffer()
         {
             assembler.SetNumSamplesExpected(10);
@@ -139,6 +161,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void TestNumSampleExpectedLoweredToAmountInCurrentBuffer()
         {
             assembler.SetNumSamplesExpected(10);
@@ -211,7 +234,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(ThreadStateException))]
         public void TestDeadLockExceptionOccursWhenSetFrameSizeFromWithinSampleAssembledCall()
         {
             DeadLockingMockSampleFrameReceiver mockFrameReceiver 

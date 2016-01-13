@@ -12,6 +12,7 @@ namespace SimpleOscope.SampleReceiving
     {
         void SampleAssembled(ushort nextSample);
 
+        /* Should set the number of expected samples and should cause the buffer to reset. */
         void SetNumSamplesExpected(uint numSamplesExpected);
     }
 }

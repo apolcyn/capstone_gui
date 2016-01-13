@@ -7,8 +7,8 @@
     <ProjectGuid>{73702FB0-7A6A-4BF5-A6FA-DBBBB7A13EDA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClassLibrary1</RootNamespace>
-    <AssemblyName>ClassLibrary1</AssemblyName>
+    <RootNamespace>SimpleOscope</RootNamespace>
+    <AssemblyName>SimpleOscope</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,9 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SampleReceiving\Impl\ByteReceiving\ByteReceiverImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameReceiving\SampleFrameReceiverImpl.cs" />
+    <Compile Include="SampleReceiving\ByteReceiver.cs" />
     <Compile Include="SampleReceiving\SampleAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />
