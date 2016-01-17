@@ -9,7 +9,9 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
     public class RisingEdgeTriggeringFrameReceiver : SampleFrameReceiver
     {
         private SampleFrameDisplayer displayer;
-        private ushort triggerLevel;
+        private uint triggerLevel;
+        private uint scanLength;
+        private uint scanStartIndex;
 
         public RisingEdgeTriggeringFrameReceiver(SampleFrameDisplayer displayer)
         {
@@ -22,15 +24,19 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
             {
                 throw new ArgumentException();
             }
+            if(this.scanLength + this.scanStartIndex > numSamples)
+            {
+                throw new Exception();
+            }
 
             uint lastSample = UInt16.MaxValue;
-            int start = -1, numTriggers = 0;
+            int start = -1;
 
-            for(int i = 0; i < numSamples; i++)
+            for(uint i = this.scanStartIndex; i < this.scanStartIndex + this.scanLength; i++)
             {
-                if(lastSample < triggerLevel && samples[i] >= triggerLevel && numTriggers++ == 1)
+                if(lastSample < triggerLevel && samples[i] >= triggerLevel)
                 {
-                    start = i;
+                    start = (int)i;
                     break;
                 }
                 lastSample = samples[i];
@@ -42,7 +48,21 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
             }
         }
 
-        public void SetTriggerLevel(ushort triggerLevel)
+        public void SetScanLength(uint scanLength)
+        {
+            if(scanLength < 2)
+            {
+                throw new ArgumentException();
+            }
+            this.scanLength = scanLength;
+        }
+
+        public void SetScanStartIndex(uint scanStartIndex)
+        {
+            this.scanStartIndex = scanStartIndex;
+        }
+
+        public void SetTriggerLevel(uint triggerLevel)
         {
             this.triggerLevel = triggerLevel;
         }

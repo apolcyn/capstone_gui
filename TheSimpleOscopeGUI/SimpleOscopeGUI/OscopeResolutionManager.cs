@@ -19,7 +19,6 @@ namespace WpfApplication1
         private int curVerticalResolution;
         private int curFrameSize;
         private int curADCSamplePeriod;
-        private int curWaveFrequency;
 
         private int numVerticalDivisions { get; }
         private int numHorizontalDivisions { get; }
@@ -39,11 +38,6 @@ namespace WpfApplication1
         public void ADCSampleRateChanged(int newADCSamplePeriod)
         {
             this.curADCSamplePeriod = newADCSamplePeriod;
-        }
-
-        public void WaveFrequencyChanged(int newFrequency)
-        {
-            this.curFrequency = newFrequency;
         }
 
          /* In general, when setting the horizontal time unit, our priorities are:

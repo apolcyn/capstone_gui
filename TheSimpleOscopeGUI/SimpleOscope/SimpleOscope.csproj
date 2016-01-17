@@ -48,13 +48,13 @@
     <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameDisplaying\SampleFrameDisplayerImpl.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameReceiving\SampleFrameReceiverImpl.cs" />
     <Compile Include="SampleReceiving\ByteReceiver.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameReceiving\RisingEdgeTriggeringFrameReceiver.cs" />
     <Compile Include="SampleReceiving\SampleAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameDisplayer.cs" />
-    <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

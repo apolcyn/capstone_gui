@@ -8,7 +8,7 @@ using SimpleOscope.SampleReceiving.Impl.ByteReceiving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace SimpleOscopeUnitTests.SampleReceiving.Impl.ByteReceiving
+namespace SimpleOscopeUnitTests.SampleReceiving.Impl
 {
     [TestClass]
     public class ByteReceivingImplTests

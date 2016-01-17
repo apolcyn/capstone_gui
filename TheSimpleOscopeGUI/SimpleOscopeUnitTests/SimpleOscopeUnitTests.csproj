@@ -57,10 +57,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="SampleReceiving\Impl\ByteReceiving\ByteReceivingImplTests.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImplTests.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameDisplaying\SampleFrameDisplayerImplTests.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImplTests.cs" />
+    <Compile Include="SampleReceiving\Impl\ByteReceivingImplTests.cs" />
+    <Compile Include="SampleReceiving\Impl\RisingEdgeTriggeringFrameReceiverTests.cs" />
+    <Compile Include="SampleReceiving\Impl\HighByteFirstSampleAssemblerImplTests.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameDisplayerImplTests.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameAssemblerImplTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -73,6 +74,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

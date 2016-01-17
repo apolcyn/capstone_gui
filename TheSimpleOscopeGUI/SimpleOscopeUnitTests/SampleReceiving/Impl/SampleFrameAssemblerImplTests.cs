@@ -26,6 +26,21 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
                 }
                 numSamplesJustReceived = numSamples;
             }
+
+            public void SetScanStartIndex(uint scanStartIndex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetScanLength(uint scanLength)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetTriggerLevel(uint triggerLevel)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         MockSampleFrameReceiver mockFrameReceiver;
@@ -198,6 +213,21 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
                 Thread.Sleep(100);
                 outer.val = -1;
             }
+
+            public void SetScanLength(uint scanLength)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetScanStartIndex(uint scanStartIndex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetTriggerLevel(uint triggerLevel)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private class DeadLockingMockSampleFrameReceiver : SampleFrameReceiver
@@ -207,6 +237,21 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
             public void FrameAssembled(ushort[] samples, uint numSamples)
             {
                 assembler.SetNumSamplesExpected(10);
+            }
+
+            public void SetScanLength(uint scanLength)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetScanStartIndex(uint scanStartIndex)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void SetTriggerLevel(uint triggerLevel)
+            {
+                throw new NotImplementedException();
             }
         }
 

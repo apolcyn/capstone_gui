@@ -12,7 +12,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Threading;
 
-namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
+namespace SimpleOscopeUnitTests.SampleReceiving.Impl
 {
     [TestClass]
     public class SampleFrameDisplayerImplTests

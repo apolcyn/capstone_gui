@@ -7,7 +7,7 @@ using SimpleOscope.SampleReceiving.Impl.SampleAssembly;
 using SimpleOscope.SampleReceiving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleAssembly
+namespace SimpleOscopeUnitTests.SampleReceiving.Impl
 {
     [TestClass]
     public class HighByteFirstSampleAssemblerImplTests
