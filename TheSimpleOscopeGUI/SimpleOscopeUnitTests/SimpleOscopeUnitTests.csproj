@@ -39,6 +39,8 @@
       <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -56,6 +58,7 @@
   <ItemGroup>
     <Compile Include="SampleReceiving\Impl\ByteReceiving\ByteReceivingImplTests.cs" />
     <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImplTests.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameDisplaying\SampleFrameDisplayerImplTests.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImplTests.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

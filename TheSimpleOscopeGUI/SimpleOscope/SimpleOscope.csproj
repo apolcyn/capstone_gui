@@ -30,6 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -38,19 +40,21 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SampleReceiving\Impl\ByteReceiving\ByteReceiverImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameDisplaying\SampleFrameDisplayerImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SampleFrameReceiving\SampleFrameReceiverImpl.cs" />
     <Compile Include="SampleReceiving\ByteReceiver.cs" />
     <Compile Include="SampleReceiving\SampleAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
+    <Compile Include="SampleReceiving\SampleFrameDisplayer.cs" />
     <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
