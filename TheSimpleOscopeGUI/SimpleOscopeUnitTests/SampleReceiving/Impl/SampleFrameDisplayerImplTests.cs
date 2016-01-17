@@ -30,7 +30,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void testNormalCase()
         {
             Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayer displayer 
+            SampleFrameDisplayerImpl displayer 
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for(int i = 0; i < 21; i++)
@@ -40,7 +40,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
 
             displayer.SetNumSamplesToDisplay(11);
             mockDrawer.Setup(x => x.getCanvasWidth()).Returns(31);
-            displayer.DisplaySampleFrame(10, 21, samples);
+            displayer.DisplaySampleFrameFromStartIndex(10, 21, samples);
 
             // The canvas should be cleared every time before drawing
             mockDrawer.Verify(x => x.clearScopeCanvas(), Times.Once());
@@ -68,7 +68,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void testSpacingTimesNumSamplesToDisplayGreatherThanCanvasWidth()
         {
             Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayer displayer
+            SampleFrameDisplayerImpl displayer
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
@@ -80,7 +80,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             // Setting canvas width to 17. The line beginning at 15 and going to 18 should
             // still be drawn though.
             mockDrawer.Setup(x => x.getCanvasWidth()).Returns(17);
-            displayer.DisplaySampleFrame(10, 21, samples);
+            displayer.DisplaySampleFrameFromStartIndex(10, 21, samples);
 
             // The canvas should be cleared every time before drawing
             mockDrawer.Verify(x => x.clearScopeCanvas(), Times.Once());
@@ -107,7 +107,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void testSpacingTimesNumSamplesToDisplayNotEnoughToCoverCanvas()
         {
             Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayer displayer
+            SampleFrameDisplayerImpl displayer
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
@@ -120,7 +120,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             // still be drawn though.
             mockDrawer.Setup(x => x.getCanvasWidth()).Returns(32);
 
-            displayer.DisplaySampleFrame(10, 21, samples);
+            displayer.DisplaySampleFrameFromStartIndex(10, 21, samples);
         }
 
         /* If there arn't enough samples to avialable in a frame to cover the desired number
@@ -130,7 +130,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void testNumSamplesAvailableLessThanNumSamplesToDisplay()
         {
             Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayer displayer
+            SampleFrameDisplayerImpl displayer
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
@@ -142,8 +142,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             mockDrawer.Setup(x => x.getCanvasWidth()).Returns(20);
 
             // calling display samples with a start of 11 and 21 total, so 10 samples available.
-            displayer.DisplaySampleFrame(11, 21, samples);
-        }
+            displayer.DisplaySampleFrameFromStartIndex(11, 21, samples);
+        } 
     }
 }
 

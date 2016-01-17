@@ -16,6 +16,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         private uint spacing { get; set; }
         private OscopeWindowClient scopeLineDrawer { get; set; }
         private Dispatcher uiThreadDispatcher { get; set; }
+        private int triggerRelativeDisplayStartIndex;
 
         public SampleFrameDisplayerImpl(OscopeWindowClient scopeLineDrawer
             , uint numSamplesToDisplay, uint spacing, Dispatcher uiThreadDispatcher)
@@ -30,16 +31,32 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             this.uiThreadDispatcher = uiThreadDispatcher;
         }
 
-        public delegate void DisplayDeleg(uint start, uint totalSamplesInFrame, ushort[] samples);
+        public delegate void DisplayDeleg(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples);
 
-        public void DisplaySampleFrameOnUIThread(uint start, uint totalSamplesInFrame, ushort[] samples)
+        public void DisplaySampleFrame(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples)
         {
-            uiThreadDispatcher.BeginInvoke(new DisplayDeleg(DisplaySampleFrameOnUIThread)
-                , new object[] { start, totalSamplesInFrame, samples });
+            uiThreadDispatcher.BeginInvoke(new DisplayDeleg(DisplayTriggeredSampleFrame)
+                , new object[] { triggerIndex, totalSamplesInFrame, samples });
         }
 
+        public void DisplayTriggeredSampleFrame(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples)
+        {
+            if(triggerIndex + this.triggerRelativeDisplayStartIndex < 0)
+            {
+                throw new ArgumentException();
+            }
+            if(triggerIndex >= totalSamplesInFrame 
+                || triggerIndex + this.triggerRelativeDisplayStartIndex >= totalSamplesInFrame)
+            {
+                throw new ArgumentException();
+            }
+            DisplaySampleFrameFromStartIndex(
+                (uint)(triggerIndex + this.triggerRelativeDisplayStartIndex),
+                totalSamplesInFrame,
+                samples);
+        }
 
-        public void DisplaySampleFrame(uint start, uint totalSamplesInFrame, ushort[] samples)
+        public void DisplaySampleFrameFromStartIndex(uint start, uint totalSamplesInFrame, ushort[] samples)
         {
             if(totalSamplesInFrame - start < this.numSamplesToDisplay)
             {
@@ -69,6 +86,11 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
                 prevX = curX;
                 prevY = curY;
             }
+        }
+
+        public void SetTriggerRelativeDispalyStartIndex(int triggerRelativeDisplayStartIndex)
+        {
+            this.triggerRelativeDisplayStartIndex = triggerRelativeDisplayStartIndex;
         }
 
         public void SetNumSamplesToDisplay(uint numSamplesToDisplay)
