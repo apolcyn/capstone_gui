@@ -29,7 +29,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         [TestMethod]
         public void testNormalCase()
         {
-            Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
+            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
             SampleFrameDisplayer displayer 
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
@@ -67,7 +67,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         [TestMethod]
         public void testSpacingTimesNumSamplesToDisplayGreatherThanCanvasWidth()
         {
-            Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
+            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
             SampleFrameDisplayer displayer
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
@@ -106,7 +106,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         [ExpectedException(typeof(Exception))]
         public void testSpacingTimesNumSamplesToDisplayNotEnoughToCoverCanvas()
         {
-            Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
+            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
             SampleFrameDisplayer displayer
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
@@ -129,7 +129,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         [ExpectedException(typeof(Exception))]
         public void testNumSamplesAvailableLessThanNumSamplesToDisplay()
         {
-            Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
+            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
             SampleFrameDisplayer displayer
                 = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];

@@ -14,10 +14,10 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
     {
         private uint numSamplesToDisplay { get; set; }
         private uint spacing { get; set; }
-        private ScopeLineDrawer scopeLineDrawer { get; set; }
+        private OscopeWindowClient scopeLineDrawer { get; set; }
         private Dispatcher uiThreadDispatcher { get; set; }
 
-        public SampleFrameDisplayerImpl(ScopeLineDrawer scopeLineDrawer
+        public SampleFrameDisplayerImpl(OscopeWindowClient scopeLineDrawer
             , uint numSamplesToDisplay, uint spacing, Dispatcher uiThreadDispatcher)
         {
             if(scopeLineDrawer == null)
@@ -77,13 +77,13 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         }
     }
 
-    public class ScopeLineDrawerImpl : ScopeLineDrawer
+    public class OscopeWindowClientImpl : OscopeWindowClient
     {
         private Canvas scopeCanvas { get; set; }
 
-        public ScopeLineDrawerImpl() { }
+        public OscopeWindowClientImpl() { }
 
-        public ScopeLineDrawerImpl(Canvas scopeCanvas)
+        public OscopeWindowClientImpl(Canvas scopeCanvas)
         {
             this.scopeCanvas = scopeCanvas;
         }

@@ -24,6 +24,15 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
             serialPort.Write(str);
         }
 
+        public void SendPsocCommand(string str)
+        {
+            if(str[0] != '#' || str[str.Length - 1] != '#')
+            {
+                throw new Exception("incorrectoly formatted string: " + str);
+            }
+            WriteString(str);
+        }
+
         void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             while(serialPort.BytesToRead > 0)

@@ -13,7 +13,7 @@ namespace SimpleOscope.SampleReceiving
         void SetNumSamplesToDisplay(uint numSampleToDisplay);
     }
 
-    public interface ScopeLineDrawer
+    public interface OscopeWindowClient
     {
         void drawOscopeLine(int prevX, int prevY, int curX, int curY);
 
