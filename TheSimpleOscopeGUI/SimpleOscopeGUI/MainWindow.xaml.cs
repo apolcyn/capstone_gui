@@ -36,37 +36,52 @@ namespace WpfApplication1
         const char START_COMMAND = 'A';
         const char STOP_COMMAND = 'Z';
 
+        public WaveType waveType { get; set; }
+
         // Wave types and the corresponding letters to configure them
-        public enum WaveType {Sine, Square, Sawtooth, Triangle, Arbitrary };
+        public enum WaveType { Sine, Square, Sawtooth, Triangle, Arbitrary };
         char[] waveTypeCommands = { 'I', 'Q', 'W', 'T', 'A' };
         const char WAVE_TYPE_COMMAND = 'W';
         const WaveType DEFAULT_WAVE_TYPE = WaveType.Sine;
-        WaveType waveType = DEFAULT_WAVE_TYPE;
+
+        public decimal vpp { get; set; }
 
         public const decimal MIN_VPP = 0;
         public const decimal MAX_VPP = 4;
         public const string VPP_FORMAT_STR = "F2"; // precion of 10^-2
         public const decimal DEFAULT_VPP = 0;
-        decimal vpp = DEFAULT_VPP;
         const char VPP_COMMAND = 'V';
 
-        int frequency;
+        public int frequency { get; set; }
+
         public const int MIN_FREQ = 0;
         public const int MAX_FREQ = 240000;
         const int DEFAULT_FREQ = 1;
         public const char FREQUENCY_COMMAND = 'F';
 
-        decimal vOffset;
+        public decimal vOffset { get; set; }
+
         public const decimal MIN_OFFSET = 0;
         public const decimal MAX_OFFSET = 4;
         public const string VOFFSET_FORMAT_STR = "F2"; // precision of 10^-2
         const decimal DEFAULT_OFFSET = 0;
         public const char VOFFSET_COMMAND = 'O';
 
-        int dutyCycle;
+        public int dutyCycle { get; set; }
+
         const int MIN_DUTY_CYCLE = 0;
         const int MAX_DUTY_CYCLE = 100;
+        const int DEFAULT_DUTY_CYCLE = 50;
         const char DUTY_CYCLE_COMMAND = 'D';
+
+        public FunctionGeneratorConfiguration()
+        {
+            dutyCycle = DEFAULT_DUTY_CYCLE;
+            frequency = DEFAULT_FREQ;
+            vOffset = DEFAULT_OFFSET;
+            vpp = DEFAULT_VPP;
+            waveType = DEFAULT_WAVE_TYPE;
+        }
 
         public string getConfiguration()
         {
@@ -76,23 +91,23 @@ namespace WpfApplication1
 
             // wave type configuration
             config.Append(WAVE_TYPE_COMMAND);
-            config.Append(waveTypeCommands[(int)getWaveType()]);
+            config.Append(waveTypeCommands[(int)waveType]);
 
             // vpp configuration
             config.Append(VPP_COMMAND);
-            config.Append(getVpp().ToString(VPP_FORMAT_STR));
+            config.Append(vpp.ToString(VPP_FORMAT_STR));
 
             // frequency configuration
             config.Append(FREQUENCY_COMMAND);
-            config.Append(getFrequency());
+            config.Append(frequency);
 
             // vOffset configuration
             config.Append(VOFFSET_COMMAND);
-            config.Append(getVOffset().ToString(VOFFSET_FORMAT_STR));
+            config.Append(vOffset.ToString(VOFFSET_FORMAT_STR));
 
             // duty cycle configuration
             config.Append(DUTY_CYCLE_COMMAND);
-            config.Append(getDutyCycle());
+            config.Append(dutyCycle);
 
             return config.ToString();
         }
@@ -108,11 +123,6 @@ namespace WpfApplication1
             return true;
         }
 
-        public decimal getVpp()
-        {
-            return vpp;
-        }
-
         public bool setFrequency(int frequency)
         {
             if(frequency < MIN_FREQ || frequency > MAX_FREQ)
@@ -122,11 +132,6 @@ namespace WpfApplication1
             this.frequency = frequency;
 
             return true;
-        }
-
-        public int getFrequency()
-        {
-            return frequency;
         }
 
         public bool setVOffset(decimal vOffset)
@@ -140,21 +145,6 @@ namespace WpfApplication1
             return true;
         }
 
-        public decimal getVOffset()
-        {
-            return vOffset;
-        }
-
-        public void setWaveType(WaveType waveType)
-        {
-            this.waveType = waveType;
-        }
-
-        public WaveType getWaveType()
-        {
-            return waveType;
-        }
-
         public bool setDutyCycle(int dutyCycle)
         {
             if(dutyCycle < MIN_DUTY_CYCLE || dutyCycle > MAX_DUTY_CYCLE)
@@ -164,11 +154,6 @@ namespace WpfApplication1
             this.dutyCycle = dutyCycle;
             return true;
         }      
-        
-        public int getDutyCycle()
-        {
-            return dutyCycle;
-        }
     }
 
     /* An object that contains all of the configuration relevant to the oscope.
@@ -181,23 +166,34 @@ namespace WpfApplication1
         const char START_COMMAND = 'A';
         const char STOP_COMMAND = 'Z';
 
+        public int resolution { get; set; }
+
         int[] resolutionOptions = { 8, 10, 12 };
         const int DEFAULT_RESOLUTION = 8;
-        int resolution = DEFAULT_RESOLUTION;
         char RESOLUTION_COMMAND = 'R';
+
+        public int kSamplesPerSecond { get; set; }
 
         const int KSAMPLES_PER_SECOND_MIN = 56;
         const int KSAMPLES_PER_SECOND_MAX = 1000;
         const int KSAMPLES_PER_SECOND_DEFAULT = 56;
-        int kSamplesPerSecond = KSAMPLES_PER_SECOND_DEFAULT;
-        char KSAMPLES_PER_SECOND_COMMAND = 'S';
+        const char KSAMPLES_PER_SECOND_COMMAND = 'S';
 
         const int SAMPLES_PER_FRAME = 1000;
         const char SAMPLES_PER_FRAME_COMMAND = 'F';
 
+        public int triggerLevel { get; set; }
+
         const int MIN_TRIGGER_LEVEL = 0;
         const int MAX_TRIGGER_LEVEL = 300;
-        int triggerLevel;
+        const int DEFAULT_TRIGGER_LEVEL = 150;
+
+        public OscopeConfiguration()
+        {
+            kSamplesPerSecond = KSAMPLES_PER_SECOND_DEFAULT;
+            resolution = DEFAULT_RESOLUTION;
+            triggerLevel = DEFAULT_TRIGGER_LEVEL;
+        }
 
         public string getConfiguration()
         {
@@ -206,10 +202,10 @@ namespace WpfApplication1
             config.Append(FIRST_CHAR);
 
             config.Append(RESOLUTION_COMMAND);
-            config.Append(getResolution());
+            config.Append(resolution);
 
             config.Append(KSAMPLES_PER_SECOND_COMMAND);
-            config.Append(getKSamplesPerSecond());
+            config.Append(kSamplesPerSecond);
 
             return config.ToString();
         }
@@ -225,11 +221,6 @@ namespace WpfApplication1
             return true;
         }
 
-        public int getResolution()
-        {
-            return resolution;
-        }
-
         public bool setTriggerLevel(int triggerLevel)
         {
             if(triggerLevel > MAX_TRIGGER_LEVEL || triggerLevel < MIN_TRIGGER_LEVEL)
@@ -238,11 +229,6 @@ namespace WpfApplication1
             }
             this.triggerLevel = triggerLevel;
             return true;
-        }
-
-        public int getTriggerLevel()
-        {
-            return this.triggerLevel;
         }
 
         public bool setkSamplesPerSecond(int kSamplesPerSecond)
@@ -255,12 +241,6 @@ namespace WpfApplication1
             this.kSamplesPerSecond = kSamplesPerSecond;
             return true;
         }
-
-        public int getKSamplesPerSecond()
-        {
-            return kSamplesPerSecond;
-        }
-
     }
 
     /* An object that receives bytes and turns them into samples when they're ready.
@@ -548,11 +528,11 @@ namespace WpfApplication1
         private void update_DAC_vpp(decimal newVpp)
         {
             nextFunctionGeneratorConfiguration.setVpp(newVpp);
-            this.DAC_vpp_slider.Value = (double)nextFunctionGeneratorConfiguration.getVpp();
+            this.DAC_vpp_slider.Value = (double)nextFunctionGeneratorConfiguration.vpp;
             if (this.Vpp_text_display != null)
             {
                 this.Vpp_text_display.Text
-                    = nextFunctionGeneratorConfiguration.getVpp().ToString(FunctionGeneratorConfiguration.VPP_FORMAT_STR);
+                    = nextFunctionGeneratorConfiguration.vpp.ToString(FunctionGeneratorConfiguration.VPP_FORMAT_STR);
             }
         }
 
@@ -566,11 +546,11 @@ namespace WpfApplication1
         private void update_DAC_voffset(decimal newOffset)
         {
             nextFunctionGeneratorConfiguration.setVOffset(newOffset);
-            this.DAC_voffset_slider.Value = (double)nextFunctionGeneratorConfiguration.getVOffset();
+            this.DAC_voffset_slider.Value = (double)nextFunctionGeneratorConfiguration.vOffset;
             if (this.Voffset_text_display != null)
             {
                 this.Voffset_text_display.Text
-                    = nextFunctionGeneratorConfiguration.getVOffset().ToString(FunctionGeneratorConfiguration.VOFFSET_FORMAT_STR);
+                    = nextFunctionGeneratorConfiguration.vOffset.ToString(FunctionGeneratorConfiguration.VOFFSET_FORMAT_STR);
             }
         }
 
@@ -584,10 +564,10 @@ namespace WpfApplication1
         private void update_DAC_duty_cycle(int newDutyCycle)
         {
             nextFunctionGeneratorConfiguration.setDutyCycle(newDutyCycle);
-            this.DAC_duty_cycle.Value = nextFunctionGeneratorConfiguration.getDutyCycle();
+            this.DAC_duty_cycle.Value = nextFunctionGeneratorConfiguration.dutyCycle;
             if (this.duty_cycle_text_display != null)
             {
-                this.duty_cycle_text_display.Text = nextFunctionGeneratorConfiguration.getDutyCycle().ToString();
+                this.duty_cycle_text_display.Text = nextFunctionGeneratorConfiguration.dutyCycle.ToString();
             }
         }
 
@@ -601,18 +581,17 @@ namespace WpfApplication1
         private void update_DAC_frequency(int newFreq)
         {
             nextFunctionGeneratorConfiguration.setFrequency(newFreq);
-            this.DAC_frequency_slider.Value = nextFunctionGeneratorConfiguration.getFrequency();
+            this.DAC_frequency_slider.Value = nextFunctionGeneratorConfiguration.frequency;
             if (this.DAC_frequency_text_display != null)
             {
                 this.DAC_frequency_text_display.Text
-                    = nextFunctionGeneratorConfiguration.getFrequency().ToString();
+                    = nextFunctionGeneratorConfiguration.frequency.ToString();
             }
         }
 
         private void DAC_wavetype_selected(object sender, SelectionChangedEventArgs e)
         {
-            nextFunctionGeneratorConfiguration
-                .setWaveType((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedIndex);
+            nextFunctionGeneratorConfiguration.waveType = ((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedIndex);
         }
 
         private void DAC_start_btn_click(object sender, RoutedEventArgs e)
@@ -632,8 +611,8 @@ namespace WpfApplication1
             if (this.oscope_ksamples_text_display != null)
             {
                 nextOscopeConfiguration.setkSamplesPerSecond(val);
-                this.oscope_ksamples_slider.Value = nextOscopeConfiguration.getKSamplesPerSecond();
-                this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.getKSamplesPerSecond().ToString();
+                this.oscope_ksamples_slider.Value = nextOscopeConfiguration.kSamplesPerSecond;
+                this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.kSamplesPerSecond.ToString();
             }
         }
 
@@ -647,7 +626,7 @@ namespace WpfApplication1
         /* Finds the index in the new samples buffer that sets off the trigger, if there are any samples that do. */
         private int findTriggerStartIndex(ushort[] newSamples, int startIndex, int numSamples)
         {
-            int triggerLevel = nextOscopeConfiguration.getTriggerLevel();
+            int triggerLevel = nextOscopeConfiguration.triggerLevel;
             int count = 0;
 
             for(int i = startIndex; i < numSamples - 1; i++)
@@ -774,7 +753,7 @@ namespace WpfApplication1
         private void update_oscope_trigger_level(int triggerLevel)
         {
             nextOscopeConfiguration.setTriggerLevel((int)this.trigger_slider_button.Maximum - triggerLevel);
-            this.trigger_slider_button.Value = this.trigger_slider_button.Maximum - nextOscopeConfiguration.getTriggerLevel();
+            this.trigger_slider_button.Value = this.trigger_slider_button.Maximum - nextOscopeConfiguration.triggerLevel;
         }
 
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
