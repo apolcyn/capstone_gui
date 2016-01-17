@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
 {
@@ -14,9 +15,10 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         private uint numSamplesToDisplay { get; set; }
         private uint spacing { get; set; }
         private ScopeLineDrawer scopeLineDrawer { get; set; }
+        private Dispatcher uiThreadDispatcher { get; set; }
 
         public SampleFrameDisplayerImpl(ScopeLineDrawer scopeLineDrawer
-            , uint numSamplesToDisplay, uint spacing)
+            , uint numSamplesToDisplay, uint spacing, Dispatcher uiThreadDispatcher)
         {
             if(scopeLineDrawer == null)
             {
@@ -25,7 +27,17 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             this.scopeLineDrawer = scopeLineDrawer;
             this.numSamplesToDisplay = numSamplesToDisplay;
             this.spacing = spacing;
+            this.uiThreadDispatcher = uiThreadDispatcher;
         }
+
+        public delegate void DisplayDeleg(uint start, uint totalSamplesInFrame, ushort[] samples);
+
+        public void DisplaySampleFrameOnUIThread(uint start, uint totalSamplesInFrame, ushort[] samples)
+        {
+            uiThreadDispatcher.BeginInvoke(new DisplayDeleg(DisplaySampleFrameOnUIThread)
+                , new object[] { start, totalSamplesInFrame, samples });
+        }
+
 
         public void DisplaySampleFrame(uint start, uint totalSamplesInFrame, ushort[] samples)
         {
@@ -92,6 +104,10 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         /* Draws a line on the canvas between two points. */
         public void drawOscopeLine(int prevX, int prevY, int curX, int curY)
         {
+            if(prevX > getCanvasWidth())
+            {
+                throw new Exception("trying to draw a line that goes way past the end of this canvas");
+            }
             Line myLine = new Line();
             myLine.Stroke = System.Windows.Media.Brushes.Gold;
             myLine.X1 = prevX;

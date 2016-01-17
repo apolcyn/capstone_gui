@@ -9,18 +9,29 @@ using SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying;
 using System.Windows.Controls;
 using SimpleOscope.SampleReceiving;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Threading;
 
 namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
 {
     [TestClass]
     public class SampleFrameDisplayerImplTests
     {
+        Button button = new Button();
+        Dispatcher fakeDispatcher;
+
+        [TestInitialize]
+        public void setup()
+        {
+            fakeDispatcher = button.Dispatcher;
+        }
+
         [TestMethod]
         public void testNormalCase()
         {
             Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
             SampleFrameDisplayer displayer 
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
+                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for(int i = 0; i < 21; i++)
             {
@@ -58,7 +69,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         {
             Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
             SampleFrameDisplayer displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
+                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
             {
@@ -97,7 +108,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         {
             Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
             SampleFrameDisplayer displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
+                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
             {
@@ -120,7 +131,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameDisplaying
         {
             Mock<ScopeLineDrawer> mockDrawer = new Mock<ScopeLineDrawer>();
             SampleFrameDisplayer displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
+                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3, fakeDispatcher);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
             {
