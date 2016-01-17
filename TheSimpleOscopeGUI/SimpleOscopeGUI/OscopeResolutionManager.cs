@@ -17,13 +17,18 @@ namespace WpfApplication1
 
         private int curHorizontalResolution;
         private int curVerticalResolution;
+        private int curFrameSize;
+        private int curADCSamplePeriod;
+        private int curWaveFrequency;
 
         private int numVerticalDivisions { get; }
         private int numHorizontalDivisions { get; }
 
-        public OscopeResolutionManager(SampleFrameAssembler sampleFrameAssembler
-            , SampleFrameReceiver sampleFrameReceiver
-            , OscopeWindowClient oscopeWindowClient, SerialPortClient serialPortClient)
+        public OscopeResolutionManager(
+            SampleFrameAssembler sampleFrameAssembler,
+            SampleFrameReceiver sampleFrameReceiver,
+            OscopeWindowClient oscopeWindowClient, 
+            SerialPortClient serialPortClient)
         {
             this.sampleFrameAssembler = sampleFrameAssembler;
             this.sampleFrameReceiver = sampleFrameReceiver;
@@ -31,12 +36,34 @@ namespace WpfApplication1
             this.serialPortClient = serialPortClient;
         }
 
-        public void horizontalResolutionUpdated(int newTimePerDivision)
+        public void ADCSampleRateChanged(int newADCSamplePeriod)
         {
+            this.curADCSamplePeriod = newADCSamplePeriod;
+        }
+
+        public void WaveFrequencyChanged(int newFrequency)
+        {
+            this.curFrequency = newFrequency;
+        }
+
+         /* In general, when setting the horizontal time unit, our priorities are:
+          * 1. Have the ADC sample rate as high as possible.
+          * 2. Have as many samples on the screen as possible.
+          * 
+          * To achieve a certain horizontal time unit, we first see if we can reach it
+          * by keeping the ADC's sample rate at a max, and only setting the distance between
+          * samples (and thn possibly the sample frame size too to compensate).
+          * If the desired horizontal time unit is too large to be achieved by only setting the
+          * spacing between samples, then we can request to set the ADC sample rate to a lower
+          * value, and then adjusting from there. 
+          */
+        public void horizontalResolutionChangeRequest(int newTimePerWholeWindow)
+        {
+            
             throw new NotImplementedException();
         }
 
-        public void verticalResolutionUpdated(int newVoltagePerDivision)
+        public void verticalResolutionUpdated(int newVoltagePerWholeWindow)
         {
             throw new NotImplementedException();
         }
