@@ -8,31 +8,38 @@ using System.Threading.Tasks;
 
 namespace WpfApplication1
 {
-    class OscopeResolutionManager
+    public class OscopeResolutionManager
     {
         private SampleFrameAssembler sampleFrameAssembler;
         private SampleFrameReceiver sampleFrameReceiver;
-        private OscopeWindowClient oscopeWindowClient;
+        private SampleFrameDisplayer sampleFrameDispalyer;
+        public virtual OscopeWindowClient oscopeWindowClient { get; set; }
         private SerialPortClient serialPortClient;
 
         private int curHorizontalResolution;
         private int curVerticalResolution;
         private int curFrameSize;
-        private int curADCSamplePeriod;
+        public virtual int curADCSamplePeriod { get; set; }
+        private int curHorizontalShift;
+        // TODO: private int curVerticalShift;
 
         private int numVerticalDivisions { get; }
         private int numHorizontalDivisions { get; }
+
+        public OscopeResolutionManager() { }
 
         public OscopeResolutionManager(
             SampleFrameAssembler sampleFrameAssembler,
             SampleFrameReceiver sampleFrameReceiver,
             OscopeWindowClient oscopeWindowClient, 
-            SerialPortClient serialPortClient)
+            SerialPortClient serialPortClient,
+            SampleFrameDisplayer sampleFrameDispalyer)
         {
             this.sampleFrameAssembler = sampleFrameAssembler;
             this.sampleFrameReceiver = sampleFrameReceiver;
             this.oscopeWindowClient = oscopeWindowClient;
             this.serialPortClient = serialPortClient;
+            this.sampleFrameDispalyer = sampleFrameDispalyer;
         }
 
         public void ADCSampleRateChanged(int newADCSamplePeriod)
@@ -46,18 +53,39 @@ namespace WpfApplication1
           * 
           * To achieve a certain horizontal time unit, we first see if we can reach it
           * by keeping the ADC's sample rate at a max, and only setting the distance between
-          * samples (and thn possibly the sample frame size too to compensate).
+          * samples (and then possibly the sample frame size too to compensate).
           * If the desired horizontal time unit is too large to be achieved by only setting the
           * spacing between samples, then we can request to set the ADC sample rate to a lower
           * value, and then adjusting from there. 
           */
-        public void horizontalResolutionChangeRequest(int newTimePerWholeWindow)
+        public virtual void HorizontalResolutionChangeRequest(int newTimePerWholeWindow)
         {
-            
+            // first see if its possible to achieve the desired time unit
+            // by only adjusting the spacing between samples.
+            if(curADCSamplePeriod * (oscopeWindowClient.getCanvasWidth() - 1) 
+                >= newTimePerWholeWindow)
+            {
+                AdjustSampleSpacing(newTimePerWholeWindow);
+            }
+            else
+            {
+                AdjustADCSampleRate(newTimePerWholeWindow);
+            }
             throw new NotImplementedException();
         }
 
-        public void verticalResolutionUpdated(int newVoltagePerWholeWindow)
+        public virtual int AdjustSampleSpacing(int newTimePerWholeWindow)
+        {
+            int idealNumSamplesInWindow = newTimePerWholeWindow / curADCSamplePeriod + 1;
+            return 0;
+        }
+
+        public virtual void AdjustADCSampleRate(int newTimePerWholeWindow)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void verticalResolutionUpdated(int newVoltagePerWholeWindow)
         {
             throw new NotImplementedException();
         }

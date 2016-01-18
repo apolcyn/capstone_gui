@@ -77,7 +77,11 @@ namespace WpfApplication1
             ByteReceiver byteReceiver = new ByteReceiverImpl(sampleAssembler);
             serialPortClient = new SerialPortClient(serialPort, byteReceiver);
 
-            oscopeResolutionManager = new OscopeResolutionManager(sampleFrameAssembler, sampleFrameReceiver, oscopeWindowClient, serialPortClient);
+            oscopeResolutionManager = new OscopeResolutionManager(sampleFrameAssembler
+                , sampleFrameReceiver
+                , oscopeWindowClient
+                , serialPortClient
+                , sampleFrameDisplayer);
         }
     }
 

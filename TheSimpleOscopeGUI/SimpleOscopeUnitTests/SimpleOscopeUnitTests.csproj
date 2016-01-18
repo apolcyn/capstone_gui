@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="GUI\OscopeResolutionManagerTests.cs" />
     <Compile Include="SampleReceiving\Impl\ByteReceivingImplTests.cs" />
     <Compile Include="SampleReceiving\Impl\RisingEdgeTriggeringFrameReceiverTests.cs" />
     <Compile Include="SampleReceiving\Impl\HighByteFirstSampleAssemblerImplTests.cs" />
@@ -66,6 +67,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleOscopeGUI\SimpleOscopeGUI.csproj">
+      <Project>{08a1ca36-9680-4b86-afe9-76c7af7c6282}</Project>
+      <Name>SimpleOscopeGUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleOscope\SimpleOscope.csproj">
       <Project>{73702fb0-7a6a-4bf5-a6fa-dbbbb7a13eda}</Project>
       <Name>SimpleOscope</Name>
