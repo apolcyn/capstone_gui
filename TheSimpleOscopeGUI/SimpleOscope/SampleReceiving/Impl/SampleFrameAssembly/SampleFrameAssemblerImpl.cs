@@ -22,7 +22,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
             this.sampleReceiver = sampleReceiver;
         }
 
-        public void SetNumSamplesExpected(uint numSamplesExpected)
+        public virtual void SetNumSamplesExpected(uint numSamplesExpected)
         {
             if(currentThreadCallingSampleAssembled == Thread.CurrentThread)
             {
@@ -43,7 +43,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
             }
         }
 
-        public void SampleAssembled(ushort nextSample)
+        public virtual void SampleAssembled(ushort nextSample)
         {
             lock(numSamplesLockingObject)
             {

@@ -14,12 +14,15 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
     public class ByteReceivingImplTests
     {
         private ByteReceiverImpl byteReceiver;
+
         Mock<SampleAssembler> mockSampleAssembler = new Mock<SampleAssembler>();
+        Mock<SampleFrameAssembler> mockFrameAssembler = new Mock<SampleFrameAssembler>();
 
         [TestInitialize]
         public void setup()
         {
-            byteReceiver = new ByteReceiverImpl(mockSampleAssembler.Object);
+            byteReceiver = new ByteReceiverImpl(mockSampleAssembler.Object
+                , mockFrameAssembler.Object);
         }
 
         private void SendHeader(int numSamples)
@@ -50,18 +53,21 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void TestFiveSamples()
         {
             TestSamples(5, Times.Once(), Times.Exactly(10));
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(5), Times.Once);
         }
 
         [TestMethod]
         public void TestOneSample()
         {
             TestSamples(1, Times.Once(), Times.Exactly(2));
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(1), Times.Once);
         }
 
         [TestMethod]
         public void TestTwoSamples()
         {
             TestSamples(2, Times.Once(), Times.Exactly(4));
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(2), Times.Once);
         }
 
         [TestMethod]
@@ -69,6 +75,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         {
             TestSamples(1, Times.Once(), Times.Exactly(2));
             SendHeader(2);
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(2), Times.Once);
             SendSamples(0, 2, Times.Exactly(2), Times.Exactly(4));
             SendSamples(2, 4, Times.Exactly(1), Times.Exactly(6));
         }
@@ -78,6 +85,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         {
             TestSamples(2, Times.Once(), Times.Exactly(4));
             SendHeader(1);
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(1), Times.Once);
             SendSamples(0, 2, Times.Exactly(2), Times.Exactly(6));
         }
 
@@ -85,8 +93,11 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void TestChangeNumSamplesMultipleTimes()
         {
             TestSamples(2, Times.Once(), Times.Exactly(4));
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(2), Times.Once);
             TestSamples(1, Times.Exactly(2), Times.Exactly(6));
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(1), Times.Once);
             SendHeader(2);
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(2), Times.Exactly(2));
             SendSamples(0, 2, Times.Exactly(3), Times.Exactly(8));
             SendSamples(2, 4, Times.Exactly(2), Times.Exactly(10));
         }
@@ -97,7 +108,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         public void TestTooManySamples()
         {
             SendHeader(2);
-            for(byte i = 0; i < 5; i++)
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(2), Times.Once);
+            for (byte i = 0; i < 5; i++)
             {
                 byteReceiver.byteReceived(i);
             }
@@ -130,6 +142,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             {
                 byteReceiver.byteReceived((byte)c);
             }
+            mockFrameAssembler.Verify(x => x.SetNumSamplesExpected(5), Times.Once);
             SendSamples(0, 10, Times.Once(), Times.Exactly(10));
         }
 

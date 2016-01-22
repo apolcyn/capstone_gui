@@ -18,15 +18,20 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
             this.displayer = displayer;
         }
 
+        /* Searches a given samples frame from a configured start index
+         * and for a configured scan length, for sample index that sets off the trigger. */
         public void FrameAssembled(ushort[] samples, uint numSamples)
         {
             if(numSamples == 0 || numSamples > samples.Length)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("num samples length is invalid: got " + numSamples);
             }
             if(this.scanLength + this.scanStartIndex > numSamples)
             {
-                throw new Exception();
+                throw new Exception("scan length and scan start index > num samples." 
+                    + ". scan length: " + this.scanLength
+                    + ". scan start index: " + this.scanStartIndex
+                    + ". num samples: " + numSamples);
             }
 
             uint lastSample = UInt16.MaxValue;

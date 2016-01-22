@@ -70,11 +70,11 @@ namespace WpfApplication1
             SampleFrameDisplayer sampleFrameDisplayer 
                 = new SampleFrameDisplayerImpl(oscopeWindowClient
                 , DEFAULT_NUM_SAMPLES_TO_DISPLAY
-                , DEFAULT_SAMPLE_SPACING, this.Dispatcher);
+                , DEFAULT_SAMPLE_SPACING);
             SampleFrameReceiver sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer);
             SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameReceiver);
             SampleAssembler sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);
-            ByteReceiver byteReceiver = new ByteReceiverImpl(sampleAssembler);
+            ByteReceiver byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
             serialPortClient = new SerialPortClient(serialPort, byteReceiver);
 
             oscopeResolutionManager = new OscopeResolutionManager(sampleFrameAssembler

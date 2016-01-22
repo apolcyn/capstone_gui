@@ -17,10 +17,13 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
         private uint numExpectedBytes;
 
         private SampleAssembler sampleAssembler;
+        private SampleFrameAssembler sampleFrameAssembler;
 
-        public ByteReceiverImpl(SampleAssembler sampleAssembler)
+        public ByteReceiverImpl(SampleAssembler sampleAssembler
+            , SampleFrameAssembler sampleFrameAssembler)
         {
             this.sampleAssembler = sampleAssembler;
+            this.sampleFrameAssembler = sampleFrameAssembler;
         }
 
         public void byteReceived(byte newByte)
@@ -59,6 +62,7 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
                         }
                         numBytesReceived = 0;
                         numExpectedBytes = numExpectedSamples * 2;
+                        sampleFrameAssembler.SetNumSamplesExpected(numExpectedSamples);
                         curState = ReceiveState.RECEIVING_SAMPLES;
                     }
                     else if(newByte >= '0' && newByte <= '9')
