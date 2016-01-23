@@ -27,55 +27,6 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         }
 
         [TestMethod]
-        public void TestCreatesLineCorrectly()
-        {
-            mockDrawer.Setup(x => x.getCanvasWidth()).Returns(10);
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
-
-            Line expected = new Line();
-            expected.X1 = 2;
-            expected.X2 = 5;
-            expected.Y1 = 8;
-            expected.Y2 = 6;
-            Line actual = displayer.createLine(2, 8, 5, 6);
-            Assert.AreEqual(actual.X1, expected.X1);
-            Assert.AreEqual(actual.X2, expected.X2);
-            Assert.AreEqual(actual.Y1, expected.Y1);
-            Assert.AreEqual(actual.Y2, expected.Y2);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestCreateLineErrorsIfLineSpacingIsBad()
-        {
-            mockDrawer.Setup(x => x.getCanvasWidth()).Returns(40);
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
-            displayer.createLine(2, 5, 4, 6);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestCreateLineErrorsIfLineGoesPastEndOfPossibleIsBad()
-        {
-            mockDrawer.Setup(x => x.getCanvasWidth()).Returns(20);
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
-            displayer.createLine(40, 5, 43, 6);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestCreateLineErrorsIfItIsGoingBackwards()
-        {
-            mockDrawer.Setup(x => x.getCanvasWidth()).Returns(40);
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
-            displayer.createLine(2, 5, 1, 6);
-        }
-
-        [TestMethod]
         public void TestNormalCase()
         {
             SampleFrameDisplayerImpl displayer 
@@ -90,7 +41,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             mockDrawer.Setup(x => x.getCanvasWidth()).Returns(31);
             displayer.DisplaySampleFrameFromStartIndex(10, 21, samples);
 
-            List<Line> expectedLines = new List<Line>();
+            List<LineCoordinates> expectedLines = new List<LineCoordinates>();
             // Test that all of the expected lines got called to be drawn
             for(int i = 0; i < 10; i++)
             {
@@ -98,12 +49,12 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
                 int expY1 = samples[i + 10];
                 int expX2 = i * 3 + 3;
                 int expY2 = samples[i + 11];
-                Line expectedLine = displayer.createLine(expX1, expY1, expX2, expY2);
+                LineCoordinates expectedLine = CreateLineCoordinates(expX1, expY1, expX2, expY2);
                 expectedLines.Add(expectedLine);
             }
             // The canvas should be cleared every time before drawing
-            mockDrawer.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>(
-                lines => ListOfLinesHaveEqualCoordinates(lines, expectedLines))), Times.Once);
+            mockDrawer.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>(
+                lines => ListOfLineCoordinatesStructsEqual(lines, expectedLines))), Times.Once);
         }
 
         /* If the nunmber of samples to display times the spacing is greater than canvas
@@ -129,7 +80,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             displayer.DisplaySampleFrameFromStartIndex(10, 21, samples);
 
             // The canvas should be cleared every time before drawing
-            List<Line> expLines = new List<Line>();
+            List<LineCoordinates> expLines = new List<LineCoordinates>();
 
             // Test that all of the expected lines got called to be drawn
             for (int i = 0; i < 6; i++)
@@ -138,11 +89,11 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
                 int expY1 = samples[i + 10];
                 int expX2 = i * 3 + 3;
                 int expY2 = samples[i + 11];
-                expLines.Add(displayer.createLine(expX1, expY1, expX2, expY2));
+                expLines.Add(CreateLineCoordinates(expX1, expY1, expX2, expY2));
             }
 
-            mockDrawer.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expLines)))
+            mockDrawer.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expLines)))
                 , Times.Once);
         }
 
@@ -158,12 +109,12 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             mockDrawer.Setup(x => x.getCanvasWidth()).Returns(4);
             displayer.DisplaySampleFrameFromStartIndex(1, 4, samples);
 
-            List<Line> expLines = new List<Line>();
-            expLines.Add(CreateLine(0, 1, 2, 2));
-            expLines.Add(CreateLine(2, 2, 4, 3));
+            List<LineCoordinates> expLines = new List<LineCoordinates>();
+            expLines.Add(CreateLineCoordinates(0, 1, 2, 2));
+            expLines.Add(CreateLineCoordinates(2, 2, 4, 3));
 
-            mockDrawer.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expLines)))
+            mockDrawer.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expLines)))
                 , Times.Once);
         }
 

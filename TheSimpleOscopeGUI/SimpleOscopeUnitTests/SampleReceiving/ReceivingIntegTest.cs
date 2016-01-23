@@ -63,12 +63,12 @@ namespace SimpleOscopeUnitTests.SampleReceiving
             {
                 byteReceiver.byteReceived((byte)(c - '0'));
             }
-            List<Line> expectedLines = new List<Line>();
-            expectedLines.Add(CreateLine(0, 1, 1, 2));
-            expectedLines.Add(CreateLine(1, 2, 2, 3));
+            List<LineCoordinates> expectedLines = new List<LineCoordinates>();
+            expectedLines.Add(CreateLineCoordinates(0, 1, 1, 2));
+            expectedLines.Add(CreateLineCoordinates(1, 2, 2, 3));
 
-            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expectedLines)))
+            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expectedLines)))
                 , Times.Once);
         }
 
@@ -92,12 +92,12 @@ namespace SimpleOscopeUnitTests.SampleReceiving
             {
                 byteReceiver.byteReceived((byte)(c - '0'));
             }
-            List<Line> expectedLines = new List<Line>();
-            expectedLines.Add(CreateLine(0, 1, 1, 2));
-            expectedLines.Add(CreateLine(1, 2, 2, 3));
+            List<LineCoordinates> expectedLines = new List<LineCoordinates>();
+            expectedLines.Add(CreateLineCoordinates(0, 1, 1, 2));
+            expectedLines.Add(CreateLineCoordinates(1, 2, 2, 3));
 
-            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expectedLines)))
+            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expectedLines)))
                 , Times.Once);
         }
 
@@ -121,12 +121,12 @@ namespace SimpleOscopeUnitTests.SampleReceiving
             {
                 byteReceiver.byteReceived((byte)(c - '0'));
             }
-            List<Line> expectedLines = new List<Line>();
-            expectedLines.Add(CreateLine(0, 1, 2, 2));
-            expectedLines.Add(CreateLine(2, 2, 4, 3));
+            List<LineCoordinates> expectedLines = new List<LineCoordinates>();
+            expectedLines.Add(CreateLineCoordinates(0, 1, 2, 2));
+            expectedLines.Add(CreateLineCoordinates(2, 2, 4, 3));
 
-            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expectedLines)))
+            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expectedLines)))
                 , Times.Once);
         }
 
@@ -150,13 +150,13 @@ namespace SimpleOscopeUnitTests.SampleReceiving
             {
                 byteReceiver.byteReceived((byte)(c - '0'));
             }
-            List<Line> expectedLines = new List<Line>();
-            expectedLines.Add(CreateLine(0, 0, 100, 1));
-            expectedLines.Add(CreateLine(100, 1, 200, 2));
-            expectedLines.Add(CreateLine(200, 2, 300, 3));
+            List<LineCoordinates> expectedLines = new List<LineCoordinates>();
+            expectedLines.Add(CreateLineCoordinates(0, 0, 100, 1));
+            expectedLines.Add(CreateLineCoordinates(100, 1, 200, 2));
+            expectedLines.Add(CreateLineCoordinates(200, 2, 300, 3));
 
-            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expectedLines)))
+            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expectedLines)))
                 , Times.Once);
         }
 
@@ -188,13 +188,13 @@ namespace SimpleOscopeUnitTests.SampleReceiving
             {
                 byteReceiver.byteReceived((byte)(c - '0'));
             }
-            List<Line> expectedLines = new List<Line>();
-            expectedLines.Add(CreateLine(0, 0, 101, 1));
-            expectedLines.Add(CreateLine(101, 1, 202, 2));
-            expectedLines.Add(CreateLine(202, 2, 303, 3));
+            List<LineCoordinates> expectedLines = new List<LineCoordinates>();
+            expectedLines.Add(CreateLineCoordinates(0, 0, 101, 1));
+            expectedLines.Add(CreateLineCoordinates(101, 1, 202, 2));
+            expectedLines.Add(CreateLineCoordinates(202, 2, 303, 3));
 
-            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<Line>>
-                (lines => ListOfLinesHaveEqualCoordinates(lines, expectedLines)))
+            mockScopeWindowClient.Verify(x => x.drawLinesOnOscope(It.Is<List<LineCoordinates>>
+                (lines => ListOfLineCoordinatesStructsEqual(lines, expectedLines)))
                 , Times.Once);
         }
 

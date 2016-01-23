@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WpfApplication1
+namespace SimpleOscope
 {
     /// <summary>
     /// configuration for a horizontal time/div that tells

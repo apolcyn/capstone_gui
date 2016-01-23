@@ -24,13 +24,13 @@ using SimpleOscope.SampleReceiving.Impl.SampleAssembly;
 using SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly;
 using SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving;
 
-namespace WpfApplication1
+namespace SimpleOscope
 {
 
     public class OscopeWidthChangedEventArgs : EventArgs
     {
         public uint newWidth { get; }
-        public OscopeWidthChangedEventArgs(uint newWidth) { this.newWidth = newWidth}
+        public OscopeWidthChangedEventArgs(uint newWidth) { this.newWidth = newWidth; }
     }
 
     /* Main window object, contains references to all of the visual components on the GUI display.
@@ -62,11 +62,11 @@ namespace WpfApplication1
             serialPort.Open();
 
             // Initialize PSOC sample receiving chain.
-            OscopeWindowClient oscopeWindowClient = new OscopeWindowClientImpl(this.oscope_window_canvas);
+            OscopeWindowClient oscopeWindowClient = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
             SampleFrameDisplayer sampleFrameDisplayer 
                 = new SampleFrameDisplayerImpl(oscopeWindowClient
-                , DEFAULT_NUM_SAMPLES_TO_DISPLAY
-                , DEFAULT_SAMPLE_SPACING);
+                , 100
+                , 4);
             SampleFrameReceiver sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer);
             SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameReceiver);
             SampleAssembler sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);
@@ -272,7 +272,7 @@ namespace WpfApplication1
 
         private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            this.verticalTriggerIndex = (int)this.vertical_trigger_slider.Value / 4;
+           //TODO: this.verticalTriggerIndex = (int)this.vertical_trigger_slider.Value / 4;
         }
     }
 }

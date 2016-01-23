@@ -114,7 +114,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         /// <returns></returns>
         public virtual int getCanvasWidth()
         {
-            return 400;
+            return (int)this.scopeCanvas.Width;
         }
 
         public void clearScopeCanvas()

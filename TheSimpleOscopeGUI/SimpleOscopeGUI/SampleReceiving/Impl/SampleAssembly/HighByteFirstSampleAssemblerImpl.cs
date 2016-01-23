@@ -11,6 +11,9 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleAssembly
         private SampleFrameAssembler sampleFrameAssembler;
         private ushort curSample;
         private int curByte;
+        private int maxSampleSize = 1;
+        private double windowHeight = 1;
+        private double scaler = 1;
 
         public HighByteFirstSampleAssemblerImpl(SampleFrameAssembler sampleFrameAssembler)
         {
@@ -23,7 +26,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleAssembly
 
             if(curByte == 2)
             {
-                sampleFrameAssembler.SampleAssembled((ushort)(curSample / 4096.0 * 300));
+                sampleFrameAssembler.SampleAssembled((ushort)(curSample / maxSampleSize * windowHeight * scaler));
                 curByte = 0;
                 curSample = 0;
             }

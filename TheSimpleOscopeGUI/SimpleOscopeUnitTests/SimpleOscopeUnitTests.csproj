@@ -69,20 +69,16 @@
     <Compile Include="BaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleOscopeGUI\SimpleOscopeGUI.csproj">
-      <Project>{08a1ca36-9680-4b86-afe9-76c7af7c6282}</Project>
-      <Name>SimpleOscopeGUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimpleOscope\SimpleOscope.csproj">
-      <Project>{73702fb0-7a6a-4bf5-a6fa-dbbbb7a13eda}</Project>
-      <Name>SimpleOscope</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleOscopeGUI\SimpleOscope.csproj">
+      <Project>{08a1ca36-9680-4b86-afe9-76c7af7c6282}</Project>
+      <Name>SimpleOscope</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

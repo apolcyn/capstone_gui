@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WpfApplication1
+namespace SimpleOscope
 {
     /* An object that contains all of the configuration relevant to the oscope.
     Always have a configuration that has been send and is currently being used, as well as a "next configuration", 
