@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
 {
+    /// <summary>
+    /// Interfaces with the USB to the PSOC.
+    /// </summary>
     public class SerialPortClient
     {
         private SerialPort serialPort { get; set; }
@@ -19,11 +22,18 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
             serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
         }
 
+        /// <summary>
+        /// Writes the string as is to the PSOC.
+        /// </summary>
         public void WriteString(string str)
         {
             serialPort.Write(str);
         }
 
+        /// <summary>
+        /// Writes a command to the PSOC and checks to make sure
+        /// that it is wrapped in '#' characters
+        /// </summary>
         public void SendPsocCommand(string str)
         {
             if(str[0] != '#' || str[str.Length - 1] != '#')
