@@ -26,10 +26,12 @@ using SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving;
 
 namespace WpfApplication1
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    /// 
+
+    public class OscopeWidthChangedEventArgs : EventArgs
+    {
+        public uint newWidth { get; }
+        public OscopeWidthChangedEventArgs(uint newWidth) { this.newWidth = newWidth}
+    }
 
     /* Main window object, contains references to all of the visual components on the GUI display.
      * Manages adjustments of oscillscope horizontal and vertical resolution and trigger level
@@ -38,25 +40,19 @@ namespace WpfApplication1
      */
     public partial class MainWindow : Window
     {
-        const char COMMAND_OUTER_CHAR = '#';
-
         private FunctionGeneratorConfiguration curFunctionGeneratorConfiguration = new FunctionGeneratorConfiguration();
         private FunctionGeneratorConfiguration nextFunctionGeneratorConfiguration = new FunctionGeneratorConfiguration();
 
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
-        private const int SAMPLES_PER_WINDOW = 100;
-        private Queue<ushort> oscopeSamples = new Queue<ushort>(SAMPLES_PER_WINDOW);
-        private ushort[] samplesDisplayBuffer = new ushort[SAMPLES_PER_WINDOW];
-
-        private int verticalTriggerIndex;
+        /// <summary>
+        /// Raised when the oscope width has changed, or is set.
+        /// </summary>
+        public event EventHandler<OscopeWidthChangedEventArgs> OscopeWidthChangedEvent;
 
         SerialPortClient serialPortClient;
         OscopeResolutionManager oscopeResolutionManager;
-
-        const uint DEFAULT_NUM_SAMPLES_TO_DISPLAY = 100;
-        const uint DEFAULT_SAMPLE_SPACING = 3;
 
         public MainWindow()
         {
@@ -77,15 +73,19 @@ namespace WpfApplication1
             ByteReceiver byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
             serialPortClient = new SerialPortClient(serialPort, byteReceiver);
 
-            oscopeResolutionManager = new OscopeResolutionManager(sampleFrameAssembler
-                , sampleFrameReceiver
-                , oscopeWindowClient
-                , serialPortClient
-                , sampleFrameDisplayer);
+            sampleFrameDisplayer.SetNumSamplesToDisplay(300);
+            sampleFrameDisplayer.SetSpacing(10);
+            sampleFrameDisplayer.SetTriggerRelativeDispalyStartIndex(0);
+
+            sampleFrameReceiver.SetScanStartIndex(0);
+            sampleFrameReceiver.SetScanLength(300);
+            sampleFrameReceiver.SetTriggerLevel(100);
+            
+            
         }
     }
 
-    partial class MainWindow
+    public partial class MainWindow
     {
         // event handler for DAC vpp slider updates
         private void DAC_vpp_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -245,11 +245,11 @@ namespace WpfApplication1
         {
             if (this.trigger_selection.SelectedIndex == 0)
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
             else if(this.trigger_selection.SelectedIndex == 1)
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
         }
 

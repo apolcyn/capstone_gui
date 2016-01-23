@@ -59,7 +59,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="GUI\OscopeResolutionManagerTests.cs" />
     <Compile Include="SampleReceiving\Impl\ByteReceivingImplTests.cs" />
     <Compile Include="SampleReceiving\Impl\RisingEdgeTriggeringFrameReceiverTests.cs" />
     <Compile Include="SampleReceiving\Impl\HighByteFirstSampleAssemblerImplTests.cs" />
@@ -82,7 +81,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GUI\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

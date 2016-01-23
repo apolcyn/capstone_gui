@@ -6,15 +6,42 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
 {
+    public class PsocReadyEventArgs : EventArgs { }
+
     public class ByteReceiverImpl : ByteReceiver
     {
         private enum ReceiveState { FIND_FIRST_HEADER_CHAR, FIND_SECOND_HEADER_CHAR,
-        READING_NUM_SAMPLES, RECEIVING_SAMPLES};
+        READING_NUM_SAMPLES, RECEIVING_SAMPLES, RECEIVING_PSOC_READY_ACK};
 
         private ReceiveState curState;
         private uint numExpectedSamples;
         private uint numBytesReceived;
         private uint numExpectedBytes;
+
+        public event EventHandler<PsocReadyEventArgs> RaisePsocReadyEvent;
+
+        private class PsocReadyAckStringIterator
+        {
+            const string PSOC_READY_ACK_STR = "PSOC_READY";
+            int curIndex = 0;
+
+            public void reset()
+            {
+                curIndex = 0;
+            }
+
+            public char next()
+            {
+                return PSOC_READY_ACK_STR[curIndex++];
+            }
+
+            public bool finished()
+            {
+                return curIndex == PSOC_READY_ACK_STR.Length;
+            }
+        }
+
+        private PsocReadyAckStringIterator psocReadyAckStringIterator = new PsocReadyAckStringIterator();
 
         private SampleAssembler sampleAssembler;
         private SampleFrameAssembler sampleFrameAssembler;
@@ -35,9 +62,30 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
                     {
                         curState = ReceiveState.FIND_SECOND_HEADER_CHAR;
                     }
+                    else if(newByte == 'P')
+                    {
+                        psocReadyAckStringIterator.next();
+                        curState = ReceiveState.RECEIVING_PSOC_READY_ACK;
+                    }
                     else
                     {
                         throw new ArgumentException("invalid state");
+                    }
+                    break;
+
+                case ReceiveState.RECEIVING_PSOC_READY_ACK:
+                    if(newByte == psocReadyAckStringIterator.next())
+                    {
+                        if(psocReadyAckStringIterator.finished())
+                        {
+                            psocReadyAckStringIterator.reset();
+                            curState = ReceiveState.FIND_FIRST_HEADER_CHAR;
+                            if(RaisePsocReadyEvent != null) RaisePsocReadyEvent(this, new PsocReadyEventArgs());
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("invalid state");
                     }
                     break;
 

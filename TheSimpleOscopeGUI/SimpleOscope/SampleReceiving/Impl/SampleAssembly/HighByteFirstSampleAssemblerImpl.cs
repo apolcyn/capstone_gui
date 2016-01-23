@@ -23,7 +23,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleAssembly
 
             if(curByte == 2)
             {
-                sampleFrameAssembler.SampleAssembled(curSample);
+                sampleFrameAssembler.SampleAssembled((ushort)(curSample / 4096.0 * 300));
                 curByte = 0;
                 curSample = 0;
             }

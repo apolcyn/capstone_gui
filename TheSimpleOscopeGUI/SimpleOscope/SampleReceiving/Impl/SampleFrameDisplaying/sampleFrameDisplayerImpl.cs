@@ -33,7 +33,8 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         {
             if(triggerIndex + this.triggerRelativeDisplayStartIndex < 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException(String.Format("trigger index of sample frame is {0} but trigger relatvie display start idnex is {1}"
+                    , triggerIndex , this.triggerRelativeDisplayStartIndex));
             }
             if(triggerIndex >= totalSamplesInFrame 
                 || triggerIndex + this.triggerRelativeDisplayStartIndex >= totalSamplesInFrame)
@@ -50,7 +51,9 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         {
             if(totalSamplesInFrame - start < this.numSamplesToDisplay)
             {
-                throw new Exception("trying to display more samples than what was received in frame");
+                throw new Exception(String.Format("trying to display more samples than what was " 
+                    + " received in frame. total samples in frame is {0} but display start is {1}."
+                    , totalSamplesInFrame, start));
             }
 
             if((this.numSamplesToDisplay - 1) * this.spacing + 1 < scopeLineDrawer.getCanvasWidth())
@@ -61,13 +64,13 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
 
             int prevX = 0;
             int prevY = samples[start];
-            List<Line> linesToDraw = new List<Line>();
+            List<LineCoordinates> linesToDraw = new List<LineCoordinates>();
 
             for(uint i = start + 1; i < start + numSamplesToDisplay; i++)
             {
                 int curX = (int)(this.spacing * (i - start));
                 int curY = samples[i];
-                linesToDraw.Add(createLine(prevX, prevY, curX, curY));
+                linesToDraw.Add(new LineCoordinates(prevX, prevY, curX, curY)); 
                 if (curX > this.scopeLineDrawer.getCanvasWidth())
                 {
                     break;
@@ -76,29 +79,6 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
                 prevY = curY;
             }
             scopeLineDrawer.drawLinesOnOscope(linesToDraw);
-        }
-
-        /* Creates a line to draw on the oscope canvas */
-        public Line createLine(int prevX, int prevY, int curX, int curY)
-        {
-            if (prevX > scopeLineDrawer.getCanvasWidth())
-            {
-                throw new ArgumentException("trying to draw a line that goes way past the end of this canvas");
-            }
-            else if(curX - prevX != spacing)
-            {
-                throw new ArgumentException("spacing on these lines is bad");
-            }
-            Line line = new Line();
-            line.Stroke = System.Windows.Media.Brushes.Gold;
-            line.X1 = prevX;
-            line.X2 = curX;
-            line.Y1 = prevY;
-            line.Y2 = curY;
-            line.HorizontalAlignment = HorizontalAlignment.Left;
-            line.VerticalAlignment = VerticalAlignment.Center;
-            line.StrokeThickness = 4;
-            return line;
         }
 
         public void SetTriggerRelativeDispalyStartIndex(int triggerRelativeDisplayStartIndex)
@@ -123,14 +103,18 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
 
         public OscopeWindowClientImpl() { }
 
-        public OscopeWindowClientImpl(Canvas scopeCanvas)
+        public OscopeWindowClientImpl(Canvas scopeCanvas, MainWindow mainWindow)
         {
             this.scopeCanvas = scopeCanvas;
         }
 
+        /// <summary>
+        ///  TODO: make this adapt to different screen sizes
+        /// </summary>
+        /// <returns></returns>
         public virtual int getCanvasWidth()
         {
-            return (int)this.scopeCanvas.Width;
+            return 400;
         }
 
         public void clearScopeCanvas()
@@ -141,10 +125,33 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             }
         }
 
-        public virtual void drawLinesOnOscope(List<Line> lines)
+        /* Creates a line to draw on the oscope canvas */
+        private Line createLine(int prevX, int prevY, int curX, int curY)
+        {
+            Line line = new Line();
+            line.Stroke = System.Windows.Media.Brushes.Gold;
+            line.X1 = prevX;
+            line.X2 = curX;
+            line.Y1 = prevY;
+            line.Y2 = curY;
+            line.HorizontalAlignment = HorizontalAlignment.Left;
+            line.VerticalAlignment = VerticalAlignment.Center;
+            line.StrokeThickness = 4;
+            return line;
+        }
+
+        public delegate void drawLinesOnCanvasUIThread(List<LineCoordinates> lines);
+
+        public void drawLinesOnCanvasUIThreadImpl(List<LineCoordinates> lines)
         {
             clearScopeCanvas();
-            lines.ForEach(x => this.scopeCanvas.Children.Add(x));
+            lines.ForEach(l => this.scopeCanvas.Children.Add(createLine(l.x1, l.y1, l.x2, l.y2)));
+        }
+
+
+        public virtual void drawLinesOnOscope(List<LineCoordinates> lines)
+        {
+            this.scopeCanvas.Dispatcher.BeginInvoke(new drawLinesOnCanvasUIThread(drawLinesOnCanvasUIThreadImpl), new object[] { lines });
         }
     }
 }

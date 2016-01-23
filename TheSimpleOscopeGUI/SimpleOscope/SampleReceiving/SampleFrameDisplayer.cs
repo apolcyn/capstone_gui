@@ -20,10 +20,26 @@ namespace SimpleOscope.SampleReceiving
 
     public interface OscopeWindowClient
     {
-        void drawLinesOnOscope(List<Line> lines);
+        void drawLinesOnOscope(List<LineCoordinates> lines);
 
         int getCanvasWidth();
 
         void clearScopeCanvas();
+    }
+
+    public struct LineCoordinates
+    {
+        public int x1 { get; }
+        public int x2 { get; }
+        public int y1 { get; }
+        public int y2 { get; }
+
+        public LineCoordinates(int x1, int y1, int x2, int y2)
+        {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        }
     }
 }
