@@ -18,7 +18,7 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
         private uint numBytesReceived;
         private uint numExpectedBytes;
 
-        public event EventHandler<PsocReadyEventArgs> RaisePsocReadyEvent;
+        public event EventHandler<PsocReadyEventArgs> PsocReadyEvent;
 
         private class PsocReadyAckStringIterator
         {
@@ -80,7 +80,7 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
                         {
                             psocReadyAckStringIterator.reset();
                             curState = ReceiveState.FIND_FIRST_HEADER_CHAR;
-                            if(RaisePsocReadyEvent != null) RaisePsocReadyEvent(this, new PsocReadyEventArgs());
+                            if(PsocReadyEvent != null) PsocReadyEvent(this, new PsocReadyEventArgs());
                         }
                     }
                     else

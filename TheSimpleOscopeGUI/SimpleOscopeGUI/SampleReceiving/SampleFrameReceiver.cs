@@ -15,6 +15,6 @@ namespace SimpleOscope.SampleReceiving
 
         void SetScanLength(uint scanLength);
 
-        void SetTriggerLevel(uint triggerLevel);
+        void SetTriggerLevel(int triggerLevel);
     }
 }

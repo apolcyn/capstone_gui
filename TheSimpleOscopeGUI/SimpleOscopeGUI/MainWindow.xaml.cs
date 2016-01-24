@@ -26,11 +26,85 @@ using SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving;
 
 namespace SimpleOscope
 {
-
     public class OscopeWidthChangedEventArgs : EventArgs
     {
-        public uint newWidth { get; }
-        public OscopeWidthChangedEventArgs(uint newWidth) { this.newWidth = newWidth; }
+        public int newWidth { get; }
+        public OscopeWidthChangedEventArgs(int newWidth) { this.newWidth = newWidth; }
+    }
+
+    public class OscopeHeightChangedEventArgs : EventArgs
+    {
+        public int newHeight { get; }
+        public OscopeHeightChangedEventArgs(int newHeight) { this.newHeight = newHeight; }
+    }
+
+    public class MaxSampleSizeChangedEventArgs : EventArgs
+    {
+        public double maxSampleSize { get; }
+        public MaxSampleSizeChangedEventArgs(double maxSampleSize) { this.maxSampleSize = maxSampleSize; }
+    }
+
+    public class SampleScalerChangedEventArgs : EventArgs
+    {
+        public double sampleScaler { get; }
+        public SampleScalerChangedEventArgs(double sampleScaler) { this.sampleScaler = sampleScaler; }
+    }
+
+    public class SampleOffsetChangedEventArgs : EventArgs
+    {
+        public double sampleOffset { get; }
+        public SampleOffsetChangedEventArgs(double sampleOffset) { this.sampleOffset = sampleOffset; }
+    }
+
+    public class NumSamplesToDisplayChangedEventArgs : EventArgs
+    {
+        public uint numSamples { get; }
+        public NumSamplesToDisplayChangedEventArgs(uint numSamples) { this.numSamples = numSamples; }
+    }
+
+    public class SampleSpacingChangedEventArgs : EventArgs
+    {
+        public uint sampleSpacing { get; }
+        public SampleSpacingChangedEventArgs(uint sampleSpacing) { this.sampleSpacing = sampleSpacing; }
+    }
+
+    public class TriggerRelativeDisplayStartChangedEventArgs : EventArgs
+    {
+        public int triggerRelativeDisplayStart { get; }
+        public TriggerRelativeDisplayStartChangedEventArgs(int triggerRelativeDisplayStart)
+        {
+            this.triggerRelativeDisplayStart = triggerRelativeDisplayStart;
+        }
+    }
+
+    public class TriggerScanStartIndexChangedEventArgs : EventArgs
+    {
+        public uint triggerScanStart { get; }
+        public TriggerScanStartIndexChangedEventArgs(uint triggerScanStart)
+        {
+            this.triggerScanStart = triggerScanStart;
+        }
+    }
+
+    public class TriggerScanLengthChangedEventArgs : EventArgs
+    {
+        public uint triggerScanLength { get; }
+        public TriggerScanLengthChangedEventArgs(uint triggerScanLength)
+        {
+            this.triggerScanLength = triggerScanLength;
+        }
+    }
+
+    public class TriggerLevelChangedEventArgs : EventArgs
+    {
+        public int triggerLevel { get; }
+        public TriggerLevelChangedEventArgs(int triggerLevel) { this.triggerLevel = triggerLevel; }
+    }
+
+    public class COMPortSelectedEventArgs : EventArgs
+    {
+        public string fullComportName { get; }
+        public COMPortSelectedEventArgs(string fullComportName) { this.fullComportName = fullComportName; }
     }
 
     /* Main window object, contains references to all of the visual components on the GUI display.
@@ -47,46 +121,99 @@ namespace SimpleOscope
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
         /// <summary>
-        /// Raised when the oscope width has changed, or is set.
+        /// Raised when the oscope width is set to new value.
         /// </summary>
         public event EventHandler<OscopeWidthChangedEventArgs> OscopeWidthChangedEvent;
 
+        /// <summary>
+        /// Raised when the oscope height is set to new value.
+        /// </summary>
+        public event EventHandler<OscopeHeightChangedEventArgs> OscopeHeightChangedEvent;
+
+        /// <summary>
+        /// Raised when the max sample size is set.
+        /// </summary>
+        public event EventHandler<MaxSampleSizeChangedEventArgs> MaxSampleSizeChangedEvent;
+
+        /// <summary>
+        /// Raised when the scaling applied to samples is set.
+        /// </summary>
+        public event EventHandler<SampleScalerChangedEventArgs> SampleScalerChangedEvent;
+
+        /// <summary>
+        /// Raised when the final offset applied to samples is set.
+        /// </summary>
+        public event EventHandler<SampleOffsetChangedEventArgs> SampleOffsetChangedEvent;
+
+        public event EventHandler<NumSamplesToDisplayChangedEventArgs> NumSamplesToDisplayChangedEvent;
+
+        public event EventHandler<TriggerRelativeDisplayStartChangedEventArgs> TriggerRelativeDisplayStartChangedEvent;
+
+        public event EventHandler<TriggerScanLengthChangedEventArgs> TriggerScanLengthChangedEvent;
+
+        public event EventHandler<TriggerScanStartIndexChangedEventArgs> TriggerScanStartChangedEvent;
+
+        public event EventHandler<TriggerLevelChangedEventArgs> TriggerLevelChangedEvent;
+
+        public event EventHandler<SampleSpacingChangedEventArgs> SampleSpacingChangedEvent;
+
+        public event EventHandler<COMPortSelectedEventArgs> COMPortSelectedEvent;
+
         SerialPortClient serialPortClient;
-        OscopeResolutionManager oscopeResolutionManager;
 
         public MainWindow()
         {
             InitializeComponent();
-            SerialPort serialPort = new SerialPort("COM10", 57600, Parity.None, 8, StopBits.One);
-            serialPort.Handshake = Handshake.None;
-            serialPort.Open();
+
+            Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
 
             // Initialize PSOC sample receiving chain.
-            OscopeWindowClient oscopeWindowClient = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
-            SampleFrameDisplayer sampleFrameDisplayer 
-                = new SampleFrameDisplayerImpl(oscopeWindowClient
-                , 100
-                , 4);
-            SampleFrameReceiver sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer);
+            OscopeWindowClient oscopeWindowClient 
+                = new OscopeWindowClientImpl(this.oscope_window_canvas, this, (int)this.oscope_window_canvas.Width);
+            SampleFrameDisplayer sampleFrameDisplayer = new SampleFrameDisplayerImpl(oscopeWindowClient, this);
+            SampleFrameReceiver sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer, this);
             SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameReceiver);
-            SampleAssembler sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);
-            ByteReceiver byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
-            serialPortClient = new SerialPortClient(serialPort, byteReceiver);
+            SampleAssembler sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler, this);
+            ByteReceiverImpl byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
+            serialPortClient = new SerialPortClient(byteReceiver, this);
 
-            sampleFrameDisplayer.SetNumSamplesToDisplay(300);
-            sampleFrameDisplayer.SetSpacing(10);
-            sampleFrameDisplayer.SetTriggerRelativeDispalyStartIndex(0);
+            byteReceiver.PsocReadyEvent += PSOC_ready;
 
-            sampleFrameReceiver.SetScanStartIndex(0);
-            sampleFrameReceiver.SetScanLength(300);
-            sampleFrameReceiver.SetTriggerLevel(100);
-            
-            
+            TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs(100));
+            TriggerScanLengthChangedEvent(this, new TriggerScanLengthChangedEventArgs(300));
+            TriggerScanStartChangedEvent(this, new TriggerScanStartIndexChangedEventArgs(0));
+            TriggerRelativeDisplayStartChangedEvent(this, new TriggerRelativeDisplayStartChangedEventArgs(0));
+            SampleSpacingChangedEvent(this, new SampleSpacingChangedEventArgs(10));
+            NumSamplesToDisplayChangedEvent(this, new NumSamplesToDisplayChangedEventArgs(300));
+            OscopeHeightChangedEvent(this, new OscopeHeightChangedEventArgs(
+                    (int)this.oscope_window_canvas.Height));
+            OscopeWidthChangedEvent(this, new OscopeWidthChangedEventArgs(
+                    (int)this.oscope_window_canvas.Width));
+            MaxSampleSizeChangedEvent(this, new MaxSampleSizeChangedEventArgs(
+                    4095));
+            SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(
+                    1));
+            SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(
+                    0.0));
         }
     }
 
     public partial class MainWindow
     {
+        private void PSOC_ready(object sender, PsocReadyEventArgs args)
+        {
+            MessageBox.Show("PSOC device connected.");
+        }
+
+        private void COM_port_selection_comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count != 1)
+            {
+                throw new Exception(String.Format("selected number of items is {0}", e.AddedItems.Count));
+            }
+            COMPortSelectedEvent(this, new COMPortSelectedEventArgs(e.AddedItems[0].ToString()));
+        }
+
         // event handler for DAC vpp slider updates
         private void DAC_vpp_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -230,7 +357,11 @@ namespace SimpleOscope
 
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            update_oscope_trigger_level((int)this.trigger_slider_button.Value);
+            if(TriggerLevelChangedEvent != null)
+            {
+                TriggerLevelChangedEvent(this
+                    , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Maximum - this.trigger_slider_button.Value)));
+            }
         }
 
         private void log(String str)

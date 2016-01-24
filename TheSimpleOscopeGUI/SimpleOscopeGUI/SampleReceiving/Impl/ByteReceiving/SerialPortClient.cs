@@ -22,6 +22,24 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
             serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
         }
 
+        public SerialPortClient(ByteReceiver byteReceiver, MainWindow mainWindow)
+        {
+            this.byteReceiver = byteReceiver;
+            mainWindow.COMPortSelectedEvent += COMPortSelected;
+        }
+
+        private void COMPortSelected(object sender, COMPortSelectedEventArgs args)
+        {
+            if(this.serialPort != null)
+            {
+                this.serialPort.Close();
+            }
+            this.serialPort = new SerialPort(args.fullComportName, 57600, Parity.None, 8, StopBits.One);
+            this.serialPort.Handshake = Handshake.None;
+            this.serialPort.Open();
+            this.serialPort.DataReceived += sp_DataReceived;
+        }
+
         /// <summary>
         /// Writes the string as is to the PSOC.
         /// </summary>

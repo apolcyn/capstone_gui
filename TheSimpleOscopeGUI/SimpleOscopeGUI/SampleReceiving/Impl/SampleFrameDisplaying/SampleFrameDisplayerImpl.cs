@@ -10,15 +10,21 @@ using System.Windows.Threading;
 
 namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
 {
-    public class SampleFrameDisplayerImpl : SampleFrameDisplayer
+    public class SampleFrameDisplayerImpl : SampleFrameDisplayer, SampleFrameReceiver
     {
         private uint numSamplesToDisplay { get; set; }
-        private uint spacing { get; set; }
+        private uint sampleSpacing { get; set; }
         private OscopeWindowClient scopeLineDrawer { get; set; }
         private int triggerRelativeDisplayStartIndex;
+        private int oscopeCanvasWidth;
+
+        private int triggerLevel;
+        private uint triggerScanLength;
+        private uint triggerScanStartIndex;
+        private OscopeHorizontalResolutionConfiguration 
 
         public SampleFrameDisplayerImpl(OscopeWindowClient scopeLineDrawer
-            , uint numSamplesToDisplay, uint spacing)
+            , uint numSamplesToDisplay, uint sampleSpacing)
         {
             if(scopeLineDrawer == null)
             {
@@ -26,7 +32,38 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             }
             this.scopeLineDrawer = scopeLineDrawer;
             this.numSamplesToDisplay = numSamplesToDisplay;
-            this.spacing = spacing;
+            this.sampleSpacing = sampleSpacing;
+        }
+
+        public SampleFrameDisplayerImpl(OscopeWindowClient scopeLineDrawer
+            , MainWindow mainWindow)
+        {
+            this.scopeLineDrawer = scopeLineDrawer;
+            mainWindow.NumSamplesToDisplayChangedEvent += numSamplesToDisplayChanged;
+            mainWindow.SampleSpacingChangedEvent += sampleSpacingChanged;
+            mainWindow.TriggerRelativeDisplayStartChangedEvent += triggerRelativeDisplayStartChanged;
+            mainWindow.OscopeWidthChangedEvent += oscopeWidthChanged;
+        }
+
+        private void oscopeWidthChanged(object sender, OscopeWidthChangedEventArgs args)
+        {
+            oscopeCanvasWidth = args.newWidth;
+        }
+
+        private void numSamplesToDisplayChanged(object sender, NumSamplesToDisplayChangedEventArgs args)
+        {
+            this.numSamplesToDisplay = args.numSamples;
+        }
+
+        private void sampleSpacingChanged(object sender, SampleSpacingChangedEventArgs args)
+        {
+            this.sampleSpacing = args.sampleSpacing;
+        }
+
+        private void triggerRelativeDisplayStartChanged(object sender
+            , TriggerRelativeDisplayStartChangedEventArgs args)
+        {
+            this.triggerRelativeDisplayStartIndex = args.triggerRelativeDisplayStart;
         }
 
         public void DisplaySampleFrame(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples)
@@ -56,7 +93,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
                     , totalSamplesInFrame, start));
             }
 
-            if((this.numSamplesToDisplay - 1) * this.spacing + 1 < scopeLineDrawer.getCanvasWidth())
+            if((this.numSamplesToDisplay - 1) * this.sampleSpacing + 1 < oscopeCanvasWidth)
             {
                 throw new Exception("number of samples to display with current spacing"
                     + " isn't enough to cover width of scope canvas");
@@ -68,10 +105,10 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
 
             for(uint i = start + 1; i < start + numSamplesToDisplay; i++)
             {
-                int curX = (int)(this.spacing * (i - start));
+                int curX = (int)(this.sampleSpacing * (i - start));
                 int curY = samples[i];
                 linesToDraw.Add(new LineCoordinates(prevX, prevY, curX, curY)); 
-                if (curX > this.scopeLineDrawer.getCanvasWidth())
+                if (curX > oscopeCanvasWidth)
                 {
                     break;
                 }
@@ -91,67 +128,63 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             this.numSamplesToDisplay = numSamplesToDisplay;
         }
 
-        public void SetSpacing(uint spacing)
+        public void SetSpacing(uint sampleSpacing)
         {
-            this.spacing = spacing;
-        }
-    }
-
-    public class OscopeWindowClientImpl : OscopeWindowClient
-    {
-        private Canvas scopeCanvas { get; set; }
-
-        public OscopeWindowClientImpl() { }
-
-        public OscopeWindowClientImpl(Canvas scopeCanvas, MainWindow mainWindow)
-        {
-            this.scopeCanvas = scopeCanvas;
+            this.sampleSpacing = sampleSpacing;
         }
 
-        /// <summary>
-        ///  TODO: make this adapt to different screen sizes
-        /// </summary>
-        /// <returns></returns>
-        public virtual int getCanvasWidth()
+        /* Searches a given samples frame from a configured start index
+  * and for a configured scan length, for sample index that sets off the trigger. */
+        public void FrameAssembled(ushort[] samples, uint numSamples)
         {
-            return (int)this.scopeCanvas.Width;
-        }
-
-        public void clearScopeCanvas()
-        {
-            while (this.scopeCanvas.Children.Count > 0)
+            if (numSamples == 0 || numSamples > samples.Length)
             {
-                this.scopeCanvas.Children.RemoveAt(0);
+                throw new ArgumentException("num samples length is invalid: got " + numSamples);
+            }
+            if (this.triggerScanLength + this.triggerScanStartIndex > numSamples)
+            {
+                throw new Exception("scan length and scan start index > num samples."
+                    + ". scan length: " + this.triggerScanLength
+                    + ". scan start index: " + this.triggerScanStartIndex
+                    + ". num samples: " + numSamples);
+            }
+
+            uint lastSample = UInt16.MaxValue;
+            int start = -1;
+
+            for (uint i = this.triggerScanStartIndex; i < this.triggerScanStartIndex + this.triggerScanLength; i++)
+            {
+                if (lastSample < triggerLevel && samples[i] >= triggerLevel)
+                {
+                    start = (int)i;
+                    break;
+                }
+                lastSample = samples[i];
+            }
+
+            if (start >= 0)
+            {
+                DisplaySampleFrame((uint)start, numSamples, samples);
             }
         }
 
-        /* Creates a line to draw on the oscope canvas */
-        private Line createLine(int prevX, int prevY, int curX, int curY)
+        public void SetScanLength(uint triggerScanLength)
         {
-            Line line = new Line();
-            line.Stroke = System.Windows.Media.Brushes.Gold;
-            line.X1 = prevX;
-            line.X2 = curX;
-            line.Y1 = prevY;
-            line.Y2 = curY;
-            line.HorizontalAlignment = HorizontalAlignment.Left;
-            line.VerticalAlignment = VerticalAlignment.Center;
-            line.StrokeThickness = 4;
-            return line;
+            if (triggerScanLength < 2)
+            {
+                throw new ArgumentException();
+            }
+            this.triggerScanLength = triggerScanLength;
         }
 
-        public delegate void drawLinesOnCanvasUIThread(List<LineCoordinates> lines);
-
-        public void drawLinesOnCanvasUIThreadImpl(List<LineCoordinates> lines)
+        public void SetScanStartIndex(uint triggerScanStartIndex)
         {
-            clearScopeCanvas();
-            lines.ForEach(l => this.scopeCanvas.Children.Add(createLine(l.x1, l.y1, l.x2, l.y2)));
+            this.triggerScanStartIndex = triggerScanStartIndex;
         }
 
-
-        public virtual void drawLinesOnOscope(List<LineCoordinates> lines)
+        public void SetTriggerLevel(int triggerLevel)
         {
-            this.scopeCanvas.Dispatcher.BeginInvoke(new drawLinesOnCanvasUIThread(drawLinesOnCanvasUIThreadImpl), new object[] { lines });
+            this.triggerLevel = triggerLevel;
         }
     }
 }
