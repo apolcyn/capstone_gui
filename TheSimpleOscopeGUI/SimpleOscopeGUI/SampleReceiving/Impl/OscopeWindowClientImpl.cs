@@ -35,7 +35,7 @@ namespace SimpleOscope.SampleReceiving.Impl
         /// <returns></returns>
         public virtual int getCanvasWidth()
         {
-            return this.oscopeWidth;
+            throw new NotImplementedException("shouldn't be calling this.");
         }
 
         public void clearScopeCanvas()

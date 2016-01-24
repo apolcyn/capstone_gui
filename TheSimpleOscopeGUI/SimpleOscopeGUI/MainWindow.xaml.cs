@@ -156,6 +156,8 @@ namespace SimpleOscope
 
         SerialPortClient serialPortClient;
 
+        private HorizontalResolutionConfiguration curHorizontalResolutionConfiguration;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -173,11 +175,13 @@ namespace SimpleOscope
             if (COMPortSelectedEvent == null) throw new Exception("didnt register");
             byteReceiver.PsocReadyEvent += PSOC_ready;
 
+            HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
+
             HorizontalResolutionConfiguration config
                 = HorizontalResolutionConfiguration.builder()
-                .withFrameSize(200)
-                .withNumSamplesToDisplay(100)
-                .withOscopeWindowSize(397)
+                .withFrameSize(100)
+                .withNumSamplesToDisplay(50)
+                .withOscopeWindowSize(197)
                 .withPixelSpacing(3)
                 .withPsocSPS(0)
                 .withTimePerDiv(0)
@@ -185,6 +189,8 @@ namespace SimpleOscope
 
             HorizonalResolutionConfigChangedEvent(this
                 , new HorizontalResolutionConfigChangedEventArgs(config));
+            this.oscope_window_canvas.SizeChanged += oscopeActualSizeChanged;
+
             TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs(0));
             TriggerHorizontalPositionChangedEvent(this, new TriggerHorizontalPositionChangedEventArgs(0));
             OscopeHeightChangedEvent(this, new OscopeHeightChangedEventArgs(
@@ -214,10 +220,32 @@ namespace SimpleOscope
             COMPortSelectedEvent(this, new COMPortSelectedEventArgs(e.AddedItems[0].ToString()));
         }
 
-        // event handler for DAC vpp slider updates
+        /// <summary>
+        ///  event handler for DAC vpp slider updates
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DAC_vpp_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             update_DAC_vpp((decimal)this.DAC_vpp_slider.Value);
+        }
+
+        private void oscopeActualSizeChanged(object sender
+            , SizeChangedEventArgs args)
+        {
+            if(curHorizontalResolutionConfiguration.oscopeWindowSize != args.NewSize.Width)
+            {
+                throw new Exception(String.Format("what the heck. wanted oscope width to be {0}"
+                    + " but it came out to be {1}"
+                    , curHorizontalResolutionConfiguration.oscopeWindowSize
+                    , args.NewSize.Width));
+            }
+        }
+        
+        private void oscopeHorizontalResolutionConfigurationChanged(object sender
+            , HorizontalResolutionConfigChangedEventArgs args)
+        {
+            this.curHorizontalResolutionConfiguration = args.config;
         }
 
         // updates value of DAC vpp

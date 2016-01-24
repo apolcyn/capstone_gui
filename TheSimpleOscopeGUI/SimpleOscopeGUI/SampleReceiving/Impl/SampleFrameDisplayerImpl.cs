@@ -163,7 +163,7 @@ namespace SimpleOscope.SampleReceiving.Impl
                     , totalSamplesInFrame, start, this.displayConfig.numSamplesToDispaly));
             }
 
-            if((this.displayConfig.numSamplesToDispaly - 1) * this.displayConfig.pixelSpacing 
+            if((this.displayConfig.numSamplesToDispaly - 1) * (this.displayConfig.pixelSpacing  + 1)
                 + 1 < this.displayConfig.oscopeWindowSize)
             {
                 throw new Exception("number of samples to display with current spacing"
@@ -176,12 +176,16 @@ namespace SimpleOscope.SampleReceiving.Impl
 
             for(uint i = start + 1; i < start + this.displayConfig.numSamplesToDispaly; i++)
             {
-                int curX = (int)(this.displayConfig.pixelSpacing * (i - start));
+                int curX = (int)((this.displayConfig.pixelSpacing + 1) * (i - start));
                 int curY = samples[i];
                 linesToDraw.Add(new LineCoordinates(prevX, prevY, curX, curY)); 
-                if (curX > this.displayConfig.oscopeWindowSize)
+                if (curX == this.displayConfig.oscopeWindowSize - 1)
                 {
                     break;
+                }
+                else if(curX >= this.displayConfig.oscopeWindowSize)
+                {
+                    throw new ArgumentException("what are you doing");
                 }
                 prevX = curX;
                 prevY = curY;
