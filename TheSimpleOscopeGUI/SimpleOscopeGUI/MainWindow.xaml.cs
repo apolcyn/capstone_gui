@@ -176,6 +176,7 @@ namespace SimpleOscope
             byteReceiver.PsocReadyEvent += PSOC_ready;
 
             HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
+            HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
 
             HorizontalResolutionConfiguration config
                 = HorizontalResolutionConfiguration.builder()
@@ -240,6 +241,13 @@ namespace SimpleOscope
                     , curHorizontalResolutionConfiguration.oscopeWindowSize
                     , args.NewSize.Width));
             }
+        }
+
+        private void updateHorizontalTriggeringSelector(object sender
+            , HorizontalResolutionConfigChangedEventArgs args)
+        {
+            this.vertical_trigger_slider.Width = args.config.oscopeWindowSize;
+            this.vertical_trigger_slider.Maximum = args.config.oscopeWindowSize;
         }
         
         private void oscopeHorizontalResolutionConfigurationChanged(object sender
@@ -433,7 +441,8 @@ namespace SimpleOscope
 
         private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-           //TODO: this.verticalTriggerIndex = (int)this.vertical_trigger_slider.Value / 4;
+            TriggerHorizontalPositionChangedEvent(this
+                , new TriggerHorizontalPositionChangedEventArgs((uint)e.NewValue));
         }
     }
 }
