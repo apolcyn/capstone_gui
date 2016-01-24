@@ -2,41 +2,38 @@
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleOscope.SampleReceiving;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly;
-using SimpleOscope.SampleReceiving.Impl.SampleAssembly;
-using SimpleOscope.SampleReceiving.Impl.ByteReceiving;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
 using Moq;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using System.Windows;
 using System.Threading;
 using System.Collections.Generic;
+using SimpleOscope;
 
 namespace SimpleOscopeUnitTests.SampleReceiving
 {
     [TestClass]
     public class ReceivingIntegTest : BaseTests
     {
-        Mock<OscopeWindowClient> mockScopeWindowClient;
+        Mock<OscopeWindowClient> mockScopeWindowClient = new Mock<OscopeWindowClient>();
         SampleFrameDisplayer sampleFrameDisplayer;
         SampleFrameReceiver sampleFrameReceiver;
         SampleFrameAssembler sampleFrameAssembler;
         SampleAssembler sampleAssembler;
         ByteReceiver byteReceiver;
+        Mock<MainWindow> mockMainWindow = new Mock<MainWindow>();
+
 
         [TestInitialize]
         public void setup()
         {
-            uint numSamplesToDisplay = 10;
-            uint sampleSpacing = 3;
-
-            mockScopeWindowClient = new Mock<OscopeWindowClient>();
             sampleFrameDisplayer
-                = new SampleFrameDisplayerImpl(mockScopeWindowClient.Object
-                , numSamplesToDisplay
-                , sampleSpacing);
+                = new SampleFrameDisplayerImpl(mockScopeWindowClient.Object, mockMainWindow.Object);
             sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer);
             sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameReceiver);
             sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);

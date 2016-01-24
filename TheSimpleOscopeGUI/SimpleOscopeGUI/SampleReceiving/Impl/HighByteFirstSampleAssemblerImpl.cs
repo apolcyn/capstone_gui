@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleOscope.SampleReceiving.Impl.SampleAssembly
+namespace SimpleOscope.SampleReceiving.Impl
 {
     public class HighByteFirstSampleAssemblerImpl : SampleAssembler
     {
@@ -16,19 +16,21 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleAssembly
         private double sampleScaler = 1;
         private double sampleOffset = 0;
 
+        public static HighByteFirstSampleAssemblerImpl newHighByteFirstSampleAssemblerImpl(
+            SampleFrameAssembler sampleFrameAssembler, MainWindow mainWindow)
+        {
+            HighByteFirstSampleAssemblerImpl assembler 
+                = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);
+            mainWindow.OscopeHeightChangedEvent += assembler.oscopeHeightChanged;
+            mainWindow.MaxSampleSizeChangedEvent += assembler.maxSampleSizeChanged;
+            mainWindow.SampleScalerChangedEvent += assembler.sampleScalerChanged;
+            mainWindow.SampleOffsetChangedEvent += assembler.sampleOffsetChanged;
+            return assembler;
+        }
+
         public HighByteFirstSampleAssemblerImpl(SampleFrameAssembler sampleFrameAssembler)
         {
             this.sampleFrameAssembler = sampleFrameAssembler;
-        }
-
-        public HighByteFirstSampleAssemblerImpl(SampleFrameAssembler sampleFrameAssembler
-            , MainWindow mainWindow)
-        {
-            this.sampleFrameAssembler = sampleFrameAssembler;
-            mainWindow.OscopeHeightChangedEvent += oscopeHeightChanged;
-            mainWindow.MaxSampleSizeChangedEvent += maxSampleSizeChanged;
-            mainWindow.SampleScalerChangedEvent += sampleScalerChanged;
-            mainWindow.SampleOffsetChangedEvent += sampleOffsetChanged;
         }
 
         public void AddReceivedByte(byte newByte)

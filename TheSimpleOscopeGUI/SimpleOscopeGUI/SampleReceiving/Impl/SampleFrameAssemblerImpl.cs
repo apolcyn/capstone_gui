@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly
+namespace SimpleOscope.SampleReceiving.Impl
 {
     public class SampleFrameAssemblerImpl : SampleFrameAssembler
     {

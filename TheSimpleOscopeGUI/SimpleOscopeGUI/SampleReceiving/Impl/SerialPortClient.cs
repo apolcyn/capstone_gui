@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
+namespace SimpleOscope.SampleReceiving.Impl
 {
     /// <summary>
     /// Interfaces with the USB to the PSOC.
@@ -15,17 +15,17 @@ namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
         private SerialPort serialPort { get; set; }
         private ByteReceiver byteReceiver { get; set; }
 
-        public SerialPortClient(SerialPort serialPort, ByteReceiver byteReceiver)
+        public static SerialPortClient newSerialPortClient(ByteReceiver byteReceiver
+            , MainWindow mainWindow)
         {
-            this.serialPort = serialPort;
-            this.byteReceiver = byteReceiver;
-            serialPort.DataReceived += new SerialDataReceivedEventHandler(sp_DataReceived);
+            SerialPortClient client = new SerialPortClient(byteReceiver);
+            mainWindow.COMPortSelectedEvent += client.COMPortSelected;
+            return client;
         }
 
-        public SerialPortClient(ByteReceiver byteReceiver, MainWindow mainWindow)
+        public SerialPortClient(ByteReceiver byteReceiver)
         {
             this.byteReceiver = byteReceiver;
-            mainWindow.COMPortSelectedEvent += COMPortSelected;
         }
 
         private void COMPortSelected(object sender, COMPortSelectedEventArgs args)

@@ -17,7 +17,7 @@ namespace SimpleOscope.SampleReceiving.Impl
 
         public OscopeWindowClientImpl() { }
 
-        public OscopeWindowClientImpl(Canvas scopeCanvas, MainWindow mainWindow, int oscopeWidth)
+        public OscopeWindowClientImpl(Canvas scopeCanvas, MainWindow mainWindow)
         {
             this.scopeCanvas = scopeCanvas;
             this.oscopeWidth = oscopeWidth;

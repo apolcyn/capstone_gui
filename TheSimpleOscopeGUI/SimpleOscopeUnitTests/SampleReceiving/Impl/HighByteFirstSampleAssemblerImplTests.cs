@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SimpleOscope.SampleReceiving.Impl.SampleAssembly;
+using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

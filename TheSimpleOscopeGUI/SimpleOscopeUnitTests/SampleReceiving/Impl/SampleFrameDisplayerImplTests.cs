@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying;
+using SimpleOscope.SampleReceiving.Impl;
 using System.Windows.Controls;
 using SimpleOscope.SampleReceiving;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Threading;
 using SimpleOscopeUnitTests;
+using SimpleOscope;
 
 namespace SimpleOscopeUnitTests.SampleReceiving.Impl
 {
@@ -19,18 +20,20 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
     public class SampleFrameDisplayerImplTests : BaseTests
     {
         Mock<OscopeWindowClient> mockDrawer;
+        Mock<MainWindow> mockMainWindow;
+        SampleFrameDisplayerImpl displayer;
 
         [TestInitialize]
         public void setup()
         {
             mockDrawer = new Mock<OscopeWindowClient>();
+            mockMainWindow = new Mock<MainWindow>();
+            displayer = new SampleFrameDisplayerImpl(mockDrawer.Object, mockMainWindow.Object);
         }
 
         [TestMethod]
         public void TestNormalCase()
         {
-            SampleFrameDisplayerImpl displayer 
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
             ushort[] samples = new ushort[21];
             for(int i = 0; i < 21; i++)
             {
@@ -64,9 +67,6 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         [TestMethod]
         public void testSpacingTimesNumSamplesToDisplayGreatherThanCanvasWidth()
         {
-            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
             {
@@ -100,9 +100,6 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         [TestMethod]
         public void TestSpacingOfTwo()
         {
-            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 2);
             ushort[] samples = new ushort[] { 0, 1, 2, 3 };
 
             displayer.SetNumSamplesToDisplay(3);
@@ -124,9 +121,6 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         [ExpectedException(typeof(Exception))]
         public void testSpacingTimesNumSamplesToDisplayNotEnoughToCoverCanvas()
         {
-            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
             {
@@ -147,9 +141,6 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
         [ExpectedException(typeof(Exception))]
         public void testNumSamplesAvailableLessThanNumSamplesToDisplay()
         {
-            Mock<OscopeWindowClient> mockDrawer = new Mock<OscopeWindowClient>();
-            SampleFrameDisplayerImpl displayer
-                = new SampleFrameDisplayerImpl(mockDrawer.Object, 10, 3);
             ushort[] samples = new ushort[21];
             for (int i = 0; i < 21; i++)
             {

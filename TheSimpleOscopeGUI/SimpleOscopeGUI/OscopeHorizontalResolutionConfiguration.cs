@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace SimpleOscope
 {
     /// <summary>
@@ -8,46 +10,116 @@ namespace SimpleOscope
     /// time / division
     /// This should be a constant.
     /// </summary>
-    public struct HorizontalResolutionConfiguration
+    public class HorizontalResolutionConfiguration
     {
         /// <summary>number of picoseconds/division on oscope</summary>
         public ulong timePerDiv
         {
-            get;
+            get; set;
         }
         /// <summary>the SPS in hertz needed fro PSOC to achieve this</summary>
         public ulong psocSPS
         {
-            get;
+            get; set;
         }
         /// <summary>the number of "imaginary, vertical lines" needed
         /// between each sample displayed on oscope.</summary>
         public uint pixelSpacing
         {
-            get;
+            get; set;
         }
         /// <summary>
         /// The number of samples per frame needed to achieve this time/div.
         /// </summary>
-        public uint frameSize
-        {
-            get;
-        }
+        public uint frameSize { get; set; }
 
         /// <summary>
-        /// Creates configuration constants to use for scaling horizontal resolution
+        /// Width of the oscope inwodw in pixels.
         /// </summary>
-        /// <param name="timePerDiv">time/div in picoseconds</param>
-        /// <param name="psocSPS">samples per second in Hz</param>
-        /// <param name="pixelSpacing">number of pixels - 1 between sample pixels</param>
-        /// <param name="frameSize">number of samples per frame needed</param>
-        public HorizontalResolutionConfiguration(ulong timePerDiv
-            , ulong psocSPS, uint pixelSpacing, uint frameSize)
+        public uint oscopeWindowSize { get; set; }
+
+        /// <summary>
+        /// The number of samples that should be displayed on the oscope screen at a time.
+        /// </summary>
+        public uint numSamplesToDispaly { get; set; }
+
+        private HorizontalResolutionConfiguration()
         {
-            this.timePerDiv = timePerDiv;
-            this.psocSPS = psocSPS;
-            this.pixelSpacing = pixelSpacing;
-            this.frameSize = frameSize;
+        }
+
+        public static HorizontalResolutionConfigurationBuilder builder()
+        {
+            return new HorizontalResolutionConfigurationBuilder();
+        }
+
+        public class HorizontalResolutionConfigurationBuilder
+        {
+            private HorizontalResolutionConfiguration config;
+            private long sum = 0;
+
+            public HorizontalResolutionConfigurationBuilder()
+            {
+                this.config = new HorizontalResolutionConfiguration();
+            }
+
+            public HorizontalResolutionConfigurationBuilder withTimePerDiv(ulong timePerDiv)
+            {
+                this.config.timePerDiv = timePerDiv;
+                sum += 1;
+                return this;
+            }
+
+            public HorizontalResolutionConfigurationBuilder withPsocSPS(ulong psocSPS)
+            {
+                this.config.psocSPS = psocSPS;
+                sum += 10;
+                return this;
+            }
+
+            public HorizontalResolutionConfigurationBuilder withPixelSpacing(uint pixelSpacing)
+            {
+                this.config.pixelSpacing = pixelSpacing;
+                sum += 100;
+                return this;
+            }
+
+            public HorizontalResolutionConfigurationBuilder withFrameSize(uint frameSize)
+            {
+                this.config.frameSize = frameSize;
+                sum += 1000;
+                return this;
+            }
+
+            public HorizontalResolutionConfigurationBuilder withOscopeWindowSize(uint oscopeWindowSize)
+            {
+                this.config.oscopeWindowSize = oscopeWindowSize;
+                sum += 10000;
+                return this;
+            }
+
+            public HorizontalResolutionConfigurationBuilder withNumSamplesToDisplay(uint numSamplesToDisplay)
+            {
+                this.config.numSamplesToDispaly = numSamplesToDisplay;
+                sum += 100000;
+                return this;
+            }
+
+            public HorizontalResolutionConfiguration build()
+            {
+                if(this.sum != 111111)
+                {
+                    throw new Exception("unspecified parameters");
+                }
+                if(this.config.oscopeWindowSize 
+                    != ((this.config.numSamplesToDispaly - 1) * (this.config.pixelSpacing + 1) + 1)) {
+                    throw new ArgumentException("window size doesn't fit");
+                }
+                if(this.config.frameSize / 2 < this.config.numSamplesToDispaly)
+                {
+                    throw new ArgumentException("frame size not big enough");
+                }
+                return config;
+            }
         }
     }
 }

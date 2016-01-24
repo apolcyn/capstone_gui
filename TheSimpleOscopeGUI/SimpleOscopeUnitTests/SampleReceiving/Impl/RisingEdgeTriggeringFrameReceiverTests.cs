@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving;
+using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving;
 
 namespace SimpleOscopeUnitTests.SampleReceiving.Impl

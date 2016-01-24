@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleOscope.SampleReceiving.Impl.ByteReceiving
+namespace SimpleOscope.SampleReceiving.Impl
 {
     public class PsocReadyEventArgs : EventArgs { }
 

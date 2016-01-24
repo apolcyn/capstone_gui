@@ -58,13 +58,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="OscopeHorizontalResolutionConfiguration.cs" />
     <Compile Include="SampleReceiving\ByteReceiver.cs" />
-    <Compile Include="SampleReceiving\Impl\ByteReceiving\ByteReceiverImpl.cs" />
-    <Compile Include="SampleReceiving\Impl\ByteReceiving\SerialPortClient.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleAssembly\HighByteFirstSampleAssemblerImpl.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameAssembly\SampleFrameAssemblerImpl.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameDisplaying\SampleFrameDisplayerImpl.cs" />
-    <Compile Include="SampleReceiving\Impl\SampleFrameReceiving\RisingEdgeTriggeringFrameReceiver.cs" />
+    <Compile Include="SampleReceiving\Impl\ByteReceiverImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\SerialPortClient.cs" />
+    <Compile Include="SampleReceiving\Impl\OscopeWindowClientImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\HighByteFirstSampleAssemblerImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameAssemblerImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\SampleFrameDisplayerImpl.cs" />
+    <Compile Include="SampleReceiving\Impl\RisingEdgeTriggeringFrameReceiver.cs" />
     <Compile Include="SampleReceiving\SampleAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameDisplayer.cs" />
@@ -85,7 +87,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OscopeConfiguration.cs" />
-    <Compile Include="OscopeResolutionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

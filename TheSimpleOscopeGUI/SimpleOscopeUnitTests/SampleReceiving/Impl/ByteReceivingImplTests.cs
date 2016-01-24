@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SimpleOscope.SampleReceiving;
-using SimpleOscope.SampleReceiving.Impl.ByteReceiving;
+using SimpleOscope.SampleReceiving.Impl;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

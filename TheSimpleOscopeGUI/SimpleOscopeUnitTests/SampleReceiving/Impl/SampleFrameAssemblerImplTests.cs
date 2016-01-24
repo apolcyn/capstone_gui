@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly;
+using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -37,7 +37,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
                 throw new NotImplementedException();
             }
 
-            public void SetTriggerLevel(uint triggerLevel)
+            public void SetTriggerLevel(int triggerLevel)
             {
                 throw new NotImplementedException();
             }
@@ -224,7 +224,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
                 throw new NotImplementedException();
             }
 
-            public void SetTriggerLevel(uint triggerLevel)
+            public void SetTriggerLevel(int triggerLevel)
             {
                 throw new NotImplementedException();
             }
@@ -249,7 +249,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl.SampleFrameAssembly
                 throw new NotImplementedException();
             }
 
-            public void SetTriggerLevel(uint triggerLevel)
+            public void SetTriggerLevel(int triggerLevel)
             {
                 throw new NotImplementedException();
             }

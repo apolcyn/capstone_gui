@@ -17,12 +17,13 @@ using System.IO.Ports;
 using System.Threading;
 using System.Windows.Threading;
 using System.IO;
-using SimpleOscope.SampleReceiving.Impl.ByteReceiving;
+using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying;
-using SimpleOscope.SampleReceiving.Impl.SampleAssembly;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameAssembly;
-using SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
+using SimpleOscope.SampleReceiving.Impl;
 
 namespace SimpleOscope
 {
@@ -68,30 +69,21 @@ namespace SimpleOscope
         public SampleSpacingChangedEventArgs(uint sampleSpacing) { this.sampleSpacing = sampleSpacing; }
     }
 
-    public class TriggerRelativeDisplayStartChangedEventArgs : EventArgs
+    public class TriggerHorizontalPositionChangedEventArgs : EventArgs
     {
-        public int triggerRelativeDisplayStart { get; }
-        public TriggerRelativeDisplayStartChangedEventArgs(int triggerRelativeDisplayStart)
+        public uint triggerHorizontalPosition { get; }
+        public TriggerHorizontalPositionChangedEventArgs(uint triggerHorizontalPosition)
         {
-            this.triggerRelativeDisplayStart = triggerRelativeDisplayStart;
+            this.triggerHorizontalPosition = triggerHorizontalPosition;
         }
     }
 
-    public class TriggerScanStartIndexChangedEventArgs : EventArgs
+    public class SampleFrameSizeChangedEventArgs : EventArgs
     {
-        public uint triggerScanStart { get; }
-        public TriggerScanStartIndexChangedEventArgs(uint triggerScanStart)
+        public uint sampleFrameSize { get; }
+        public SampleFrameSizeChangedEventArgs(uint sampleFrameSize)
         {
-            this.triggerScanStart = triggerScanStart;
-        }
-    }
-
-    public class TriggerScanLengthChangedEventArgs : EventArgs
-    {
-        public uint triggerScanLength { get; }
-        public TriggerScanLengthChangedEventArgs(uint triggerScanLength)
-        {
-            this.triggerScanLength = triggerScanLength;
+            this.sampleFrameSize = sampleFrameSize;
         }
     }
 
@@ -105,6 +97,15 @@ namespace SimpleOscope
     {
         public string fullComportName { get; }
         public COMPortSelectedEventArgs(string fullComportName) { this.fullComportName = fullComportName; }
+    }
+
+    public class HorizontalResolutionConfigChangedEventArgs
+    {
+        public HorizontalResolutionConfiguration config;
+        public HorizontalResolutionConfigChangedEventArgs(HorizontalResolutionConfiguration config)
+        {
+            this.config = config;
+        }
     }
 
     /* Main window object, contains references to all of the visual components on the GUI display.
@@ -145,19 +146,13 @@ namespace SimpleOscope
         /// </summary>
         public event EventHandler<SampleOffsetChangedEventArgs> SampleOffsetChangedEvent;
 
-        public event EventHandler<NumSamplesToDisplayChangedEventArgs> NumSamplesToDisplayChangedEvent;
-
-        public event EventHandler<TriggerRelativeDisplayStartChangedEventArgs> TriggerRelativeDisplayStartChangedEvent;
-
-        public event EventHandler<TriggerScanLengthChangedEventArgs> TriggerScanLengthChangedEvent;
-
-        public event EventHandler<TriggerScanStartIndexChangedEventArgs> TriggerScanStartChangedEvent;
+        public event EventHandler<TriggerHorizontalPositionChangedEventArgs> TriggerHorizontalPositionChangedEvent;
 
         public event EventHandler<TriggerLevelChangedEventArgs> TriggerLevelChangedEvent;
 
-        public event EventHandler<SampleSpacingChangedEventArgs> SampleSpacingChangedEvent;
-
         public event EventHandler<COMPortSelectedEventArgs> COMPortSelectedEvent;
+
+        public event EventHandler<HorizontalResolutionConfigChangedEventArgs> HorizonalResolutionConfigChangedEvent;
 
         SerialPortClient serialPortClient;
 
@@ -168,27 +163,32 @@ namespace SimpleOscope
             Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
 
             // Initialize PSOC sample receiving chain.
-            OscopeWindowClient oscopeWindowClient 
-                = new OscopeWindowClientImpl(this.oscope_window_canvas, this, (int)this.oscope_window_canvas.Width);
-            SampleFrameDisplayer sampleFrameDisplayer = new SampleFrameDisplayerImpl(oscopeWindowClient, this);
-            SampleFrameReceiver sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer, this);
-            SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameReceiver);
-            SampleAssembler sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler, this);
+            OscopeWindowClient oscopeWindowClient  = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
+            SampleFrameDisplayerImpl sampleFrameDisplayer 
+                = SampleFrameDisplayerImpl.newSampleFrameDisplayerImpl(oscopeWindowClient, this);
+            SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameDisplayer);
+            SampleAssembler sampleAssembler = HighByteFirstSampleAssemblerImpl.newHighByteFirstSampleAssemblerImpl(sampleFrameAssembler, this);
             ByteReceiverImpl byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
-            serialPortClient = new SerialPortClient(byteReceiver, this);
-
+            serialPortClient = SerialPortClient.newSerialPortClient(byteReceiver, this);
+            if (COMPortSelectedEvent == null) throw new Exception("didnt register");
             byteReceiver.PsocReadyEvent += PSOC_ready;
 
-            TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs(100));
-            TriggerScanLengthChangedEvent(this, new TriggerScanLengthChangedEventArgs(300));
-            TriggerScanStartChangedEvent(this, new TriggerScanStartIndexChangedEventArgs(0));
-            TriggerRelativeDisplayStartChangedEvent(this, new TriggerRelativeDisplayStartChangedEventArgs(0));
-            SampleSpacingChangedEvent(this, new SampleSpacingChangedEventArgs(10));
-            NumSamplesToDisplayChangedEvent(this, new NumSamplesToDisplayChangedEventArgs(300));
+            HorizontalResolutionConfiguration config
+                = HorizontalResolutionConfiguration.builder()
+                .withFrameSize(200)
+                .withNumSamplesToDisplay(100)
+                .withOscopeWindowSize(397)
+                .withPixelSpacing(3)
+                .withPsocSPS(0)
+                .withTimePerDiv(0)
+                .build();
+
+            HorizonalResolutionConfigChangedEvent(this
+                , new HorizontalResolutionConfigChangedEventArgs(config));
+            TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs(0));
+            TriggerHorizontalPositionChangedEvent(this, new TriggerHorizontalPositionChangedEventArgs(0));
             OscopeHeightChangedEvent(this, new OscopeHeightChangedEventArgs(
                     (int)this.oscope_window_canvas.Height));
-            OscopeWidthChangedEvent(this, new OscopeWidthChangedEventArgs(
-                    (int)this.oscope_window_canvas.Width));
             MaxSampleSizeChangedEvent(this, new MaxSampleSizeChangedEventArgs(
                     4095));
             SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(
@@ -360,7 +360,9 @@ namespace SimpleOscope
             if(TriggerLevelChangedEvent != null)
             {
                 TriggerLevelChangedEvent(this
-                    , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Maximum - this.trigger_slider_button.Value)));
+                    , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Maximum 
+                    - this.trigger_slider_button.Value)));
+
             }
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
+namespace SimpleOscope.SampleReceiving.Impl
 {
     public class RisingEdgeTriggeringFrameReceiver : SampleFrameReceiver
     {
@@ -21,19 +21,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
         public RisingEdgeTriggeringFrameReceiver(SampleFrameDisplayer displayer, MainWindow mainWindow)
         {
             this.displayer = displayer;
-            mainWindow.TriggerScanStartChangedEvent += triggerScanStartIndexChanged;
-            mainWindow.TriggerScanLengthChangedEvent += triggerScanLengthChanged;
             mainWindow.TriggerLevelChangedEvent += triggerLevelChanged;
-        }
-
-        private void triggerScanLengthChanged(object sender, TriggerScanLengthChangedEventArgs args)
-        {
-            this.triggerScanLength = args.triggerScanLength;
-        }
-
-        private void triggerScanStartIndexChanged(object sender, TriggerScanStartIndexChangedEventArgs args)
-        {
-            this.triggerScanStartIndex = args.triggerScanStart;
         }
 
         private void triggerLevelChanged(object sender, TriggerLevelChangedEventArgs args)
