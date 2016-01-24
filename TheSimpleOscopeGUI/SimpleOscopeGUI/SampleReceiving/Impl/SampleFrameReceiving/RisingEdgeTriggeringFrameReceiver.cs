@@ -9,13 +9,36 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
     public class RisingEdgeTriggeringFrameReceiver : SampleFrameReceiver
     {
         private SampleFrameDisplayer displayer;
-        private uint triggerLevel;
-        private uint scanLength;
-        private uint scanStartIndex;
+        private int triggerLevel;
+        private uint triggerScanLength;
+        private uint triggerScanStartIndex;
 
         public RisingEdgeTriggeringFrameReceiver(SampleFrameDisplayer displayer)
         {
             this.displayer = displayer;
+        }
+
+        public RisingEdgeTriggeringFrameReceiver(SampleFrameDisplayer displayer, MainWindow mainWindow)
+        {
+            this.displayer = displayer;
+            mainWindow.TriggerScanStartChangedEvent += triggerScanStartIndexChanged;
+            mainWindow.TriggerScanLengthChangedEvent += triggerScanLengthChanged;
+            mainWindow.TriggerLevelChangedEvent += triggerLevelChanged;
+        }
+
+        private void triggerScanLengthChanged(object sender, TriggerScanLengthChangedEventArgs args)
+        {
+            this.triggerScanLength = args.triggerScanLength;
+        }
+
+        private void triggerScanStartIndexChanged(object sender, TriggerScanStartIndexChangedEventArgs args)
+        {
+            this.triggerScanStartIndex = args.triggerScanStart;
+        }
+
+        private void triggerLevelChanged(object sender, TriggerLevelChangedEventArgs args)
+        {
+            this.triggerLevel = args.triggerLevel;
         }
 
         /* Searches a given samples frame from a configured start index
@@ -26,18 +49,18 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
             {
                 throw new ArgumentException("num samples length is invalid: got " + numSamples);
             }
-            if(this.scanLength + this.scanStartIndex > numSamples)
+            if(this.triggerScanLength + this.triggerScanStartIndex > numSamples)
             {
                 throw new Exception("scan length and scan start index > num samples." 
-                    + ". scan length: " + this.scanLength
-                    + ". scan start index: " + this.scanStartIndex
+                    + ". scan length: " + this.triggerScanLength
+                    + ". scan start index: " + this.triggerScanStartIndex
                     + ". num samples: " + numSamples);
             }
 
             uint lastSample = UInt16.MaxValue;
             int start = -1;
 
-            for(uint i = this.scanStartIndex; i < this.scanStartIndex + this.scanLength; i++)
+            for(uint i = this.triggerScanStartIndex; i < this.triggerScanStartIndex + this.triggerScanLength; i++)
             {
                 if(lastSample < triggerLevel && samples[i] >= triggerLevel)
                 {
@@ -53,21 +76,21 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameReceiving
             }
         }
 
-        public void SetScanLength(uint scanLength)
+        public void SetScanLength(uint triggerScanLength)
         {
-            if(scanLength < 2)
+            if(triggerScanLength < 2)
             {
                 throw new ArgumentException();
             }
-            this.scanLength = scanLength;
+            this.triggerScanLength = triggerScanLength;
         }
 
-        public void SetScanStartIndex(uint scanStartIndex)
+        public void SetScanStartIndex(uint triggerScanStartIndex)
         {
-            this.scanStartIndex = scanStartIndex;
+            this.triggerScanStartIndex = triggerScanStartIndex;
         }
 
-        public void SetTriggerLevel(uint triggerLevel)
+        public void SetTriggerLevel(int triggerLevel)
         {
             this.triggerLevel = triggerLevel;
         }

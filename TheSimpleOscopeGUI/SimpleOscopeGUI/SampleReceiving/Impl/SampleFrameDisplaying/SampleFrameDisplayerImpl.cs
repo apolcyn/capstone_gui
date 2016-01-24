@@ -13,12 +13,13 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
     public class SampleFrameDisplayerImpl : SampleFrameDisplayer
     {
         private uint numSamplesToDisplay { get; set; }
-        private uint spacing { get; set; }
+        private uint sampleSpacing { get; set; }
         private OscopeWindowClient scopeLineDrawer { get; set; }
         private int triggerRelativeDisplayStartIndex;
+        private int oscopeCanvasWidth;
 
         public SampleFrameDisplayerImpl(OscopeWindowClient scopeLineDrawer
-            , uint numSamplesToDisplay, uint spacing)
+            , uint numSamplesToDisplay, uint sampleSpacing)
         {
             if(scopeLineDrawer == null)
             {
@@ -26,7 +27,38 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             }
             this.scopeLineDrawer = scopeLineDrawer;
             this.numSamplesToDisplay = numSamplesToDisplay;
-            this.spacing = spacing;
+            this.sampleSpacing = sampleSpacing;
+        }
+
+        public SampleFrameDisplayerImpl(OscopeWindowClient scopeLineDrawer
+            , MainWindow mainWindow)
+        {
+            this.scopeLineDrawer = scopeLineDrawer;
+            mainWindow.NumSamplesToDisplayChangedEvent += numSamplesToDisplayChanged;
+            mainWindow.SampleSpacingChangedEvent += sampleSpacingChanged;
+            mainWindow.TriggerRelativeDisplayStartChangedEvent += triggerRelativeDisplayStartChanged;
+            mainWindow.OscopeWidthChangedEvent += oscopeWidthChanged;
+        }
+
+        private void oscopeWidthChanged(object sender, OscopeWidthChangedEventArgs args)
+        {
+            oscopeCanvasWidth = args.newWidth;
+        }
+
+        private void numSamplesToDisplayChanged(object sender, NumSamplesToDisplayChangedEventArgs args)
+        {
+            this.numSamplesToDisplay = args.numSamples;
+        }
+
+        private void sampleSpacingChanged(object sender, SampleSpacingChangedEventArgs args)
+        {
+            this.sampleSpacing = args.sampleSpacing;
+        }
+
+        private void triggerRelativeDisplayStartChanged(object sender
+            , TriggerRelativeDisplayStartChangedEventArgs args)
+        {
+            this.triggerRelativeDisplayStartIndex = args.triggerRelativeDisplayStart;
         }
 
         public void DisplaySampleFrame(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples)
@@ -56,7 +88,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
                     , totalSamplesInFrame, start));
             }
 
-            if((this.numSamplesToDisplay - 1) * this.spacing + 1 < scopeLineDrawer.getCanvasWidth())
+            if((this.numSamplesToDisplay - 1) * this.sampleSpacing + 1 < oscopeCanvasWidth)
             {
                 throw new Exception("number of samples to display with current spacing"
                     + " isn't enough to cover width of scope canvas");
@@ -68,10 +100,10 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
 
             for(uint i = start + 1; i < start + numSamplesToDisplay; i++)
             {
-                int curX = (int)(this.spacing * (i - start));
+                int curX = (int)(this.sampleSpacing * (i - start));
                 int curY = samples[i];
                 linesToDraw.Add(new LineCoordinates(prevX, prevY, curX, curY)); 
-                if (curX > this.scopeLineDrawer.getCanvasWidth())
+                if (curX > oscopeCanvasWidth)
                 {
                     break;
                 }
@@ -91,21 +123,29 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
             this.numSamplesToDisplay = numSamplesToDisplay;
         }
 
-        public void SetSpacing(uint spacing)
+        public void SetSpacing(uint sampleSpacing)
         {
-            this.spacing = spacing;
+            this.sampleSpacing = sampleSpacing;
         }
     }
 
     public class OscopeWindowClientImpl : OscopeWindowClient
     {
         private Canvas scopeCanvas { get; set; }
+        private int oscopeWidth;
 
         public OscopeWindowClientImpl() { }
 
-        public OscopeWindowClientImpl(Canvas scopeCanvas, MainWindow mainWindow)
+        public OscopeWindowClientImpl(Canvas scopeCanvas, MainWindow mainWindow, int oscopeWidth)
         {
             this.scopeCanvas = scopeCanvas;
+            this.oscopeWidth = oscopeWidth;
+            mainWindow.OscopeWidthChangedEvent += oscopeWidthChanged;
+        }
+
+        public void oscopeWidthChanged(object sender, OscopeWidthChangedEventArgs args)
+        {
+            this.oscopeWidth = args.newWidth;
         }
 
         /// <summary>
@@ -114,7 +154,7 @@ namespace SimpleOscope.SampleReceiving.Impl.SampleFrameDisplaying
         /// <returns></returns>
         public virtual int getCanvasWidth()
         {
-            return (int)this.scopeCanvas.Width;
+            return this.oscopeWidth;
         }
 
         public void clearScopeCanvas()
