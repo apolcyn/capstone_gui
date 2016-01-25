@@ -25,9 +25,11 @@
         <Slider x:Name="DAC_frequency_slider" Grid.Column="1" HorizontalAlignment="Left" Margin="22,69,0,0" Value="100" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
         <TextBox x:Name="DAC_frequency_text_display" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="153,68,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="62"/>
         <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,303,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
+            <ComboBoxItem></ComboBoxItem>
             <ComboBoxItem>Sine</ComboBoxItem>
             <ComboBoxItem>Sqaure</ComboBoxItem>
             <ComboBoxItem>Sawtooth</ComboBoxItem>
+            <ComboBoxItem>Triangle</ComboBoxItem>
             <ComboBoxItem>Arbitrary</ComboBoxItem>
         </ComboBox>
         <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="25,337,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click"/>

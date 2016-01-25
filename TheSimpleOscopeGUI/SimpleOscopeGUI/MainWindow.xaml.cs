@@ -207,6 +207,15 @@ namespace SimpleOscope
                  .withNumSamplesToDisplay(400)
                  .withOscopeWindowSize(400)
                  .withPixelSpacing(0)
+                 .withPsocSPS(250)
+                 .withTimePerDiv(200000)
+                 .build());
+
+            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                 .withFrameSize(800)
+                 .withNumSamplesToDisplay(400)
+                 .withOscopeWindowSize(400)
+                 .withPixelSpacing(0)
                  .withPsocSPS(1000)
                  .withTimePerDiv(50000)
                  .build());
@@ -296,8 +305,8 @@ namespace SimpleOscope
         {
             if (connected)
             {
-                serialPortClient.SendPsocCommand(String.Format("#AZ#"));
-                Thread.Sleep(200);
+                //serialPortClient.SendPsocCommand(String.Format("#AZ#"));
+                //Thread.Sleep(200);
                 serialPortClient.SendPsocCommand(String.Format("#AS{0}#", args.config.psocSPS));
                 Thread.Sleep(200);
                 serialPortClient.SendPsocCommand(String.Format("#AA#"));
@@ -466,7 +475,15 @@ namespace SimpleOscope
 
         private void DAC_wavetype_selected(object sender, SelectionChangedEventArgs e)
         {
-            nextFunctionGeneratorConfiguration.waveType = ((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedIndex);
+            nextFunctionGeneratorConfiguration.waveType 
+                = ((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedIndex - 1);
+            if (serialPortClient != null)
+            {
+                string temp = String.Format("#DW{0}#"
+                    , nextFunctionGeneratorConfiguration.getWaveType());
+                serialPortClient.SendPsocCommand(temp);
+                this.DAC_config_command.Text = temp;
+            }
         }
 
         private void DAC_start_btn_click(object sender, RoutedEventArgs e)
@@ -506,11 +523,21 @@ namespace SimpleOscope
         {
             string[] vals = this.DAC_frequency_text_display.Text.Split();
             update_DAC_frequency(int.Parse(vals[0]));
+            if (serialPortClient != null)
+            {
+                serialPortClient.SendPsocCommand(String.Format("#DF{0}#"
+                , nextFunctionGeneratorConfiguration.frequency));
+            }
         }
 
         private void Vpp_update_btn_Click(object sender, RoutedEventArgs e)
         {
             update_DAC_vpp(decimal.Parse(this.Vpp_text_display.Text.Split()[0]));
+            if (serialPortClient != null)
+            {
+                serialPortClient.SendPsocCommand(String.Format("#DV{0}#"
+                , nextFunctionGeneratorConfiguration.vpp));
+            }
         }
 
         private void Voffset_update_btn_Click(object sender, RoutedEventArgs e)
@@ -521,6 +548,11 @@ namespace SimpleOscope
         private void duty_cycle_update_btn_Click(object sender, RoutedEventArgs e)
         {
             update_DAC_duty_cycle(int.Parse(this.duty_cycle_text_display.Text.Split()[0]));
+            if (serialPortClient != null)
+            {
+                serialPortClient.SendPsocCommand(String.Format("#DD{0}#"
+                , nextFunctionGeneratorConfiguration.dutyCycle));
+            }
         }
 
         private void oscope_ksamples_update_btn_Click(object sender, RoutedEventArgs e)

@@ -135,5 +135,10 @@ namespace SimpleOscope
             this.dutyCycle = dutyCycle;
             return true;
         }
+
+        public char getWaveType()
+        {
+            return waveTypeCommands[(int)waveType];
+        }
     }
 }

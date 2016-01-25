@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope.SampleReceiving.Impl
 {
+
+
     /// <summary>
     /// Interfaces with the USB to the PSOC.
     /// </summary>
