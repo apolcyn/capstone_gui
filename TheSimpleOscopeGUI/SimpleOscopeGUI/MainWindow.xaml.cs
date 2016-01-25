@@ -215,7 +215,7 @@ namespace SimpleOscope
 
             HorizontalResolutionConfiguration config
                 = HorizontalResolutionConfiguration.builder()
-                .withFrameSize(200)
+                .withFrameSize(400)
                 .withNumSamplesToDisplay(100)
                 .withOscopeWindowSize(397)
                 .withPixelSpacing(3)
@@ -235,7 +235,7 @@ namespace SimpleOscope
             OscopeHeightChangedEvent(this, new OscopeHeightChangedEventArgs(
                     (int)this.oscope_window_canvas.Height));
             MaxSampleSizeChangedEvent(this, new MaxSampleSizeChangedEventArgs(
-                    4095));
+                    255));
             SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(
                     1));
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(
@@ -245,6 +245,11 @@ namespace SimpleOscope
 
     public partial class MainWindow
     {
+
+        private void updateOscopeHeight(object sender, SizeChangedEventArgs args)
+        {
+            OscopeHeightChangedEvent(this, new OscopeHeightChangedEventArgs((int)args.NewSize.Height));
+        }
 
         private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
