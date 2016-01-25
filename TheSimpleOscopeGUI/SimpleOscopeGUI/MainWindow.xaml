@@ -135,7 +135,7 @@
                  Text="{Binding ElementName=voltsPerDivisionSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                  VerticalAlignment="Top" Width="44" FontSize="14"/>
         <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Margin="36,375,0,0" VerticalAlignment="Top" Width="94"/>
-        <Slider x:Name="voltageOffsetSlider" HorizontalAlignment="Left" Margin="94,417,0,0" VerticalAlignment="Top" Height="33" RenderTransformOrigin="0.5,0.5" Width="98" Maximum="2" LargeChange="0.1" ValueChanged="voltageOffsetSlider_ValueChanged">
+        <Slider x:Name="voltageOffsetSlider" HorizontalAlignment="Left" Margin="94,417,0,0" VerticalAlignment="Top" Height="33" RenderTransformOrigin="0.5,0.5" Width="98" Maximum="4000" Minimum="0" LargeChange="500" SmallChange="100" ValueChanged="voltageOffsetSlider_ValueChanged">
             <Slider.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="-1"/>

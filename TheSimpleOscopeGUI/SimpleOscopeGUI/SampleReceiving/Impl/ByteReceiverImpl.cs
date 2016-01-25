@@ -109,7 +109,7 @@ namespace SimpleOscope.SampleReceiving.Impl
                             throw new ArgumentException("can't have a frame size of zero");
                         }
                         numBytesReceived = 0;
-                        numExpectedBytes = numExpectedSamples * 2;
+                        numExpectedBytes = numExpectedSamples;
                         sampleFrameAssembler.SetNumSamplesExpected(numExpectedSamples);
                         curState = ReceiveState.RECEIVING_SAMPLES;
                     }

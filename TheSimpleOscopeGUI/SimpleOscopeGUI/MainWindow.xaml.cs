@@ -241,15 +241,16 @@ namespace SimpleOscope
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(
                     0.0));
         }
+    }
+
+    public partial class MainWindow
+    {
 
         private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(e.NewValue));
         }
-    }
 
-    public partial class MainWindow
-    {
         private void PSOC_ready(object sender, PsocReadyEventArgs args)
         {
             MessageBox.Show("PSOC device connected.");
@@ -261,6 +262,12 @@ namespace SimpleOscope
             {
                 SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(e.NewValue));
             }
+        }
+
+        private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            TriggerHorizontalPositionChangedEvent(this
+                , new TriggerHorizontalPositionChangedEventArgs((uint)e.NewValue));
         }
 
         private void updateTimeDivisionLines(object sender, SizeChangedEventArgs args)
@@ -512,12 +519,6 @@ namespace SimpleOscope
         private void button3_Click(object sender, RoutedEventArgs e)
         {
             serialPortClient.SendPsocCommand("#DZ#");
-        }
-
-        private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            TriggerHorizontalPositionChangedEvent(this
-                , new TriggerHorizontalPositionChangedEventArgs((uint)e.NewValue));
         }
     }
 }
