@@ -40,9 +40,9 @@ namespace SimpleOscope.SampleReceiving.Impl
 
         public void clearScopeCanvas()
         {
-            while (this.scopeCanvas.Children.Count > 0)
+            while (this.scopeCanvas.Children.Count > MainWindow.NUM_PERMANENT_OSCOPE_LINES)
             {
-                this.scopeCanvas.Children.RemoveAt(0);
+                this.scopeCanvas.Children.RemoveAt(this.scopeCanvas.Children.Count - 1);
             }
         }
 

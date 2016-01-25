@@ -121,6 +121,10 @@ namespace SimpleOscope
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
+        public const int NUM_PERMANENT_OSCOPE_LINES = 10;
+        public const int NUM_TIME_DIVISIONS = 4;
+        public const int NUM_VOLTAGE_DIVISION_LINES = 4;
+
         /// <summary>
         /// Raised when the oscope width is set to new value.
         /// </summary>
@@ -158,6 +162,35 @@ namespace SimpleOscope
 
         private HorizontalResolutionConfiguration curHorizontalResolutionConfiguration;
 
+        private List<Line> timeDivisionLines = new List<Line>();
+
+        private void setupTimeDivisionLines()
+        {
+            for (int i = 0; i < NUM_TIME_DIVISIONS - 1; i++)
+            {
+                Line line = new Line();
+                line.Stroke = Brushes.Black;
+                line.StrokeThickness = 1;
+                timeDivisionLines.Add(line);
+                this.oscope_window_canvas.Children.Add(line);
+            }
+        }
+
+        private List<Line> voltageDivisionLines = new List<Line>();
+
+        private void setupVoltageDivisionLines()
+        {
+            for(int i = 0; i < NUM_VOLTAGE_DIVISION_LINES - 1; i++)
+            {
+                Line line = new Line();
+                line.Stroke = Brushes.Black;
+                line.StrokeThickness = 1;
+                voltageDivisionLines.Add(line);
+                this.oscope_window_canvas.Children.Add(line);
+            }
+        }
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -178,11 +211,14 @@ namespace SimpleOscope
             HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
             HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
 
+            setupTimeDivisionLines();
+            setupVoltageDivisionLines();
+
             HorizontalResolutionConfiguration config
                 = HorizontalResolutionConfiguration.builder()
-                .withFrameSize(100)
-                .withNumSamplesToDisplay(50)
-                .withOscopeWindowSize(197)
+                .withFrameSize(200)
+                .withNumSamplesToDisplay(100)
+                .withOscopeWindowSize(397)
                 .withPixelSpacing(3)
                 .withPsocSPS(0)
                 .withTimePerDiv(0)
@@ -190,7 +226,10 @@ namespace SimpleOscope
 
             HorizonalResolutionConfigChangedEvent(this
                 , new HorizontalResolutionConfigChangedEventArgs(config));
+
             this.oscope_window_canvas.SizeChanged += oscopeActualSizeChanged;
+            this.oscope_window_canvas.SizeChanged += updateTimeDivisionLines;
+            this.oscope_window_canvas.SizeChanged += updateVoltageDivisionLines;
 
             TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs(0));
             TriggerHorizontalPositionChangedEvent(this, new TriggerHorizontalPositionChangedEventArgs(0));
@@ -210,6 +249,30 @@ namespace SimpleOscope
         private void PSOC_ready(object sender, PsocReadyEventArgs args)
         {
             MessageBox.Show("PSOC device connected.");
+        }
+
+        private void updateTimeDivisionLines(object sender, SizeChangedEventArgs args)
+        {
+            int count = 1;
+            foreach(Line line in timeDivisionLines)
+            {
+                line.X1 = line.X2 = (args.NewSize.Width / NUM_TIME_DIVISIONS) * count;
+                line.Y1 = 0;
+                line.Y2 = args.NewSize.Height;
+                count++;
+            }
+        }
+
+        private void updateVoltageDivisionLines(object sender, SizeChangedEventArgs args)
+        {
+            int count = 1;
+            foreach(Line line in voltageDivisionLines)
+            {
+                line.X1 = 0;
+                line.X2 = args.NewSize.Width;
+                line.Y1 = line.Y2 = (args.NewSize.Height / NUM_VOLTAGE_DIVISION_LINES) * count;
+                count++;
+            }
         }
 
         private void COM_port_selection_comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

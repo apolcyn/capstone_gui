@@ -52,12 +52,16 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="43,232,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="44,271,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="197" Background="#FF419FB9">
-            <Line Name="triggerLine" X1="0" X2="401" 
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="397" Background="#FF419FB9">
+            <Line Name="triggerLine" 
+                  X1="0" 
+                  X2="{Binding ElementName=oscope_window_canvas, Path=ActualWidth,  UpdateSourceTrigger=PropertyChanged}"
                   Y1="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                   Y2="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                   Stroke="DarkGray" StrokeThickness="3" />
-            <Line Name="triggerVerticalLine" Y1="0" Y2="301" 
+            <Line Name="triggerVerticalLine" 
+                  Y1="0" 
+                  Y2="{Binding ElementName=oscope_window_canvas, Path=ActualHeight,  UpdateSourceTrigger=PropertyChanged}" 
                   X1="{Binding ElementName=vertical_trigger_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                   X2="{Binding ElementName=vertical_trigger_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                   Stroke="DarkGray" StrokeThickness="3" />
@@ -114,6 +118,12 @@
         <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Left" Margin="29,13,0,0" VerticalAlignment="Top" Width="400" Minimum="0" Maximum="400" SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged"/>
         <ComboBox x:Name="COM_port_comboBox" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="50,366,0,0" VerticalAlignment="Top" Width="153" SelectionChanged="COM_port_selection_comboBox_SelectionChanged"/>
         <Label x:Name="label10" Content="COM Port:" Grid.Column="2" HorizontalAlignment="Left" Margin="48,340,0,0" VerticalAlignment="Top" Width="86"/>
+        <ComboBox x:Name="timePerDivisionSelector" HorizontalAlignment="Left" Height="35" Margin="336,414,0,0" VerticalAlignment="Top" Width="128" RenderTransformOrigin="0.453,0.971"/>
+        <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="334,387,0,0" VerticalAlignment="Top" Width="126"/>
+        <ComboBox x:Name="voltagePerDivisionSelector" HorizontalAlignment="Left" Height="36" Margin="213,414,0,0" VerticalAlignment="Top" Width="69"/>
+        <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="211,384,0,0" VerticalAlignment="Top" Width="96"/>
+        <ComboBox x:Name="voltageOffsetSelector" HorizontalAlignment="Left" Height="34" Margin="61,410,0,0" VerticalAlignment="Top" Width="108"/>
+        <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Height="29" Margin="64,373,0,0" VerticalAlignment="Top" Width="106"/>
 
     </Grid>
 </Window>
