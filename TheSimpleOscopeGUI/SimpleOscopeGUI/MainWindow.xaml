@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:SimpleOscope"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="SimpleOscope.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="1300">
-    <Grid Margin="10,3,38,-20" Height="487" VerticalAlignment="Top">
+        Title="MainWindow" Height="600" Width="1300">
+    <Grid Margin="10,3,38,-4" Height="571" VerticalAlignment="Top">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -118,12 +118,22 @@
         <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Left" Margin="29,13,0,0" VerticalAlignment="Top" Width="400" Minimum="0" Maximum="400" SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22"/>
         <ComboBox x:Name="COM_port_comboBox" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="50,366,0,0" VerticalAlignment="Top" Width="153" SelectionChanged="COM_port_selection_comboBox_SelectionChanged"/>
         <Label x:Name="label10" Content="COM Port:" Grid.Column="2" HorizontalAlignment="Left" Margin="48,340,0,0" VerticalAlignment="Top" Width="86" Height="26"/>
-        <ComboBox x:Name="timePerDivisionSelector" HorizontalAlignment="Left" Height="35" Margin="336,414,0,0" VerticalAlignment="Top" Width="128" RenderTransformOrigin="0.453,0.971"/>
-        <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="334,387,0,0" VerticalAlignment="Top" Width="126"/>
-        <ComboBox x:Name="voltagePerDivisionSelector" HorizontalAlignment="Left" Height="36" Margin="213,414,0,0" VerticalAlignment="Top" Width="69"/>
+        <ComboBox x:Name="timePerDivisionSelector" HorizontalAlignment="Left" Height="35" Margin="380,420,0,0" VerticalAlignment="Top" Width="128" RenderTransformOrigin="0.453,0.971"/>
+        <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="382,388,0,0" VerticalAlignment="Top" Width="126"/>
         <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="189,375,0,0" VerticalAlignment="Top" Width="96"/>
-        <ComboBox x:Name="voltageOffsetSelector" HorizontalAlignment="Left" Height="34" Margin="61,410,0,0" VerticalAlignment="Top" Width="108"/>
-        <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Height="30" Margin="19,374,0,0" VerticalAlignment="Top" Width="106"/>
+        <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="261,424,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97" Maximum="2" Minimum="0.5" LargeChange="0.1" ValueChanged="voltsPerDivisionSlider_ValueChanged">
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="-1"/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="89.248"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+        <TextBox x:Name="voltsPerDivisionTextBox" HorizontalAlignment="Left" Height="28" Margin="196,406,0,0" TextWrapping="Wrap" 
+                 Text="{Binding ElementName=voltsPerDivisionSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
+                 VerticalAlignment="Top" Width="44" FontSize="14"/>
 
     </Grid>
 </Window>

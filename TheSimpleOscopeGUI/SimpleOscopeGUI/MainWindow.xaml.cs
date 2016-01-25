@@ -250,6 +250,14 @@ namespace SimpleOscope
             MessageBox.Show("PSOC device connected.");
         }
 
+        private void voltsPerDivisionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (SampleScalerChangedEvent != null)
+            {
+                SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(e.NewValue));
+            }
+        }
+
         private void updateTimeDivisionLines(object sender, SizeChangedEventArgs args)
         {
             int count = 1;
