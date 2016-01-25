@@ -64,8 +64,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             assembler.oscopeHeightChanged(null, new OscopeHeightChangedEventArgs(301));
             assembler.sampleScalerChanged(null, new SampleScalerChangedEventArgs(1));
 
-            assembler.AddReceivedByte(0x0f);
             assembler.AddReceivedByte(0xff);
+            assembler.AddReceivedByte(0x0f);
 
             receiver.Verify(x => x.SampleAssembled(301), Times.Once);
         }
@@ -82,8 +82,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             assembler.oscopeHeightChanged(null, new OscopeHeightChangedEventArgs(301));
             assembler.sampleScalerChanged(null, new SampleScalerChangedEventArgs(1));
 
-            assembler.AddReceivedByte(0x08);
             assembler.AddReceivedByte(0x00);
+            assembler.AddReceivedByte(0x08);
 
             receiver.Verify(x => x.SampleAssembled(150), Times.Once);
         }
@@ -100,8 +100,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             assembler.oscopeHeightChanged(null, new OscopeHeightChangedEventArgs(301));
             assembler.sampleScalerChanged(null, new SampleScalerChangedEventArgs(1));
 
-            assembler.AddReceivedByte(0x06);
             assembler.AddReceivedByte(0x00);
+            assembler.AddReceivedByte(0x06);
 
             receiver.Verify(x => x.SampleAssembled(112), Times.Once);
         }
@@ -118,8 +118,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             assembler.oscopeHeightChanged(null, new OscopeHeightChangedEventArgs(301));
             assembler.sampleScalerChanged(null, new SampleScalerChangedEventArgs(1));
 
-            assembler.AddReceivedByte(0x06);
             assembler.AddReceivedByte(3);
+            assembler.AddReceivedByte(0x06);
 
             receiver.Verify(x => x.SampleAssembled(113), Times.Once);
         }
@@ -138,6 +138,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             assembler.sampleScalerChanged(null, new SampleScalerChangedEventArgs(1));
 
             assembler.AddReceivedByte(0x32);
+            assembler.AddReceivedByte(0x32);
         }
 
         [TestMethod]
@@ -152,9 +153,8 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
             assembler.oscopeHeightChanged(null, new OscopeHeightChangedEventArgs(301));
             assembler.sampleScalerChanged(null, new SampleScalerChangedEventArgs(1));
 
-            assembler.AddReceivedByte(0x03);
             assembler.AddReceivedByte(67);
-        
+            assembler.AddReceivedByte(0x03);
 
             receiver.Verify(x => x.SampleAssembled(61), Times.Once);
         }
