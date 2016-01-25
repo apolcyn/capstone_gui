@@ -34,7 +34,7 @@ namespace SimpleOscope.SampleReceiving.Impl
             {
                 this.serialPort.Close();
             }
-            this.serialPort = new SerialPort(args.fullComportName, 57600, Parity.None, 8, StopBits.One);
+            this.serialPort = new SerialPort(args.fullComportName, 115200, Parity.None, 8, StopBits.One);
             this.serialPort.Handshake = Handshake.None;
             this.serialPort.Open();
             this.serialPort.DataReceived += sp_DataReceived;
