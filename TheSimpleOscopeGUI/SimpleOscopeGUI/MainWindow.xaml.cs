@@ -281,8 +281,8 @@ namespace SimpleOscope
         {
             InitializeComponent();
 
-            Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
-
+            //Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
+            this.COM_port_comboBox.DropDownOpened += scanForCOMPorts;
             // Initialize PSOC sample receiving chain.
             OscopeWindowClient oscopeWindowClient  = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
             SampleFrameDisplayerImpl sampleFrameDisplayer 
@@ -303,6 +303,8 @@ namespace SimpleOscope
 
             createHorizontalResolutionConfigs();
             setupWaveOptionDropDown();
+
+            serialPortClient.WroteCommandEvent += wroteCommandToPsoc;
 
             HorizontalResolutionConfiguration defaultConfig
                 = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.Items[0];
@@ -328,6 +330,20 @@ namespace SimpleOscope
 
     public partial class MainWindow
     {
+        private void wroteCommandToPsoc(object sender, WroteCommandEventArgs args)
+        {
+            this.DAC_config_command.Text += "\n" + args.command;
+        }
+
+        private void scanForCOMPorts(object sender, System.EventArgs args)
+        {
+            while(this.COM_port_comboBox.Items.Count > 0)
+            {
+                this.COM_port_comboBox.Items.RemoveAt(0);
+            }
+            Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
+        }
+
         private void commandPSOCForNewSamplesPerFrame(object sender
             , HorizontalResolutionConfigChangedEventArgs args)
         {

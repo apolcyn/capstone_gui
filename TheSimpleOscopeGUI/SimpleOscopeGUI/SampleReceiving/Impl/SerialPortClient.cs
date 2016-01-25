@@ -7,7 +7,14 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope.SampleReceiving.Impl
 {
-
+    public class WroteCommandEventArgs : EventArgs
+    {
+        public string command { get; }
+        public WroteCommandEventArgs(string command)
+        {
+            this.command = command;
+        }
+    }
 
     /// <summary>
     /// Interfaces with the USB to the PSOC.
@@ -16,6 +23,8 @@ namespace SimpleOscope.SampleReceiving.Impl
     {
         private SerialPort serialPort { get; set; }
         private ByteReceiver byteReceiver { get; set; }
+
+        public EventHandler<WroteCommandEventArgs> WroteCommandEvent;
 
         public static SerialPortClient newSerialPortClient(ByteReceiver byteReceiver
             , MainWindow mainWindow)
@@ -61,6 +70,7 @@ namespace SimpleOscope.SampleReceiving.Impl
                 throw new Exception("incorrectoly formatted string: " + str);
             }
             WriteString(str);
+            WroteCommandEvent(this, new WroteCommandEventArgs(str));
         }
 
         void sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
