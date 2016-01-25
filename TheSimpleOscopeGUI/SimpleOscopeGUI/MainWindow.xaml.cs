@@ -190,7 +190,6 @@ namespace SimpleOscope
             }
         }
 
-
         public MainWindow()
         {
             InitializeComponent();
