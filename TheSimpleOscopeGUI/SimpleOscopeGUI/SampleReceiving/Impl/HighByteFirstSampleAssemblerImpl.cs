@@ -43,6 +43,7 @@ namespace SimpleOscope.SampleReceiving.Impl
                 {
                     throw new Exception();
                 }
+                if ((curSample & 0xf000) != 0) throw new Exception("" + curSample);
                 ushort convertedSample = (ushort)(sampleOffset + curSample / maxSampleSize * oscopeHeight * sampleScaler);
                 sampleFrameAssembler.SampleAssembled(convertedSample);
                 curByte = 0;
