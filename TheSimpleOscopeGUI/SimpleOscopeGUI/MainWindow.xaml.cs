@@ -193,15 +193,53 @@ namespace SimpleOscope
 
         private void createHorizontalResolutionConfigs()
         {
-            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
-                .withFrameSize(200)
-                .withNumSamplesToDisplay(100)
-                .withOscopeWindowSize(397)
-                .withPixelSpacing(3)
-                .withPsocSPS(0)
-                .withTimePerDiv(0)
+           this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                .withFrameSize(800)
+                .withNumSamplesToDisplay(400)
+                .withOscopeWindowSize(400)
+                .withPixelSpacing(0)
+                .withPsocSPS(50)
+                .withTimePerDiv(1000000)
                 .build());
+
+            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                 .withFrameSize(800)
+                 .withNumSamplesToDisplay(400)
+                 .withOscopeWindowSize(400)
+                 .withPixelSpacing(0)
+                 .withPsocSPS(1000)
+                 .withTimePerDiv(50000)
+                 .build());
+
+            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                 .withFrameSize(800)
+                 .withNumSamplesToDisplay(400)
+                 .withOscopeWindowSize(400)
+                 .withPixelSpacing(0)
+                 .withPsocSPS(50000)
+                 .withTimePerDiv(1000)
+                 .build());
+
+            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                 .withFrameSize(800)
+                 .withNumSamplesToDisplay(400)
+                 .withOscopeWindowSize(400)
+                 .withPixelSpacing(0)
+                 .withPsocSPS(250000)
+                 .withTimePerDiv(200)
+                 .build());
+
+            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                 .withFrameSize(800)
+                 .withNumSamplesToDisplay(400)
+                 .withOscopeWindowSize(400)
+                 .withPixelSpacing(0)
+                 .withPsocSPS(1000000)
+                 .withTimePerDiv(50)
+                 .build());
         }
+
+        private bool connected = false;
 
         public MainWindow()
         {
@@ -222,6 +260,7 @@ namespace SimpleOscope
 
             HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
             HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
+            HorizonalResolutionConfigChangedEvent += commandPSOCForNewSamplesPerFrame;
 
             setupTimeDivisionLines();
             setupVoltageDivisionLines();
@@ -252,6 +291,18 @@ namespace SimpleOscope
 
     public partial class MainWindow
     {
+        private void commandPSOCForNewSamplesPerFrame(object sender
+            , HorizontalResolutionConfigChangedEventArgs args)
+        {
+            if (connected)
+            {
+                serialPortClient.SendPsocCommand(String.Format("#AZ#"));
+                Thread.Sleep(200);
+                serialPortClient.SendPsocCommand(String.Format("#AS{0}#", args.config.psocSPS));
+                Thread.Sleep(200);
+                serialPortClient.SendPsocCommand(String.Format("#AA#"));
+            }
+        }
 
         private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -262,13 +313,14 @@ namespace SimpleOscope
         {
             HorizontalResolutionConfiguration config
                 = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.SelectedItem;
-            oscopeHorizontalResolutionConfigurationChanged(this
+            HorizonalResolutionConfigChangedEvent(this
                 , new HorizontalResolutionConfigChangedEventArgs(config));
         }
 
         private void PSOC_ready(object sender, PsocReadyEventArgs args)
         {
             MessageBox.Show("PSOC device connected.");
+            connected = true;
         }
 
         private void voltsPerDivisionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

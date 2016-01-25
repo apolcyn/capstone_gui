@@ -49,7 +49,7 @@ namespace SimpleOscope
 
         public override string ToString()
         {
-            return this.timePerDiv + " seconds / division";
+            return this.timePerDiv + " micro-seconds / division";
         }
 
         public static HorizontalResolutionConfigurationBuilder builder()

@@ -52,7 +52,7 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="43,232,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="44,271,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="397" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5">
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5">
             <Canvas.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleY="-1" ScaleX="1"/>
