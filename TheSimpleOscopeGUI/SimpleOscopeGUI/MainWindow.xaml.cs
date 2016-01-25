@@ -121,7 +121,7 @@ namespace SimpleOscope
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
-        public const int NUM_PERMANENT_OSCOPE_LINES = 10;
+        public const int NUM_PERMANENT_OSCOPE_LINES = 8;
         public const int NUM_TIME_DIVISIONS = 4;
         public const int NUM_VOLTAGE_DIVISION_LINES = 4;
 
