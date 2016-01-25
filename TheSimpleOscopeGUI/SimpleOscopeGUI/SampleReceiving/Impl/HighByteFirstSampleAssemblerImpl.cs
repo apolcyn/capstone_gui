@@ -35,8 +35,15 @@ namespace SimpleOscope.SampleReceiving.Impl
 
         public void AddReceivedByte(byte newByte)
         {
-            ushort convertedSample = (ushort)(this.sampleOffset + (newByte * sampleScaler));
-            sampleFrameAssembler.SampleAssembled(convertedSample);
+            curSample = (ushort)(newByte + (curSample << (8 * curByte++)));
+
+            if (curByte == 2)
+            {
+                ushort convertedSample = (ushort)(sampleOffset + curSample / maxSampleSize * oscopeHeight * sampleScaler);
+                sampleFrameAssembler.SampleAssembled(convertedSample);
+                curByte = 0;
+                curSample = 0;
+            }
         }
 
         private void sampleOffsetChanged(object sender, SampleOffsetChangedEventArgs args)

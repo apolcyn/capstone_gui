@@ -126,7 +126,7 @@ namespace SimpleOscope.SampleReceiving.Impl
 
                 case ReceiveState.RECEIVING_SAMPLES:
                     sampleAssembler.AddReceivedByte(newByte);
-                    if(++numBytesReceived == numExpectedBytes)
+                    if(++numBytesReceived == numExpectedBytes * 2)
                     {
                         curState = ReceiveState.FIND_FIRST_HEADER_CHAR;
                     }

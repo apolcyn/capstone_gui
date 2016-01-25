@@ -235,7 +235,7 @@ namespace SimpleOscope
             OscopeHeightChangedEvent(this, new OscopeHeightChangedEventArgs(
                     (int)this.oscope_window_canvas.Height));
             MaxSampleSizeChangedEvent(this, new MaxSampleSizeChangedEventArgs(
-                    255));
+                    4095));
             SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(
                     1));
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(
