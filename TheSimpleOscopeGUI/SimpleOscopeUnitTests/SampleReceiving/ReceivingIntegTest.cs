@@ -33,7 +33,7 @@ namespace SimpleOscopeUnitTests.SampleReceiving
         public void setup()
         {
             sampleFrameDisplayer
-                = new SampleFrameDisplayerImpl(mockScopeWindowClient.Object, mockMainWindow.Object);
+                = new SampleFrameDisplayerImpl(mockScopeWindowClient.Object);
             sampleFrameReceiver = new RisingEdgeTriggeringFrameReceiver(sampleFrameDisplayer);
             sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameReceiver);
             sampleAssembler = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);

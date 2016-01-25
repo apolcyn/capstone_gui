@@ -20,15 +20,13 @@ namespace SimpleOscopeUnitTests.SampleReceiving.Impl
     public class SampleFrameDisplayerImplTests : BaseTests
     {
         Mock<OscopeWindowClient> mockDrawer;
-        Mock<MainWindow> mockMainWindow;
         SampleFrameDisplayerImpl displayer;
 
         [TestInitialize]
         public void setup()
         {
             mockDrawer = new Mock<OscopeWindowClient>();
-            mockMainWindow = new Mock<MainWindow>();
-            displayer = new SampleFrameDisplayerImpl(mockDrawer.Object, mockMainWindow.Object);
+            displayer = new SampleFrameDisplayerImpl(mockDrawer.Object);
         }
 
         [TestMethod]

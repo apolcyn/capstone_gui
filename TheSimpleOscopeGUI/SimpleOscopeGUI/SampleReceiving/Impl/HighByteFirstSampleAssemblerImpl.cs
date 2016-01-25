@@ -46,22 +46,22 @@ namespace SimpleOscope.SampleReceiving.Impl
             }
         }
 
-        private void sampleOffsetChanged(object sender, SampleOffsetChangedEventArgs args)
+        public void sampleOffsetChanged(object sender, SampleOffsetChangedEventArgs args)
         {
             this.sampleOffset = args.sampleOffset;
         }
 
-        private void maxSampleSizeChanged(object sender, MaxSampleSizeChangedEventArgs args)
+        public void maxSampleSizeChanged(object sender, MaxSampleSizeChangedEventArgs args)
         {
             this.maxSampleSize = args.maxSampleSize;
         }
 
-        private void sampleScalerChanged(object sender, SampleScalerChangedEventArgs args)
+        public void sampleScalerChanged(object sender, SampleScalerChangedEventArgs args)
         {
             this.sampleScaler = args.sampleScaler;
         }
 
-        private void oscopeHeightChanged(object sender, OscopeHeightChangedEventArgs args)
+        public void oscopeHeightChanged(object sender, OscopeHeightChangedEventArgs args)
         {
             this.oscopeHeight= args.newHeight;
         }
