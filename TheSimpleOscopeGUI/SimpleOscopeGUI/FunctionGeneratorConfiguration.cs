@@ -17,13 +17,31 @@ namespace SimpleOscope
         const char START_COMMAND = 'A';
         const char STOP_COMMAND = 'Z';
 
-        public WaveType waveType { get; set; }
+        public WaveType waveType;
+
+        public class WaveType
+        {
+            public enum WaveName { Sine, Square, Sawtooth, Triangle, Arbitrary, NotSelected };
+            private char[] waveNameCommands = { 'I', 'Q', 'W', 'T', 'A', '\0' };
+
+            public char waveLetter {get;}
+            public WaveName name;
+
+            public override string ToString()
+            {
+                return this.name.ToString();
+            }
+
+            public WaveType(WaveName name)
+            {
+                this.waveLetter = waveNameCommands[(int)name];
+                this.name = name;
+            }
+        }
 
         // Wave types and the corresponding letters to configure them
-        public enum WaveType { Sine, Square, Sawtooth, Triangle, Arbitrary };
-        char[] waveTypeCommands = { 'I', 'Q', 'W', 'T', 'A' };
         const char WAVE_TYPE_COMMAND = 'W';
-        const WaveType DEFAULT_WAVE_TYPE = WaveType.Sine;
+        WaveType DEFAULT_WAVE_TYPE = new WaveType(WaveType.WaveName.Sine);
 
         public decimal vpp { get; set; }
 
@@ -72,7 +90,7 @@ namespace SimpleOscope
 
             // wave type configuration
             config.Append(WAVE_TYPE_COMMAND);
-            config.Append(waveTypeCommands[(int)waveType]);
+            config.Append(waveType.waveLetter);
 
             // vpp configuration
             config.Append(VPP_COMMAND);
@@ -136,9 +154,9 @@ namespace SimpleOscope
             return true;
         }
 
-        public char getWaveType()
+        public char getWaveLetter()
         {
-            return waveTypeCommands[(int)waveType];
+            return this.waveType.waveLetter;
         }
     }
 }

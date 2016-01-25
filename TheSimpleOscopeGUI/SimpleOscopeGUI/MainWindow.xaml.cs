@@ -248,6 +248,33 @@ namespace SimpleOscope
                  .build());
         }
 
+        private void setupWaveOptionDropDown()
+        {
+            this.DAC_wave_type_list.Items.Add(
+                new FunctionGeneratorConfiguration.WaveType(
+                    FunctionGeneratorConfiguration.WaveType.WaveName.NotSelected));
+
+            this.DAC_wave_type_list.Items.Add(
+                new FunctionGeneratorConfiguration.WaveType(
+                    FunctionGeneratorConfiguration.WaveType.WaveName.Sine));
+
+            this.DAC_wave_type_list.Items.Add(
+                new FunctionGeneratorConfiguration.WaveType(
+                    FunctionGeneratorConfiguration.WaveType.WaveName.Square));
+
+            this.DAC_wave_type_list.Items.Add(
+                new FunctionGeneratorConfiguration.WaveType(
+                    FunctionGeneratorConfiguration.WaveType.WaveName.Sawtooth));
+
+            this.DAC_wave_type_list.Items.Add(
+                new FunctionGeneratorConfiguration.WaveType(
+                    FunctionGeneratorConfiguration.WaveType.WaveName.Triangle));
+
+            this.DAC_wave_type_list.Items.Add(
+                new FunctionGeneratorConfiguration.WaveType(
+                    FunctionGeneratorConfiguration.WaveType.WaveName.Arbitrary));
+        }
+
         private bool connected = false;
 
         public MainWindow()
@@ -275,6 +302,7 @@ namespace SimpleOscope
             setupVoltageDivisionLines();
 
             createHorizontalResolutionConfigs();
+            setupWaveOptionDropDown();
 
             HorizontalResolutionConfiguration defaultConfig
                 = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.Items[0];
@@ -305,8 +333,6 @@ namespace SimpleOscope
         {
             if (connected)
             {
-                //serialPortClient.SendPsocCommand(String.Format("#AZ#"));
-                //Thread.Sleep(200);
                 serialPortClient.SendPsocCommand(String.Format("#AS{0}#", args.config.psocSPS));
                 Thread.Sleep(200);
                 serialPortClient.SendPsocCommand(String.Format("#AA#"));
@@ -476,11 +502,11 @@ namespace SimpleOscope
         private void DAC_wavetype_selected(object sender, SelectionChangedEventArgs e)
         {
             nextFunctionGeneratorConfiguration.waveType 
-                = ((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedIndex - 1);
-            if (serialPortClient != null)
+                = ((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedItem);
+            if (serialPortClient != null  && nextFunctionGeneratorConfiguration.waveType.waveLetter != '\0')
             {
                 string temp = String.Format("#DW{0}#"
-                    , nextFunctionGeneratorConfiguration.getWaveType());
+                    , nextFunctionGeneratorConfiguration.getWaveLetter());
                 serialPortClient.SendPsocCommand(temp);
                 this.DAC_config_command.Text = temp;
             }
