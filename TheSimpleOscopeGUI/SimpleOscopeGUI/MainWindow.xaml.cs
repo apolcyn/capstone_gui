@@ -241,6 +241,11 @@ namespace SimpleOscope
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(
                     0.0));
         }
+
+        private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(e.NewValue));
+        }
     }
 
     public partial class MainWindow
