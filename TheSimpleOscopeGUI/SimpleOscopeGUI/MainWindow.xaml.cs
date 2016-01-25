@@ -460,19 +460,12 @@ namespace SimpleOscope
             update_oscope_ksamples(int.Parse(this.oscope_ksamples_text_display.Text.Split()[0]));
         }
 
-        private void update_oscope_trigger_level(int triggerLevel)
-        {
-            nextOscopeConfiguration.setTriggerLevel((int)this.trigger_slider_button.Maximum - triggerLevel);
-            this.trigger_slider_button.Value = this.trigger_slider_button.Maximum - nextOscopeConfiguration.triggerLevel;
-        }
-
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if(TriggerLevelChangedEvent != null)
             {
                 TriggerLevelChangedEvent(this
-                    , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Maximum 
-                    - this.trigger_slider_button.Value)));
+                    , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Value)));
 
             }
         }
