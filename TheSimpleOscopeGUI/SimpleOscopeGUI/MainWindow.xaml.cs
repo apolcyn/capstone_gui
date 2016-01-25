@@ -24,6 +24,7 @@ using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving.Impl;
+using System.Collections.ObjectModel;
 
 namespace SimpleOscope
 {
@@ -190,6 +191,18 @@ namespace SimpleOscope
             }
         }
 
+        private void createHorizontalResolutionConfigs()
+        {
+            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+                .withFrameSize(200)
+                .withNumSamplesToDisplay(100)
+                .withOscopeWindowSize(397)
+                .withPixelSpacing(3)
+                .withPsocSPS(0)
+                .withTimePerDiv(0)
+                .build());
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -213,18 +226,12 @@ namespace SimpleOscope
             setupTimeDivisionLines();
             setupVoltageDivisionLines();
 
-            HorizontalResolutionConfiguration config
-                = HorizontalResolutionConfiguration.builder()
-                .withFrameSize(200)
-                .withNumSamplesToDisplay(100)
-                .withOscopeWindowSize(397)
-                .withPixelSpacing(3)
-                .withPsocSPS(0)
-                .withTimePerDiv(0)
-                .build();
+            createHorizontalResolutionConfigs();
 
+            HorizontalResolutionConfiguration defaultConfig
+                = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.Items[0];
             HorizonalResolutionConfigChangedEvent(this
-                , new HorizontalResolutionConfigChangedEventArgs(config));
+                , new HorizontalResolutionConfigChangedEventArgs(defaultConfig));
 
             this.oscope_window_canvas.SizeChanged += oscopeActualSizeChanged;
             this.oscope_window_canvas.SizeChanged += updateTimeDivisionLines;
@@ -241,15 +248,24 @@ namespace SimpleOscope
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(
                     0.0));
         }
+    }
+
+    public partial class MainWindow
+    {
 
         private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(e.NewValue));
         }
-    }
 
-    public partial class MainWindow
-    {
+        private void timePerDivisionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            HorizontalResolutionConfiguration config
+                = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.SelectedItem;
+            oscopeHorizontalResolutionConfigurationChanged(this
+                , new HorizontalResolutionConfigChangedEventArgs(config));
+        }
+
         private void PSOC_ready(object sender, PsocReadyEventArgs args)
         {
             MessageBox.Show("PSOC device connected.");

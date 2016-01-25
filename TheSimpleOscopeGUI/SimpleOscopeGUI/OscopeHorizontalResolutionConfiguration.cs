@@ -47,6 +47,11 @@ namespace SimpleOscope
         {
         }
 
+        public override string ToString()
+        {
+            return this.timePerDiv + " seconds / division";
+        }
+
         public static HorizontalResolutionConfigurationBuilder builder()
         {
             return new HorizontalResolutionConfigurationBuilder();
