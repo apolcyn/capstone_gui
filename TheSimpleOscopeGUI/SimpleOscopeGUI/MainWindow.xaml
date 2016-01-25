@@ -96,7 +96,9 @@
             </Label.RenderTransform>
         </Label>
         <Label x:Name="label8" Content="Trigger:" HorizontalAlignment="Left" Height="26" Margin="433,18,0,0" VerticalAlignment="Top" Width="77"/>
-        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="303,186,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" Maximum="300" LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.ColumnSpan="2" >
+        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="303,186,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" 
+                Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" 
+                LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.ColumnSpan="2" >
             <Slider.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -123,7 +125,9 @@
                 </TransformGroup>
             </Button.RenderTransform>
         </Button>
-        <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Left" Margin="29,13,0,0" VerticalAlignment="Top" Width="400" Minimum="0" Maximum="400" SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22"/>
+        <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Left" Margin="29,13,0,0" VerticalAlignment="Top" Width="400" Minimum="0" 
+                Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" 
+                SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22"/>
         <ComboBox x:Name="COM_port_comboBox" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="50,366,0,0" VerticalAlignment="Top" Width="153" SelectionChanged="COM_port_selection_comboBox_SelectionChanged"/>
         <Label x:Name="label10" Content="COM Port:" Grid.Column="2" HorizontalAlignment="Left" Margin="48,340,0,0" VerticalAlignment="Top" Width="86" Height="26"/>
         <ComboBox x:Name="timePerDivisionSelector" HorizontalAlignment="Left" Height="35" Margin="380,420,0,0" VerticalAlignment="Top" Width="128" RenderTransformOrigin="0.453,0.971"/>

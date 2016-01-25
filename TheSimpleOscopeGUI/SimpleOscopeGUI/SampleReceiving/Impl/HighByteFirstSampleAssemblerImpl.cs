@@ -35,7 +35,7 @@ namespace SimpleOscope.SampleReceiving.Impl
 
         public void AddReceivedByte(byte newByte)
         {
-            ushort convertedSample = (ushort)(this.sampleOffset + (newByte / maxSampleSize * oscopeHeight * sampleScaler));
+            ushort convertedSample = (ushort)(this.sampleOffset + (newByte * sampleScaler));
             sampleFrameAssembler.SampleAssembled(convertedSample);
         }
 
