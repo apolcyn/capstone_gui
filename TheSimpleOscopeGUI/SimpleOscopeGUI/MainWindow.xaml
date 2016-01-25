@@ -52,7 +52,15 @@
         </ComboBox>
         <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="2" HorizontalAlignment="Left" Margin="43,232,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5"/>
         <TextBox x:Name="oscope_configuration_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="44,271,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="182"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="397" Background="#FF419FB9">
+        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="28,49,0,0" VerticalAlignment="Top" Width="397" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                    <SkewTransform AngleY="0" AngleX="0"/>
+                    <RotateTransform Angle="0"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
             <Line Name="triggerLine" 
                   X1="0" 
                   X2="{Binding ElementName=oscope_window_canvas, Path=ActualWidth,  UpdateSourceTrigger=PropertyChanged}"
@@ -88,12 +96,12 @@
             </Label.RenderTransform>
         </Label>
         <Label x:Name="label8" Content="Trigger:" HorizontalAlignment="Left" Height="26" Margin="433,18,0,0" VerticalAlignment="Top" Width="77"/>
-        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="303,186,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" Maximum="300" LargeChange="10" Value="300" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.ColumnSpan="2" >
+        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="303,186,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" Maximum="300" LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.ColumnSpan="2" >
             <Slider.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
                     <SkewTransform/>
-                    <RotateTransform Angle="89.585"/>
+                    <RotateTransform Angle="269.695"/>
                     <TranslateTransform/>
                 </TransformGroup>
             </Slider.RenderTransform>

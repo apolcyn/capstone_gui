@@ -477,10 +477,7 @@ namespace SimpleOscope
         {
             if(TriggerLevelChangedEvent != null)
             {
-                TriggerLevelChangedEvent(this
-                    , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Maximum 
-                    - this.trigger_slider_button.Value)));
-
+                TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Value)));
             }
         }
 
