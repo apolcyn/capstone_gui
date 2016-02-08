@@ -332,7 +332,8 @@ namespace SimpleOscope
     {
         private void wroteCommandToPsoc(object sender, WroteCommandEventArgs args)
         {
-            this.DAC_config_command.Text = args.command + "\n" + this.DAC_config_command.Text;
+            this.DAC_config_command.Text = String.Format("{0}\n{1}"
+                , args.command, this.DAC_config_command.Text);
         }
 
         private void scanForCOMPorts(object sender, System.EventArgs args)
