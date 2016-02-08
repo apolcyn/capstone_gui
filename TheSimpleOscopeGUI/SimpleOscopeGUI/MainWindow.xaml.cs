@@ -240,9 +240,9 @@ namespace SimpleOscope
 
             this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
                  .withFrameSize(800)
-                 .withNumSamplesToDisplay(400)
-                 .withOscopeWindowSize(400)
-                 .withPixelSpacing(0)
+                 .withNumSamplesToDisplay(200)
+                 .withOscopeWindowSize(399)
+                 .withPixelSpacing(1)
                  .withPsocSPS(1000000)
                  .withTimePerDiv(50)
                  .build());
@@ -387,7 +387,7 @@ namespace SimpleOscope
             int count = 1;
             foreach(Line line in timeDivisionLines)
             {
-                line.X1 = line.X2 = (args.NewSize.Width / NUM_TIME_DIVISIONS) * count;
+                line.X1 = line.X2 = Math.Ceiling(args.NewSize.Width / NUM_TIME_DIVISIONS) * count;
                 line.Y1 = 0;
                 line.Y2 = args.NewSize.Height;
                 count++;

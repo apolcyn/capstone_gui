@@ -27,7 +27,7 @@
         <ComboBox x:Name="DAC_wave_type_list" Grid.Column="1" HorizontalAlignment="Left" Margin="22,303,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22">
         </ComboBox>
         <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="25,337,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click"/>
-        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="22,432,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" RenderTransformOrigin="0.5,0.5">
+        <TextBox x:Name="DAC_config_command" Grid.Column="1" HorizontalAlignment="Left" Height="126" Margin="23,433,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" RenderTransformOrigin="0.5,0.5">
             <TextBox.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
