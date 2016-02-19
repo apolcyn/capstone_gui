@@ -57,10 +57,13 @@ namespace SimpleOscope.SampleReceiving.Impl
                 throw new ArgumentException("what are you doing");
             }
             this.triggerScanStartIndex = triggerHorizontalPosition / samplesPerPixel;
-            uint inclusiveScanIndexLimit = samplesPerFrame - samplesPerWindow;
-            this.triggerScanLength = inclusiveScanIndexLimit - this.triggerScanStartIndex + 1;
+            this.triggerScanLength = samplesPerWindow;
 
-            this.triggerRelativeDisplayStartIndex = - (int)(triggerHorizontalPosition / samplesPerPixel);
+            if(this.triggerScanStartIndex + this.triggerScanLength > samplesPerFrame)
+            {
+                throw new ArgumentException("bad frame size");
+            }
+            this.triggerRelativeDisplayStartIndex = - (int)this.triggerScanStartIndex;
         }
 
         private void horizontalResolutionConfigChanged(object sender
