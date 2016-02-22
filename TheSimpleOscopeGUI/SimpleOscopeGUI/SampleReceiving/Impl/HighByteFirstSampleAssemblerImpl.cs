@@ -15,9 +15,10 @@ namespace SimpleOscope.SampleReceiving.Impl
         private double oscopeHeight = 1;
         private double sampleScaler = 1;
         private double sampleOffset = 0;
+        private LinearInterpolator linearInterpolator;
 
         public static HighByteFirstSampleAssemblerImpl newHighByteFirstSampleAssemblerImpl(
-            SampleFrameAssembler sampleFrameAssembler, MainWindow mainWindow)
+            SampleFrameAssembler sampleFrameAssembler, MainWindow mainWindow, LinearInterpolator linearInterpolator)
         {
             HighByteFirstSampleAssemblerImpl assembler 
                 = new HighByteFirstSampleAssemblerImpl(sampleFrameAssembler);
@@ -25,6 +26,8 @@ namespace SimpleOscope.SampleReceiving.Impl
             mainWindow.MaxSampleSizeChangedEvent += assembler.maxSampleSizeChanged;
             mainWindow.SampleScalerChangedEvent += assembler.sampleScalerChanged;
             mainWindow.SampleOffsetChangedEvent += assembler.sampleOffsetChanged;
+
+            assembler.linearInterpolator = linearInterpolator;
             return assembler;
         }
 
@@ -44,7 +47,7 @@ namespace SimpleOscope.SampleReceiving.Impl
                     throw new Exception();
                 }
                 if ((curSample & 0xf000) != 0) throw new Exception("" + curSample);
-                ushort convertedSample = (ushort)(sampleOffset + curSample / maxSampleSize * oscopeHeight * sampleScaler);
+                ushort convertedSample = (ushort)linearInterpolator.sampleToPixel(curSample);
                 sampleFrameAssembler.SampleAssembled(convertedSample);
                 curByte = 0;
                 curSample = 0;

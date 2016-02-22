@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="LinearInterpolator.cs" />
     <Compile Include="OscopeHorizontalResolutionConfiguration.cs" />
     <Compile Include="SampleReceiving\ByteReceiver.cs" />
     <Compile Include="SampleReceiving\Impl\ByteReceiverImpl.cs" />

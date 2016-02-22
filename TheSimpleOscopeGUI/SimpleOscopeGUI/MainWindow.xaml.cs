@@ -109,6 +109,35 @@ namespace SimpleOscope
         }
     }
 
+    public class PixelVoltageRelationshipChangedEventArgs
+    {
+        public double lowerVoltage, upperVoltage;
+        public int lowerPixel, upperPixel;
+
+        public PixelVoltageRelationshipChangedEventArgs(double lowerVoltage, int lowerPixel, 
+            double upperVoltage, int upperPixel)
+        {
+            this.lowerVoltage = lowerVoltage;
+            this.upperVoltage = upperVoltage;
+            this.lowerPixel = lowerPixel;
+            this.upperPixel = upperPixel;
+        }
+    }
+
+    public class SampleToVoltageRelationshipChangedEventArgs
+    {
+        public double lowerVoltage, upperVoltage;
+        public int lowerSample, upperSample;
+        public SampleToVoltageRelationshipChangedEventArgs(double lowerVoltage, int lowerSample, 
+            double upperVoltage, int upperSample)
+        {
+            this.lowerVoltage = lowerVoltage;
+            this.upperVoltage = upperVoltage;
+            this.lowerSample = lowerSample;
+            this.upperSample = upperSample;
+        }
+    }
+
     /* Main window object, contains references to all of the visual components on the GUI display.
      * Manages adjustments of oscillscope horizontal and vertical resolution and trigger level
      * and type. 
@@ -159,11 +188,20 @@ namespace SimpleOscope
 
         public event EventHandler<HorizontalResolutionConfigChangedEventArgs> HorizonalResolutionConfigChangedEvent;
 
+        public event EventHandler<PixelVoltageRelationshipChangedEventArgs> PixelVoltageRelationshipChangedEvent;
+
+        public event EventHandler<SampleToVoltageRelationshipChangedEventArgs> SampleToVoltageRelationshipChangedEvent;
+
         SerialPortClient serialPortClient;
+
+        private LinearInterpolator linearInterpolator = new LinearInterpolator();
 
         private HorizontalResolutionConfiguration curHorizontalResolutionConfiguration;
 
         private List<Line> timeDivisionLines = new List<Line>();
+
+        public const int INITIAL_LOWER_SAMPLE = 0, INITIAL_UPPER_SAMPLE = 4095;
+        public const double INITIAL_LOWER_VOLTAGE = 0.0, INITIAL_UPPER_VOLTAGE = 5.0;
 
         private void setupTimeDivisionLines()
         {
@@ -288,7 +326,8 @@ namespace SimpleOscope
             SampleFrameDisplayerImpl sampleFrameDisplayer 
                 = SampleFrameDisplayerImpl.newSampleFrameDisplayerImpl(oscopeWindowClient, this);
             SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameDisplayer);
-            SampleAssembler sampleAssembler = HighByteFirstSampleAssemblerImpl.newHighByteFirstSampleAssemblerImpl(sampleFrameAssembler, this);
+            SampleAssembler sampleAssembler = HighByteFirstSampleAssemblerImpl.newHighByteFirstSampleAssemblerImpl(sampleFrameAssembler
+                , this, this.linearInterpolator);
             ByteReceiverImpl byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
             serialPortClient = SerialPortClient.newSerialPortClient(byteReceiver, this);
             if (COMPortSelectedEvent == null) throw new Exception("didnt register");
@@ -297,6 +336,13 @@ namespace SimpleOscope
             HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
             HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
             HorizonalResolutionConfigChangedEvent += commandPSOCForNewSamplesPerFrame;
+
+            PixelVoltageRelationshipChangedEvent += linearInterpolator.pixelVoltageRelationshipChanged;
+            SampleToVoltageRelationshipChangedEvent += linearInterpolator.sampleToVoltageRelationShipChanged;
+
+            SampleToVoltageRelationshipChangedEvent(this
+                , new SampleToVoltageRelationshipChangedEventArgs(INITIAL_LOWER_VOLTAGE
+                , INITIAL_LOWER_SAMPLE, INITIAL_UPPER_VOLTAGE, INITIAL_UPPER_SAMPLE));
 
             setupTimeDivisionLines();
             setupVoltageDivisionLines();
@@ -314,6 +360,7 @@ namespace SimpleOscope
             this.oscope_window_canvas.SizeChanged += oscopeActualSizeChanged;
             this.oscope_window_canvas.SizeChanged += updateTimeDivisionLines;
             this.oscope_window_canvas.SizeChanged += updateVoltageDivisionLines;
+            this.oscope_window_canvas.SizeChanged += updateVoltagePixelRelationship;
 
             TriggerLevelChangedEvent(this, new TriggerLevelChangedEventArgs(0));
             TriggerHorizontalPositionChangedEvent(this, new TriggerHorizontalPositionChangedEventArgs(0));
@@ -354,6 +401,13 @@ namespace SimpleOscope
                 Thread.Sleep(200);
                 serialPortClient.SendPsocCommand(String.Format("#AA#"));
             }
+        }
+
+        private void updateVoltagePixelRelationship(object sender, SizeChangedEventArgs args)
+        {
+            PixelVoltageRelationshipChangedEvent(this
+                , new PixelVoltageRelationshipChangedEventArgs(INITIAL_LOWER_VOLTAGE, 0
+                , INITIAL_UPPER_VOLTAGE, (int)args.NewSize.Height));
         }
 
         private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
