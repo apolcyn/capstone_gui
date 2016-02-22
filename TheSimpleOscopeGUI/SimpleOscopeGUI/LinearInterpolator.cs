@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace SimpleOscope
 {
+    public class PixelVoltageRelationshipUpdatedEventArgs { }
+
     public class LinearInterpolator
     {
         private int lowerSample_VS, upperSample_VS;
@@ -13,6 +15,9 @@ namespace SimpleOscope
 
         private int lowerPixel_PV, upperPixel_PV;
         private double lowerVoltage_PV, upperVoltage_PV;
+
+        public event EventHandler<PixelVoltageRelationshipUpdatedEventArgs> 
+            PixelVoltageRelationshipUpdatedEvent;
 
         public double pixelToVoltage(int pixel)
         {
@@ -26,7 +31,7 @@ namespace SimpleOscope
 
         public double sampleToVoltage(int sample)
         {
-            return interpolate(lowerSample_VS, lowerVoltage_PV, upperSample_VS, upperVoltage_VS, sample);
+            return interpolate(lowerSample_VS, lowerVoltage_VS, upperSample_VS, upperVoltage_VS, sample);
         }
 
         public int sampleToPixel(int sample)
@@ -46,6 +51,12 @@ namespace SimpleOscope
             this.upperPixel_PV = (int)args.upperPixel;
             this.lowerVoltage_PV = args.lowerVoltage;
             this.upperVoltage_PV = args.upperVoltage;
+
+            if(PixelVoltageRelationshipUpdatedEvent != null)
+            {
+                PixelVoltageRelationshipUpdatedEvent(this
+                    , new PixelVoltageRelationshipUpdatedEventArgs());
+            }
         }
 
         public void sampleToVoltageRelationShipChanged(object sender, SampleToVoltageRelationshipChangedEventArgs args)

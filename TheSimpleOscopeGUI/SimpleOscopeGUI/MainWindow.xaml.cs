@@ -201,7 +201,7 @@ namespace SimpleOscope
         private List<Line> timeDivisionLines = new List<Line>();
 
         public const int INITIAL_LOWER_SAMPLE = 0, INITIAL_UPPER_SAMPLE = 4095;
-        public const double INITIAL_LOWER_VOLTAGE = 0.0, INITIAL_UPPER_VOLTAGE = 5.0;
+        public const double INITIAL_LOWER_VOLTAGE = -5.0, INITIAL_UPPER_VOLTAGE = 5.0;
 
         private void setupTimeDivisionLines()
         {
@@ -340,6 +340,8 @@ namespace SimpleOscope
             PixelVoltageRelationshipChangedEvent += linearInterpolator.pixelVoltageRelationshipChanged;
             SampleToVoltageRelationshipChangedEvent += linearInterpolator.sampleToVoltageRelationShipChanged;
 
+            linearInterpolator.PixelVoltageRelationshipUpdatedEvent += updateVoltageOffsetDisplay;
+            linearInterpolator.PixelVoltageRelationshipUpdatedEvent += updateVoltagePerDivisionDisplay;
             SampleToVoltageRelationshipChangedEvent(this
                 , new SampleToVoltageRelationshipChangedEventArgs(INITIAL_LOWER_VOLTAGE
                 , INITIAL_LOWER_SAMPLE, INITIAL_UPPER_VOLTAGE, INITIAL_UPPER_SAMPLE));
@@ -377,6 +379,22 @@ namespace SimpleOscope
 
     public partial class MainWindow
     {
+        private void updateVoltageOffsetDisplay(object sender, PixelVoltageRelationshipUpdatedEventArgs args)
+        {
+            double newVoltageAtWindowBottom = linearInterpolator.pixelToVoltage(0);
+
+            this.voltageOffsetDisplay_textBox.Text = String.Format("{0} V"
+                , newVoltageAtWindowBottom.ToString());
+        }
+
+        private void updateVoltagePerDivisionDisplay(object sender, PixelVoltageRelationshipUpdatedEventArgs args)
+        {
+            double newVoltsPerDivision = linearInterpolator
+                .pixelToVoltage((int)(this.oscope_window_canvas.Height / NUM_VOLTAGE_DIVISION_LINES))
+                - linearInterpolator.pixelToVoltage(0);
+            this.voltsPerDivisionTextBox.Text = String.Format("{0} V", newVoltsPerDivision.ToString()); 
+        }
+
         private void wroteCommandToPsoc(object sender, WroteCommandEventArgs args)
         {
             this.DAC_config_command.Text = String.Format("{0}\n{1}"
@@ -412,7 +430,21 @@ namespace SimpleOscope
 
         private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(e.NewValue));
+            if (PixelVoltageRelationshipChangedEvent != null)
+            {
+                double voltagePerDivisionScaler = this.voltsPerDivisionSlider.Value;
+                double voltageDisplayOffset = e.NewValue;
+                double newLowerVoltage = (INITIAL_LOWER_VOLTAGE + voltageDisplayOffset)
+                    * voltagePerDivisionScaler;
+                double newUpperVoltage = (INITIAL_UPPER_VOLTAGE + voltageDisplayOffset)
+                    * voltagePerDivisionScaler;
+                int lowerPixel = 0;
+                int upperPixel = (int)this.oscope_window_canvas.Height;
+
+                PixelVoltageRelationshipChangedEvent(this
+                    , new PixelVoltageRelationshipChangedEventArgs(newLowerVoltage, lowerPixel
+                    , newUpperVoltage, upperPixel));
+            }
         }
 
         private void timePerDivisionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -431,9 +463,20 @@ namespace SimpleOscope
 
         private void voltsPerDivisionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (SampleScalerChangedEvent != null)
+            if (PixelVoltageRelationshipChangedEvent != null)
             {
-                SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(e.NewValue));
+                double voltagePerDivisionScaler = e.NewValue;
+                double voltageDisplayOffset = this.voltageOffsetSlider.Value;
+                double newLowerVoltage = (INITIAL_LOWER_VOLTAGE + voltageDisplayOffset)
+                    * voltagePerDivisionScaler;
+                double newUpperVoltage = (INITIAL_UPPER_VOLTAGE + voltageDisplayOffset)
+                    * voltagePerDivisionScaler;
+                int lowerPixel = 0;
+                int upperPixel = (int)(this.oscope_window_canvas.Height);
+
+                PixelVoltageRelationshipChangedEvent(this
+                    , new PixelVoltageRelationshipChangedEventArgs(newLowerVoltage, lowerPixel
+                    , newUpperVoltage, upperPixel));
             }
         }
 
