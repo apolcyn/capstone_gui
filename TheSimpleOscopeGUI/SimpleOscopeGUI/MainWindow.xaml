@@ -156,6 +156,9 @@
         </Slider>
         <TextBox x:Name="voltageOffsetDisplay_textBox" HorizontalAlignment="Left" Height="28" Margin="50,408,0,0" TextWrapping="NoWrap" 
                  VerticalAlignment="Top" Width="56"/>
+        <Button x:Name="dumpFramesToFileButton" Content="Dump Frames To File" HorizontalAlignment="Left" Height="32" Margin="353,516,0,0" VerticalAlignment="Top" Width="165" Click="dumpFramesToFileButton_Click"/>
+        <TextBox x:Name="fileToDumpFramesTo" HorizontalAlignment="Left" Height="29" Margin="351,478,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168"/>
+        <Button x:Name="button4" ToolTip="Turns off conversion of samples. Intended for dumping raw sample frames from PSoC." Content="Raw Samples Mode" HorizontalAlignment="Left" Height="32" Margin="195,517,0,0" VerticalAlignment="Top" Width="135" Click="rawSamplesMode_Click"/>
 
     </Grid>
 </Window>

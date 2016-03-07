@@ -26,6 +26,8 @@ namespace SimpleOscope.SampleReceiving.Impl
         private uint triggerScanLength;
         private uint triggerScanStartIndex;
 
+        private SampleFrameHook sampleFrameHook;
+
         public static SampleFrameDisplayerImpl newSampleFrameDisplayerImpl(
             OscopeWindowClient scopeLineDrawer
             , MainWindow mainWindow)
@@ -35,6 +37,7 @@ namespace SimpleOscope.SampleReceiving.Impl
             mainWindow.HorizonalResolutionConfigChangedEvent += displayer.horizontalResolutionConfigChanged;
             mainWindow.TriggerHorizontalPositionChangedEvent 
                 += displayer.triggerHorizontalPositionChanged;
+            mainWindow.SampleFrameHookChangedEvent += displayer.sampleFrameHookChanged;
             return displayer;
         }
 
@@ -87,6 +90,11 @@ namespace SimpleOscope.SampleReceiving.Impl
             }
         }
 
+        private void sampleFrameHookChanged(object sender, SampleFrameHookChangedEventArgs args)
+        {
+            this.sampleFrameHook = args.sampleFrameHook;
+        }
+
         private void triggerLevelChanged(object sender, TriggerLevelChangedEventArgs args)
         {
             this.triggerLevel = args.triggerLevel;
@@ -134,6 +142,10 @@ namespace SimpleOscope.SampleReceiving.Impl
 
             if (start >= 0)
             {
+                if (sampleFrameHook != null)
+                {
+                    sampleFrameHook(samples, (int)numSamples, start);
+                }
                 DisplaySampleFrame((uint)start, numSamples, samples);
             }
         }

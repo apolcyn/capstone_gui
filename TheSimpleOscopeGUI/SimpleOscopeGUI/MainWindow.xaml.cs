@@ -138,6 +138,15 @@ namespace SimpleOscope
         }
     }
 
+    public class SampleFrameHookChangedEventArgs
+    {
+        public SampleFrameHook sampleFrameHook;
+        public SampleFrameHookChangedEventArgs(SampleFrameHook sampleFrameHook)
+        {
+            this.sampleFrameHook = sampleFrameHook;
+        }
+    }
+
     /* Main window object, contains references to all of the visual components on the GUI display.
      * Manages adjustments of oscillscope horizontal and vertical resolution and trigger level
      * and type. 
@@ -191,6 +200,8 @@ namespace SimpleOscope
         public event EventHandler<PixelVoltageRelationshipChangedEventArgs> PixelVoltageRelationshipChangedEvent;
 
         public event EventHandler<SampleToVoltageRelationshipChangedEventArgs> SampleToVoltageRelationshipChangedEvent;
+
+        public event EventHandler<SampleFrameHookChangedEventArgs> SampleFrameHookChangedEvent;
 
         SerialPortClient serialPortClient;
 
@@ -315,6 +326,25 @@ namespace SimpleOscope
 
         private bool connected = false;
 
+        private void dumpFramesToFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.fileDataDumper = new DataDumper(this.fileToDumpFramesTo.Text);
+            SampleFrameHookChangedEvent(this
+                , new SampleFrameHookChangedEventArgs(fileDataDumper.dumpNewFrame));
+        }
+
+        private void rawSamplesMode_Click(object sender, RoutedEventArgs e)
+        {
+            SampleToVoltageRelationshipChangedEvent(this
+                , new SampleToVoltageRelationshipChangedEventArgs(0, 0, 1, 1));
+            PixelVoltageRelationshipChangedEvent(this
+                , new PixelVoltageRelationshipChangedEventArgs(0, 0, 1, 1));
+            TriggerLevelChangedEvent(this
+                , new TriggerLevelChangedEventArgs(INITIAL_UPPER_SAMPLE / 2));
+        }
+
+        private DataDumper fileDataDumper;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -336,6 +366,7 @@ namespace SimpleOscope
             HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
             HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
             HorizonalResolutionConfigChangedEvent += commandPSOCForNewSamplesPerFrame;
+            HorizonalResolutionConfigChangedEvent += updateSPSDisplayInFileDumpNameBox;
 
             PixelVoltageRelationshipChangedEvent += linearInterpolator.pixelVoltageRelationshipChanged;
             SampleToVoltageRelationshipChangedEvent += linearInterpolator.sampleToVoltageRelationShipChanged;
@@ -379,6 +410,11 @@ namespace SimpleOscope
 
     public partial class MainWindow
     {
+        private void updateSPSDisplayInFileDumpNameBox(object sender, HorizontalResolutionConfigChangedEventArgs args)
+        {
+            this.fileToDumpFramesTo.Text = args.config.psocSPS + "sps.txt";
+        }
+
         private void updateVoltageOffsetDisplay(object sender, PixelVoltageRelationshipUpdatedEventArgs args)
         {
             double newVoltageAtWindowBottom = linearInterpolator.pixelToVoltage(0);
