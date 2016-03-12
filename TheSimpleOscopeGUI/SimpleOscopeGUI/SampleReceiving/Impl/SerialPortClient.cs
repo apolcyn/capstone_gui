@@ -33,6 +33,7 @@ namespace SimpleOscope.SampleReceiving.Impl
         {
             SerialPortClient client = new SerialPortClient(byteReceiver);
             mainWindow.COMPortSelectedEvent += client.COMPortSelected;
+            mainWindow.PSoCDisconnectRequestEvent += client.disconnect;
             return client;
         }
 
@@ -68,6 +69,15 @@ namespace SimpleOscope.SampleReceiving.Impl
             catch(Exception e)
             {
                 ErrorWritingToSerialPortEvent(this, new ErrorWritingToSerialPortEventArgs(e.Message));
+            }
+        }
+
+        private void disconnect(object sender, PSoCDisconnectRequestEventArgs args)
+        {
+            if(this.serialPort != null)
+            {
+                WriteString(PSoCCommands.PSOCDisonnectRequestCommand);
+                this.serialPort.Close();
             }
         }
 

@@ -25,9 +25,18 @@ using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving.Impl;
 using SimpleOscope.SampleReceiving.Impl;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace SimpleOscope
 {
+    public class PSoCCommands
+    {
+        public const string PSOCDisonnectRequestCommand = "#PC_REQ_DISCONNECT#";
+        public const string PSOCConnectRequestCommand = "#PC_REQ_CONNECT#";
+    }
+
+    public class PSoCDisconnectRequestEventArgs : EventArgs { }
+
     public class WritingToClosedSerialPortEventArgs : EventArgs
     {
         public string message { get; }
@@ -175,6 +184,8 @@ namespace SimpleOscope
         public const int NUM_PERMANENT_OSCOPE_LINES = 8;
         public const int NUM_TIME_DIVISIONS = 4;
         public const int NUM_VOLTAGE_DIVISION_LINES = 4;
+
+        public event EventHandler<PSoCDisconnectRequestEventArgs> PSoCDisconnectRequestEvent;
 
         /// <summary>
         /// Raised when the oscope width is set to new value.
@@ -353,6 +364,17 @@ namespace SimpleOscope
                 , new PixelVoltageRelationshipChangedEventArgs(0, 0, 1, 1));
             TriggerLevelChangedEvent(this
                 , new TriggerLevelChangedEventArgs(INITIAL_UPPER_SAMPLE / 2));
+        }
+
+        private void disconnect_request_button_Click(object sender, RoutedEventArgs e)
+        {
+            PSoCDisconnectRequestEvent(this, new PSoCDisconnectRequestEventArgs());
+        }
+
+        private void voltage_measurement_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            this.voltage_measurement_label.Content = String.Format("{0} V"
+                , linearInterpolator.pixelToVoltage((int)e.NewValue).ToString("##.##"));
         }
 
         private DataDumper fileDataDumper;
@@ -735,11 +757,13 @@ namespace SimpleOscope
 
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if(TriggerLevelChangedEvent != null)
+            trigger_slider_voltage_label.Content = String.Format("{0} V"
+                , linearInterpolator.pixelToVoltage((int)e.NewValue).ToString("##.##"));
+
+            if (TriggerLevelChangedEvent != null)
             {
                 TriggerLevelChangedEvent(this
                     , new TriggerLevelChangedEventArgs((int)(this.trigger_slider_button.Value)));
-
             }
         }
 
@@ -772,7 +796,7 @@ namespace SimpleOscope
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            serialPortClient.SendPsocCommand("#PC_REQ_CONNECT#");
+            serialPortClient.SendPsocCommand(PSoCCommands.PSOCConnectRequestCommand);
         }
 
         private void button3_Click(object sender, RoutedEventArgs e)
@@ -784,6 +808,11 @@ namespace SimpleOscope
         {
             TriggerHorizontalPositionChangedEvent(this
                 , new TriggerHorizontalPositionChangedEventArgs((uint)e.NewValue));
+        }
+
+        private void window_closing(object sender, CancelEventArgs e)
+        {
+            PSoCDisconnectRequestEvent(this, new PSoCDisconnectRequestEventArgs());
         }
     }
 }
