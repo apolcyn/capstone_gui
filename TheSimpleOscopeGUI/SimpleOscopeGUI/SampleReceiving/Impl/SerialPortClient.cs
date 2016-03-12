@@ -25,6 +25,8 @@ namespace SimpleOscope.SampleReceiving.Impl
         private ByteReceiver byteReceiver { get; set; }
 
         public EventHandler<WroteCommandEventArgs> WroteCommandEvent;
+        public EventHandler<WritingToClosedSerialPortEventArgs> WritingToClosedSerialPortEvent;
+        public EventHandler<ErrorWritingToSerialPortEventArgs> ErrorWritingToSerialPortEvent;
 
         public static SerialPortClient newSerialPortClient(ByteReceiver byteReceiver
             , MainWindow mainWindow)
@@ -56,7 +58,17 @@ namespace SimpleOscope.SampleReceiving.Impl
         /// </summary>
         public void WriteString(string str)
         {
-            serialPort.Write(str);
+            try {
+                serialPort.Write(str);
+            }
+            catch(InvalidOperationException e)
+            {
+                WritingToClosedSerialPortEvent(this, new WritingToClosedSerialPortEventArgs(e.Message));
+            }
+            catch(Exception e)
+            {
+                ErrorWritingToSerialPortEvent(this, new ErrorWritingToSerialPortEventArgs(e.Message));
+            }
         }
 
         /// <summary>

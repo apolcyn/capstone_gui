@@ -28,6 +28,18 @@ using System.Collections.ObjectModel;
 
 namespace SimpleOscope
 {
+    public class WritingToClosedSerialPortEventArgs : EventArgs
+    {
+        public string message { get; }
+        public WritingToClosedSerialPortEventArgs(string message) { this.message = message; }
+    }
+
+    public class ErrorWritingToSerialPortEventArgs : EventArgs
+    {
+        public string message { get; }
+        public ErrorWritingToSerialPortEventArgs(string message) { this.message = message; }
+    }
+
     public class OscopeWidthChangedEventArgs : EventArgs
     {
         public int newWidth { get; }
@@ -384,6 +396,8 @@ namespace SimpleOscope
             setupWaveOptionDropDown();
 
             serialPortClient.WroteCommandEvent += wroteCommandToPsoc;
+            serialPortClient.ErrorWritingToSerialPortEvent += errorWritingToSerialPort;
+            serialPortClient.WritingToClosedSerialPortEvent += writingToClosedSerialPort;
 
             HorizontalResolutionConfiguration defaultConfig
                 = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.Items[0];
@@ -410,6 +424,17 @@ namespace SimpleOscope
 
     public partial class MainWindow
     {
+        private void errorWritingToSerialPort(object sender, ErrorWritingToSerialPortEventArgs args)
+        {
+            MessageBox.Show("Error writing to serial Port. Error Message: {0}", args.message);
+        }
+
+        private void writingToClosedSerialPort(object sender, WritingToClosedSerialPortEventArgs args)
+        {
+            MessageBox.Show("PSoC disconnected. Writing to closed serial Port. Error Message: {0}"
+                , args.message);
+        }
+
         private void updateSPSDisplayInFileDumpNameBox(object sender, HorizontalResolutionConfigChangedEventArgs args)
         {
             this.fileToDumpFramesTo.Text = args.config.psocSPS + "sps.txt";
@@ -667,32 +692,9 @@ namespace SimpleOscope
             serialPortClient.SendPsocCommand("#DA#");
         }
 
-        // event handler for samples/second slider update
-        private void oscope_ksamples_updated(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            update_oscope_ksamples((int)this.oscope_ksamples_slider.Value);
-        }
-
-        // updates actual oscope ksamples/sec
-        private void update_oscope_ksamples(int val)
-        {
-            if (this.oscope_ksamples_text_display != null)
-            {
-                nextOscopeConfiguration.setkSamplesPerSecond(val);
-                this.oscope_ksamples_slider.Value = nextOscopeConfiguration.kSamplesPerSecond;
-                this.oscope_ksamples_text_display.Text = nextOscopeConfiguration.kSamplesPerSecond.ToString();
-            }
-        }
-
         private void start_oscope_btn_click(object sender, RoutedEventArgs e)
         {
-            this.oscope_configuration_display.Text = nextOscopeConfiguration.getConfiguration();
             serialPortClient.SendPsocCommand("#AA#");
-        }
-
-        private void oscope_resolution_updated(object sender, SelectionChangedEventArgs e)
-        {
-            nextOscopeConfiguration.setResolution(this.oscope_resolution_dropdown.SelectedIndex);
         }
 
         private void DAC_Frequency_update_btn_click(object sender, RoutedEventArgs e)
@@ -729,11 +731,6 @@ namespace SimpleOscope
                 serialPortClient.SendPsocCommand(String.Format("#DD{0}#"
                 , nextFunctionGeneratorConfiguration.dutyCycle));
             }
-        }
-
-        private void oscope_ksamples_update_btn_Click(object sender, RoutedEventArgs e)
-        {
-            update_oscope_ksamples(int.Parse(this.oscope_ksamples_text_display.Text.Split()[0]));
         }
 
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
