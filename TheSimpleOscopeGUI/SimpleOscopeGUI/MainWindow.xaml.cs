@@ -253,7 +253,7 @@ namespace SimpleOscope
 
         private void setupVoltageDivisionLines()
         {
-            for(int i = 0; i < NUM_VOLTAGE_DIVISION_LINES - 1; i++)
+            for (int i = 0; i < NUM_VOLTAGE_DIVISION_LINES - 1; i++)
             {
                 Line line = new Line();
                 line.Stroke = Brushes.Black;
@@ -263,18 +263,21 @@ namespace SimpleOscope
             }
         }
 
+        private List<HorizontalResolutionConfiguration> horizontalConfigurations
+            = new List<HorizontalResolutionConfiguration>();
+
         private void createHorizontalResolutionConfigs()
         {
-           this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
-                .withFrameSize(800)
-                .withNumSamplesToDisplay(400)
-                .withOscopeWindowSize(400)
-                .withPixelSpacing(0)
-                .withPsocSPS(50)
-                .withTimePerDiv(1000000)
-                .build());
+            this.horizontalConfigurations.Add(HorizontalResolutionConfiguration.builder()
+                 .withFrameSize(800)
+                 .withNumSamplesToDisplay(400)
+                 .withOscopeWindowSize(400)
+                 .withPixelSpacing(0)
+                 .withPsocSPS(50)
+                 .withTimePerDiv(1000000)
+                 .build());
 
-            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+            this.horizontalConfigurations.Add(HorizontalResolutionConfiguration.builder()
                  .withFrameSize(800)
                  .withNumSamplesToDisplay(400)
                  .withOscopeWindowSize(400)
@@ -283,7 +286,7 @@ namespace SimpleOscope
                  .withTimePerDiv(200000)
                  .build());
 
-            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+            this.horizontalConfigurations.Add(HorizontalResolutionConfiguration.builder()
                  .withFrameSize(800)
                  .withNumSamplesToDisplay(400)
                  .withOscopeWindowSize(400)
@@ -292,7 +295,7 @@ namespace SimpleOscope
                  .withTimePerDiv(50000)
                  .build());
 
-            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+            this.horizontalConfigurations.Add(HorizontalResolutionConfiguration.builder()
                  .withFrameSize(800)
                  .withNumSamplesToDisplay(400)
                  .withOscopeWindowSize(400)
@@ -301,7 +304,7 @@ namespace SimpleOscope
                  .withTimePerDiv(1000)
                  .build());
 
-            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+            this.horizontalConfigurations.Add(HorizontalResolutionConfiguration.builder()
                  .withFrameSize(800)
                  .withNumSamplesToDisplay(400)
                  .withOscopeWindowSize(400)
@@ -310,7 +313,7 @@ namespace SimpleOscope
                  .withTimePerDiv(200)
                  .build());
 
-            this.timePerDivisionSelector.Items.Add(HorizontalResolutionConfiguration.builder()
+            this.horizontalConfigurations.Add(HorizontalResolutionConfiguration.builder()
                  .withFrameSize(800)
                  .withNumSamplesToDisplay(200)
                  .withOscopeWindowSize(399)
@@ -377,6 +380,31 @@ namespace SimpleOscope
                 , linearInterpolator.pixelToVoltage((int)e.NewValue).ToString("##.##"));
         }
 
+        private void time_per_division_selection_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            HorizontalResolutionConfiguration config
+                = (HorizontalResolutionConfiguration)this.horizontalConfigurations[(int)this.time_per_division_selection_slider.Value];
+            HorizonalResolutionConfigChangedEvent(this
+                , new HorizontalResolutionConfigChangedEventArgs(config));
+        }
+
+        private void updateTimePerDivisionTextDisplay(object sender, HorizontalResolutionConfigChangedEventArgs args)
+        {
+            string[] timePrefixes = { "micro", "milli", "" };
+            ulong divisor = 1000;
+            int i;
+
+            for (i = 0; i < 4 && args.config.timePerDiv / divisor > 0; divisor *= 1000, i++)
+                ;
+
+            if(i == 4)
+            {
+                throw new ArgumentException("unsupported time per div: " + args.config.timePerDiv);
+            }
+            this.time_per_division_display.Content = String.Format("{0} {1}"
+                , args.config.timePerDiv / (divisor / 1000), timePrefixes[i] + "second(s)");
+        }
+
         private DataDumper fileDataDumper;
 
         public MainWindow()
@@ -401,6 +429,7 @@ namespace SimpleOscope
             HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
             HorizonalResolutionConfigChangedEvent += commandPSOCForNewSamplesPerFrame;
             HorizonalResolutionConfigChangedEvent += updateSPSDisplayInFileDumpNameBox;
+            HorizonalResolutionConfigChangedEvent += updateTimePerDivisionTextDisplay;
 
             PixelVoltageRelationshipChangedEvent += linearInterpolator.pixelVoltageRelationshipChanged;
             SampleToVoltageRelationshipChangedEvent += linearInterpolator.sampleToVoltageRelationShipChanged;
@@ -422,7 +451,7 @@ namespace SimpleOscope
             serialPortClient.WritingToClosedSerialPortEvent += writingToClosedSerialPort;
 
             HorizontalResolutionConfiguration defaultConfig
-                = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.Items[0];
+                = (HorizontalResolutionConfiguration)this.horizontalConfigurations[0];
             HorizonalResolutionConfigChangedEvent(this
                 , new HorizontalResolutionConfigChangedEventArgs(defaultConfig));
 
@@ -464,10 +493,10 @@ namespace SimpleOscope
 
         private void updateVoltageOffsetDisplay(object sender, PixelVoltageRelationshipUpdatedEventArgs args)
         {
-            double newVoltageAtWindowBottom = linearInterpolator.pixelToVoltage(0);
+            double newVoltageAtWindowBottom = linearInterpolator.pixelToVoltage((int)(this.oscope_window_canvas.ActualHeight / 2));
 
-            this.voltageOffsetDisplay_textBox.Text = String.Format("{0} V"
-                , newVoltageAtWindowBottom.ToString());
+            this.voltage_at_window_bottom_display.Content = String.Format("{0} V"
+                , newVoltageAtWindowBottom.ToString("##.##"));
         }
 
         private void updateVoltagePerDivisionDisplay(object sender, PixelVoltageRelationshipUpdatedEventArgs args)
@@ -475,7 +504,8 @@ namespace SimpleOscope
             double newVoltsPerDivision = linearInterpolator
                 .pixelToVoltage((int)(this.oscope_window_canvas.Height / NUM_VOLTAGE_DIVISION_LINES))
                 - linearInterpolator.pixelToVoltage(0);
-            this.voltsPerDivisionTextBox.Text = String.Format("{0} V", newVoltsPerDivision.ToString()); 
+            this.voltsPerDivisionDisplay.Content = String.Format("{0} V"
+                , String.Format(newVoltsPerDivision.ToString("##.##"))); 
         }
 
         private void wroteCommandToPsoc(object sender, WroteCommandEventArgs args)
@@ -528,14 +558,6 @@ namespace SimpleOscope
                     , new PixelVoltageRelationshipChangedEventArgs(newLowerVoltage, lowerPixel
                     , newUpperVoltage, upperPixel));
             }
-        }
-
-        private void timePerDivisionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            HorizontalResolutionConfiguration config
-                = (HorizontalResolutionConfiguration)this.timePerDivisionSelector.SelectedItem;
-            HorizonalResolutionConfigChangedEvent(this
-                , new HorizontalResolutionConfigChangedEventArgs(config));
         }
 
         private void PSOC_ready(object sender, PsocReadyEventArgs args)

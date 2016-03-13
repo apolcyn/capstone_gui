@@ -82,7 +82,7 @@
         <Label x:Name="label4" Content="Frequency: (Hz)" Grid.Column="2" HorizontalAlignment="Left" Height="29" Margin="22,41,0,0" VerticalAlignment="Top" Width="120"/>
         <Label x:Name="label5" Content="Wave Type:" Grid.Column="2" HorizontalAlignment="Left" Height="25" Margin="22,90,0,0" VerticalAlignment="Top" Width="173" Grid.Row="2"/>
         <Label x:Name="label8" Content="Trigger:" HorizontalAlignment="Left" Height="26" Margin="77,14,0,0" VerticalAlignment="Top" Width="77" Grid.Column="1"/>
-        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="145,4,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" 
+        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="111,8,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" 
                 LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.Row="2" Grid.ColumnSpan="2" >
             <Slider.RenderTransform>
@@ -116,7 +116,6 @@
                 SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22" Grid.Column="1"/>
         <ComboBox x:Name="COM_port_comboBox" Grid.Column="3" HorizontalAlignment="Left" Height="22" Margin="50,190,0,0" VerticalAlignment="Top" Width="153" SelectionChanged="COM_port_selection_comboBox_SelectionChanged" Grid.Row="2"/>
         <Label x:Name="label10" Content="COM Port:" Grid.Column="3" HorizontalAlignment="Left" Margin="48,164,0,0" VerticalAlignment="Top" Width="86" Height="26" Grid.Row="2"/>
-        <ComboBox x:Name="timePerDivisionSelector" HorizontalAlignment="Left" Height="35" Margin="432,226,0,0" VerticalAlignment="Top" Width="128" RenderTransformOrigin="0.453,0.971" SelectionChanged="timePerDivisionSelector_SelectionChanged" Grid.Row="2" Grid.Column="1"/>
         <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="424,194,0,0" VerticalAlignment="Top" Width="126" Grid.Row="2" Grid.Column="1"/>
         <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="281,207,0,0" VerticalAlignment="Top" Width="96" Grid.Row="2" Grid.Column="1"/>
         <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="343,242,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97" Maximum="2" Minimum="0.5" LargeChange="0.1" ValueChanged="voltsPerDivisionSlider_ValueChanged" Grid.Row="2" Height="22" Grid.Column="1">
@@ -129,10 +128,8 @@
                 </TransformGroup>
             </Slider.RenderTransform>
         </Slider>
-        <TextBox x:Name="voltsPerDivisionTextBox" HorizontalAlignment="Left" Height="28" Margin="286,238,0,0" TextWrapping="Wrap" 
-                 VerticalAlignment="Top" Width="44" FontSize="14" Grid.Row="2" Grid.Column="1"/>
-        <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Margin="122,203,0,0" VerticalAlignment="Top" Width="94" Grid.Row="2" Height="26" Grid.Column="1"/>
-        <Slider x:Name="voltageOffsetSlider" HorizontalAlignment="Left" Margin="188,245,0,0" VerticalAlignment="Top" Height="33" RenderTransformOrigin="0.5,0.5" LargeChange="0.1" Width="98" Minimum="0" 
+        <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Margin="92,204,0,0" VerticalAlignment="Top" Width="94" Grid.Row="2" Height="26" Grid.Column="1"/>
+        <Slider x:Name="voltageOffsetSlider" HorizontalAlignment="Left" Margin="142,228,0,0" VerticalAlignment="Top" Height="33" RenderTransformOrigin="0.5,0.5" LargeChange="0.1" Width="98" Minimum="0" 
                 Maximum="5.0"
                 ValueChanged="voltageOffsetSlider_ValueChanged" Grid.Row="2" Grid.Column="1">
             <Slider.RenderTransform>
@@ -144,8 +141,6 @@
                 </TransformGroup>
             </Slider.RenderTransform>
         </Slider>
-        <TextBox x:Name="voltageOffsetDisplay_textBox" HorizontalAlignment="Left" Height="28" Margin="130,234,0,0" TextWrapping="NoWrap" 
-                 VerticalAlignment="Top" Width="56" Grid.Row="2" Grid.Column="1"/>
         <Button x:Name="dumpFramesToFileButton" Content="Dump Frames To File" HorizontalAlignment="Left" Height="32" Margin="437,322,0,0" VerticalAlignment="Top" Width="165" Click="dumpFramesToFileButton_Click" Grid.Row="2" Grid.Column="1"/>
         <TextBox x:Name="fileToDumpFramesTo" HorizontalAlignment="Left" Height="29" Margin="435,280,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" Grid.Row="2" Grid.Column="1"/>
         <Button x:Name="button4" ToolTip="Turns off conversion of samples. Intended for dumping raw sample frames from PSoC." Content="Raw Samples Mode" HorizontalAlignment="Left" Height="32" Margin="281,323,0,0" VerticalAlignment="Top" Width="135" Click="rawSamplesMode_Click" Grid.Row="2" Grid.Column="1"/>
@@ -165,6 +160,29 @@
         </Slider>
         <ToolBar x:Name="toolBar" Grid.Column="3" HorizontalAlignment="Left" Margin="214,97,0,0" Grid.Row="2" VerticalAlignment="Top" Height="13" Width="24"/>
         <Label x:Name="voltage_measurement_label" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="32" Margin="592,149,0,0" Grid.Row="2" VerticalAlignment="Top" Width="46"/>
-        <Label x:Name="trigger_slider_voltage_label" Content="Label" HorizontalAlignment="Left" Height="36" Margin="48,149,0,0" Grid.Row="2" VerticalAlignment="Top" Width="46" Grid.Column="1"/>
+        <Label x:Name="trigger_slider_voltage_label" Content="Label" HorizontalAlignment="Left" Height="36" Margin="16,157,0,0" Grid.Row="2" VerticalAlignment="Top" Width="46" Grid.Column="1"/>
+        <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="93,11,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Label x:Name="voltsPerDivisionDisplay" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="285,233,0,0" Grid.Row="2" VerticalAlignment="Top" Width="64"/>
+        <Slider x:Name="time_per_division_selection_slider" Grid.Column="1" HorizontalAlignment="Left" 
+                Margin="430,223,0,0" Grid.Row="2" VerticalAlignment="Top" Width="145" 
+                RenderTransformOrigin="0.5,0.5"
+                TickPlacement="Both"
+                Minimum="0"
+                Maximum="5"
+                IsMoveToPointEnabled="True"
+                IsSelectionRangeEnabled="True"
+                IsSnapToTickEnabled="True"
+                Ticks="0, 1, 2, 3, 4, 5" ValueChanged="time_per_division_selection_slider_ValueChanged" 
+                >
+            <Slider.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.026"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Slider.RenderTransform>
+        </Slider>
+        <Label x:Name="time_per_division_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="523,196,0,0" Grid.Row="2" VerticalAlignment="Top"/>
     </Grid>
 </Window>
