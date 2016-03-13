@@ -181,7 +181,7 @@ namespace SimpleOscope
         private OscopeConfiguration curOscopeConfiguration = new OscopeConfiguration();
         private OscopeConfiguration nextOscopeConfiguration = new OscopeConfiguration();
 
-        public const int NUM_PERMANENT_OSCOPE_LINES = 8;
+        public const int NUM_PERMANENT_OSCOPE_LINES = 9;
         public const int NUM_TIME_DIVISIONS = 4;
         public const int NUM_VOLTAGE_DIVISION_LINES = 4;
 
@@ -234,8 +234,22 @@ namespace SimpleOscope
 
         private List<Line> timeDivisionLines = new List<Line>();
 
+        private Label voltagMeasurementCursorLabel = new Label();
+
+        private Label triggerValueLabel = new Label();
+
         public const int INITIAL_LOWER_SAMPLE = 0, INITIAL_UPPER_SAMPLE = 4095;
         public const double INITIAL_LOWER_VOLTAGE = -5.0, INITIAL_UPPER_VOLTAGE = 5.0;
+
+        private void initializeVoltageMeasurementCursor()
+        {
+            this.voltage_measurement_cursor_canvas.Children.Add(voltagMeasurementCursorLabel);
+        }
+
+        private void initializeTriggerValueLabelCanvas()
+        {
+            this.trigger_label_canvas.Children.Add(triggerValueLabel);
+        }
 
         private void setupTimeDivisionLines()
         {
@@ -374,10 +388,25 @@ namespace SimpleOscope
             PSoCDisconnectRequestEvent(this, new PSoCDisconnectRequestEventArgs());
         }
 
+        private void updateVoltageCursorLabelAfterPixelToVoltageUpdated(object sender
+            , PixelVoltageRelationshipUpdatedEventArgs args)
+        {
+            updateVoltageMeasurementCursorDisplayText();
+        }
+
+        private void updateVoltageMeasurementCursorDisplayText()
+        {
+            double newLabelVerticalPosition = this.voltage_measurement_cursor_canvas.Height
+                - this.voltage_measurement_slider.Value;
+            Canvas.SetTop(this.voltagMeasurementCursorLabel, newLabelVerticalPosition);
+            voltagMeasurementCursorLabel.Content = String.Format("{0} V"
+                , linearInterpolator.pixelToVoltage((int)this.voltage_measurement_slider.Value).ToString("##.##"));
+
+        }
+
         private void voltage_measurement_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            this.voltage_measurement_label.Content = String.Format("{0} V"
-                , linearInterpolator.pixelToVoltage((int)e.NewValue).ToString("##.##"));
+            updateVoltageMeasurementCursorDisplayText();
         }
 
         private void time_per_division_selection_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -394,13 +423,15 @@ namespace SimpleOscope
             ulong divisor = 1000;
             int i;
 
+            if(args.config.timePerDiv < 0 || args.config.timePerDiv > 1000000000)
+            {
+                throw new ArgumentException(
+                    "expected time per div to be between 1 and 1000000000 microseconds");
+            }
+
             for (i = 0; i < 4 && args.config.timePerDiv / divisor > 0; divisor *= 1000, i++)
                 ;
 
-            if(i == 4)
-            {
-                throw new ArgumentException("unsupported time per div: " + args.config.timePerDiv);
-            }
             this.time_per_division_display.Content = String.Format("{0} {1}"
                 , args.config.timePerDiv / (divisor / 1000), timePrefixes[i] + "second(s)");
         }
@@ -431,10 +462,16 @@ namespace SimpleOscope
             HorizonalResolutionConfigChangedEvent += updateSPSDisplayInFileDumpNameBox;
             HorizonalResolutionConfigChangedEvent += updateTimePerDivisionTextDisplay;
 
+            initializeVoltageMeasurementCursor();
+            initializeTriggerValueLabelCanvas();
+
             PixelVoltageRelationshipChangedEvent += linearInterpolator.pixelVoltageRelationshipChanged;
+
             SampleToVoltageRelationshipChangedEvent += linearInterpolator.sampleToVoltageRelationShipChanged;
 
             linearInterpolator.PixelVoltageRelationshipUpdatedEvent += updateVoltageOffsetDisplay;
+            linearInterpolator.PixelVoltageRelationshipUpdatedEvent += updateTriggerCursorLabelFromPixelToVoltageUpdated;
+            linearInterpolator.PixelVoltageRelationshipUpdatedEvent += updateVoltageCursorLabelAfterPixelToVoltageUpdated;
             linearInterpolator.PixelVoltageRelationshipUpdatedEvent += updateVoltagePerDivisionDisplay;
             SampleToVoltageRelationshipChangedEvent(this
                 , new SampleToVoltageRelationshipChangedEventArgs(INITIAL_LOWER_VOLTAGE
@@ -777,10 +814,24 @@ namespace SimpleOscope
             }
         }
 
+        private void updateTriggerCursorLabelFromPixelToVoltageUpdated(object sender
+            , PixelVoltageRelationshipUpdatedEventArgs args)
+        {
+            updateTriggerValueLabel();
+        }
+
+        private void updateTriggerValueLabel()
+        {
+            double newVerticalPosition = this.trigger_label_canvas.Height 
+                - this.trigger_slider_button.Value;
+            Canvas.SetTop(this.triggerValueLabel, newVerticalPosition);
+            triggerValueLabel.Content = String.Format("{0} V"
+                , linearInterpolator.pixelToVoltage((int)this.trigger_slider_button.Value).ToString("##.##"));
+        }
+
         private void trigger_slider_button_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            trigger_slider_voltage_label.Content = String.Format("{0} V"
-                , linearInterpolator.pixelToVoltage((int)e.NewValue).ToString("##.##"));
+            updateTriggerValueLabel();
 
             if (TriggerLevelChangedEvent != null)
             {

@@ -70,6 +70,9 @@
                   X2="{Binding ElementName=oscope_window_canvas, Path=ActualWidth,  UpdateSourceTrigger=PropertyChanged}"
                   Y1="{Binding ElementName=voltage_measurement_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                   Y2="{Binding ElementName=voltage_measurement_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                  Stroke="Silver" 
+                  StrokeThickness="3"
+                  StrokeDashArray="4, 4"
             />
         </Canvas>
         <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
@@ -118,7 +121,11 @@
         <Label x:Name="label10" Content="COM Port:" Grid.Column="3" HorizontalAlignment="Left" Margin="48,164,0,0" VerticalAlignment="Top" Width="86" Height="26" Grid.Row="2"/>
         <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="424,194,0,0" VerticalAlignment="Top" Width="126" Grid.Row="2" Grid.Column="1"/>
         <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="281,207,0,0" VerticalAlignment="Top" Width="96" Grid.Row="2" Grid.Column="1"/>
-        <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="343,242,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97" Maximum="2" Minimum="0.5" LargeChange="0.1" ValueChanged="voltsPerDivisionSlider_ValueChanged" Grid.Row="2" Height="22" Grid.Column="1">
+        <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="343,242,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97"
+                Maximum="2" 
+                Minimum="0.01" 
+                LargeChange="0.1" 
+                ValueChanged="voltsPerDivisionSlider_ValueChanged" Grid.Row="2" Height="22" Grid.Column="1">
             <Slider.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="-1"/>
@@ -159,9 +166,7 @@
             </Slider.RenderTransform>
         </Slider>
         <ToolBar x:Name="toolBar" Grid.Column="3" HorizontalAlignment="Left" Margin="214,97,0,0" Grid.Row="2" VerticalAlignment="Top" Height="13" Width="24"/>
-        <Label x:Name="voltage_measurement_label" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="32" Margin="592,149,0,0" Grid.Row="2" VerticalAlignment="Top" Width="46"/>
-        <Label x:Name="trigger_slider_voltage_label" Content="Label" HorizontalAlignment="Left" Height="36" Margin="16,157,0,0" Grid.Row="2" VerticalAlignment="Top" Width="46" Grid.Column="1"/>
-        <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="93,11,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="101,10,0,0" Grid.Row="2" VerticalAlignment="Top"/>
         <Label x:Name="voltsPerDivisionDisplay" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="285,233,0,0" Grid.Row="2" VerticalAlignment="Top" Width="64"/>
         <Slider x:Name="time_per_division_selection_slider" Grid.Column="1" HorizontalAlignment="Left" 
                 Margin="430,223,0,0" Grid.Row="2" VerticalAlignment="Top" Width="145" 
@@ -184,5 +189,18 @@
             </Slider.RenderTransform>
         </Slider>
         <Label x:Name="time_per_division_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="523,196,0,0" Grid.Row="2" VerticalAlignment="Top"/>
+        <Canvas x:Name="voltage_measurement_cursor_canvas" Grid.Column="1" HorizontalAlignment="Left" 
+                Height="{Binding ElementName=voltage_measurement_slider, Path=Maximum, UpdateSourceTrigger=PropertyChanged}" 
+                Margin="592,26,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="50" RenderTransformOrigin="0.48,0.498" >
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="360.312"/>
+                    <TranslateTransform X="-0.003" Y="0.004"/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
+        </Canvas>
+        <Canvas x:Name="trigger_label_canvas" Grid.Column="1" HorizontalAlignment="Left" Height="308" Margin="29,28,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="38"/>
     </Grid>
 </Window>
