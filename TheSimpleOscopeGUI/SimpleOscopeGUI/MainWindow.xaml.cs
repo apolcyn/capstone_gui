@@ -444,7 +444,7 @@ namespace SimpleOscope
 
         private DataDumper fileDataDumper;
 
-        private ObservableCollection<string> validCOMPorts = new ObservableCollection<string>();
+        private ObservableCollection<MenuItem> validCOMPorts = new ObservableCollection<MenuItem>();
 
         private void psoc_connect_button_click(object sender, RoutedEventArgs e)
         {
@@ -581,7 +581,14 @@ namespace SimpleOscope
         public void scanForCOMPorts(object sender, System.EventArgs args)
         {
             this.validCOMPorts.Clear();
-            Array.ForEach<string>(SerialPort.GetPortNames(), name => this.validCOMPorts.Add(name));
+            foreach(string name in SerialPort.GetPortNames())
+            {
+                MenuItem newMenuItem = new MenuItem();
+                newMenuItem.Header = name;
+                newMenuItem.Click += (o, e) => COMPortSelectedEvent(this
+                    , new COMPortSelectedEventArgs(name));
+                this.validCOMPorts.Add(newMenuItem);
+            }
         }
 
         private void commandPSOCForNewSamplesPerFrame(object sender

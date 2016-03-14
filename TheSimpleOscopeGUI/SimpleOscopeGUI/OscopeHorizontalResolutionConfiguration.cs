@@ -43,6 +43,11 @@ namespace SimpleOscope
         /// </summary>
         public uint numSamplesToDispaly { get; set; }
 
+        /// <summary>
+        /// the amount of time used to search for triggers on this configuration when autoscaling
+        /// </summary
+        public ulong autoScalingTriggerSearchTime { get; }
+
         private HorizontalResolutionConfiguration()
         {
         }

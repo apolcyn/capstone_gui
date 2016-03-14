@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoScaler.cs" />
     <Compile Include="DataDumper.cs" />
     <Compile Include="DumpSamplesWindow.xaml.cs">
       <DependentUpon>DumpSamplesWindow.xaml</DependentUpon>
