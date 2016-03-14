@@ -128,9 +128,9 @@
                     </TransformGroup>
                 </Button.RenderTransform>
             </Button>
-            <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Right" Margin="0,15,111,0" VerticalAlignment="Top" Width="400" Minimum="0" 
+            <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Right" Margin="0,16,197,0" VerticalAlignment="Top" Width="400" Minimum="0" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" 
-                SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22" Grid.Column="2" Grid.ColumnSpan="2"/>
+                SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22" Grid.Column="1" Grid.ColumnSpan="3"/>
             <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="179,194,0,0" VerticalAlignment="Top" Width="126" Grid.Row="2" Grid.Column="3"/>
             <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="36,207,0,0" VerticalAlignment="Top" Width="96" Grid.Row="2" Grid.Column="3"/>
             <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="98,242,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97"
@@ -179,7 +179,7 @@
                     </TransformGroup>
                 </Slider.RenderTransform>
             </Slider>
-            <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="101,10,0,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Width="38"/>
+            <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="93,10,0,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Width="46" RenderTransformOrigin="0.184,0.308"/>
             <Label x:Name="voltsPerDivisionDisplay" Content="Label" Grid.Column="3" HorizontalAlignment="Left" Height="25" Margin="40,233,0,0" Grid.Row="2" VerticalAlignment="Top" Width="64"/>
             <Slider x:Name="time_per_division_selection_slider" Grid.Column="3" HorizontalAlignment="Left" 
                 Margin="185,223,0,0" Grid.Row="2" VerticalAlignment="Top" Width="145" 
@@ -201,7 +201,7 @@
                     </TransformGroup>
                 </Slider.RenderTransform>
             </Slider>
-            <Label x:Name="time_per_division_display" Content="Label" Grid.Column="3" HorizontalAlignment="Left" Margin="278,196,0,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Width="38"/>
+            <Label x:Name="time_per_division_display" Content="Label" Grid.Column="3" HorizontalAlignment="Left" Margin="278,196,0,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Width="143"/>
             <Canvas x:Name="voltage_measurement_cursor_canvas" Grid.Column="3" HorizontalAlignment="Left" 
                 Height="{Binding ElementName=voltage_measurement_slider, Path=Maximum, UpdateSourceTrigger=PropertyChanged}" 
                 Margin="347,26,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="50" RenderTransformOrigin="0.48,0.498" >
