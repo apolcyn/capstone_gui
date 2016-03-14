@@ -368,9 +368,20 @@ namespace SimpleOscope
 
         private void dumpFramesToFileButton_Click(object sender, RoutedEventArgs e)
         {
-            this.fileDataDumper = new DataDumper(this.fileToDumpFramesTo.Text);
-            SampleFrameHookChangedEvent(this
-                , new SampleFrameHookChangedEventArgs(fileDataDumper.dumpNewFrame));
+            DumpSamplesWindow dumpSamplesWindow 
+                = new DumpSamplesWindow(
+                    this.curHorizontalResolutionConfiguration.psocSPS + "sps.txt");
+
+            if(dumpSamplesWindow.ShowDialog() == true)
+            {
+                string fileName = dumpSamplesWindow.Answer();
+                this.fileDataDumper = new DataDumper(this.fileToDumpFramesTo.Text);
+
+                SampleFrameHookChangedEvent(this
+                    , new SampleFrameHookChangedEventArgs(fileDataDumper.dumpNewFrame));
+            }
+
+            dumpSamplesWindow.Close();
         }
 
         private void rawSamplesMode_Click(object sender, RoutedEventArgs e)
@@ -381,11 +392,6 @@ namespace SimpleOscope
                 , new PixelVoltageRelationshipChangedEventArgs(0, 0, 1, 1));
             TriggerLevelChangedEvent(this
                 , new TriggerLevelChangedEventArgs(INITIAL_UPPER_SAMPLE / 2));
-        }
-
-        private void disconnect_request_button_Click(object sender, RoutedEventArgs e)
-        {
-            PSoCDisconnectRequestEvent(this, new PSoCDisconnectRequestEventArgs());
         }
 
         private void updateVoltageCursorLabelAfterPixelToVoltageUpdated(object sender
@@ -438,12 +444,38 @@ namespace SimpleOscope
 
         private DataDumper fileDataDumper;
 
+        private ObservableCollection<string> validCOMPorts = new ObservableCollection<string>();
+
+        private void psoc_connect_button_click(object sender, RoutedEventArgs e)
+        {
+            serialPortClient.SendPsocCommand(PSoCCommands.PSOCConnectRequestCommand);
+        }
+
+        private void psoc_disconnect_button_click(object sender, RoutedEventArgs e)
+        {
+            PSoCDisconnectRequestEvent(this, new PSoCDisconnectRequestEventArgs());
+        }
+
+        private void initializeCOMPortDropDown()
+        {
+            this.com_port_selection.ItemsSource = validCOMPorts;
+        }
+
+        private PSOCMessageLogger psocMessageLogger;
+
+        public const string MESSAGE_LOG_DIR = "./frame_dumps/";
+
+        private void initializePSOCMessageLogger()
+        {
+            Directory.CreateDirectory(MESSAGE_LOG_DIR);
+            string fileName = MESSAGE_LOG_DIR + "psoc-message-log-last-run" + System.DateTime.Now.Hour + ".txt";
+            this.psocMessageLogger = new PSOCMessageLogger(fileName);
+        } 
+
         public MainWindow()
         {
             InitializeComponent();
 
-            //Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
-            this.COM_port_comboBox.DropDownOpened += scanForCOMPorts;
             // Initialize PSOC sample receiving chain.
             OscopeWindowClient oscopeWindowClient  = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
             SampleFrameDisplayerImpl sampleFrameDisplayer 
@@ -464,6 +496,8 @@ namespace SimpleOscope
 
             initializeVoltageMeasurementCursor();
             initializeTriggerValueLabelCanvas();
+            initializeCOMPortDropDown();
+            initializePSOCMessageLogger();
 
             PixelVoltageRelationshipChangedEvent += linearInterpolator.pixelVoltageRelationshipChanged;
 
@@ -547,17 +581,13 @@ namespace SimpleOscope
 
         private void wroteCommandToPsoc(object sender, WroteCommandEventArgs args)
         {
-            this.DAC_config_command.Text = String.Format("{0}\n{1}"
-                , args.command, this.DAC_config_command.Text);
+            this.psocMessageLogger.appendMessage(args.command);
         }
 
-        private void scanForCOMPorts(object sender, System.EventArgs args)
+        public void scanForCOMPorts(object sender, System.EventArgs args)
         {
-            while(this.COM_port_comboBox.Items.Count > 0)
-            {
-                this.COM_port_comboBox.Items.RemoveAt(0);
-            }
-            Array.ForEach<string>(SerialPort.GetPortNames(), name => this.COM_port_comboBox.Items.Add(name));
+            this.validCOMPorts.Clear();
+            Array.ForEach<string>(SerialPort.GetPortNames(), name => this.validCOMPorts.Add(name));
         }
 
         private void commandPSOCForNewSamplesPerFrame(object sender
@@ -644,15 +674,6 @@ namespace SimpleOscope
                 line.Y1 = line.Y2 = (args.NewSize.Height / NUM_VOLTAGE_DIVISION_LINES) * count;
                 count++;
             }
-        }
-
-        private void COM_port_selection_comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count != 1)
-            {
-                throw new Exception(String.Format("selected number of items is {0}", e.AddedItems.Count));
-            }
-            COMPortSelectedEvent(this, new COMPortSelectedEventArgs(e.AddedItems[0].ToString()));
         }
 
         /// <summary>
@@ -848,28 +869,11 @@ namespace SimpleOscope
             }
         }
 
-        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (this.trigger_selection.SelectedIndex == 0)
-            {
-                //throw new NotImplementedException();
-            }
-            else if(this.trigger_selection.SelectedIndex == 1)
-            {
-                //throw new NotImplementedException();
-            }
-        }
-
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             this.DAC_config_command.Clear();
             this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
             serialPortClient.SendPsocCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
-        }
-
-        private void button2_Click(object sender, RoutedEventArgs e)
-        {
-            serialPortClient.SendPsocCommand(PSoCCommands.PSOCConnectRequestCommand);
         }
 
         private void button3_Click(object sender, RoutedEventArgs e)

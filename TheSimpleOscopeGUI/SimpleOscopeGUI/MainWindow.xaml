@@ -4,68 +4,88 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleOscope"
-        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="SimpleOscope.MainWindow"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" 
+  Icon="window_icon.ico"
+    x:Class="SimpleOscope.MainWindow"
         mc:Ignorable="d" 
     Closing="window_closing"
-        Title="The Simple Oscope" Height="600" Width="1500">
-    <Grid Margin="10,3,38,-4" Height="571" VerticalAlignment="Top">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="120*"/>
-            <RowDefinition Height="56*"/>
-            <RowDefinition Height="395*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="184"/>
-            <ColumnDefinition Width="654"/>
-            <ColumnDefinition Width="163*"/>
-            <ColumnDefinition Width="140*"/>
-        </Grid.ColumnDefinitions>
-        <Slider x:Name="DAC_vpp_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="22,8,0,0" Value="2.0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Vpp" Maximum="4" ValueChanged="DAC_vpp_updated" Grid.Row="1"/>
-        <Slider x:Name="DAC_voffset_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="22,9,0,0" Value="1.0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voffset" SmallChange="0.01" Maximum="4" ValueChanged="DAC_voffset_updated" Grid.Row="2"/>
-        <Slider x:Name="DAC_duty_cycle" Grid.Column="2" HorizontalAlignment="Left" Margin="22,59,0,0" Value="50" VerticalAlignment="Top" Width="120" Height="22" ToolTip="duty cycle" ValueChanged="DAC_duty_cycle_updated" Maximum="100" SmallChange="1" LargeChange="10" Grid.Row="2"/>
-        <TextBox x:Name="Vpp_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="153,7,0,0" TextWrapping="Wrap" Text="2.0" VerticalAlignment="Top" Width="62" Grid.Row="1"/>
-        <TextBox x:Name="Voffset_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="153,9,0,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" Width="62" Grid.Row="2"/>
-        <TextBox x:Name="duty_cycle_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="147,59,0,0" TextWrapping="Wrap" Text="50" VerticalAlignment="Top" Width="62" Grid.Row="2"/>
-        <Slider x:Name="DAC_frequency_slider" Grid.Column="2" HorizontalAlignment="Left" Margin="22,69,0,0" Value="100" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
-        <TextBox x:Name="DAC_frequency_text_display" Grid.Column="2" HorizontalAlignment="Left" Height="23" Margin="153,68,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="62"/>
-        <ComboBox x:Name="DAC_wave_type_list" Grid.Column="2" HorizontalAlignment="Left" Margin="22,127,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22" Grid.Row="2">
-        </ComboBox>
-        <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="2" HorizontalAlignment="Left" Height="25" Margin="25,161,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click" Grid.Row="2"/>
-        <TextBox x:Name="DAC_config_command" Grid.Column="2" HorizontalAlignment="Left" Height="126" Margin="25,259,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" RenderTransformOrigin="0.5,0.5" Grid.Row="2">
-            <TextBox.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-0.153"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </TextBox.RenderTransform>
-        </TextBox>
-        <Label x:Name="label" Content="Function Generator Settings" Grid.Column="2" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
-        <Label x:Name="label1" Content="Oscilloscope Settings" Grid.Column="3" HorizontalAlignment="Left" Margin="38,3,0,0" VerticalAlignment="Top" Width="181" Height="26"/>
-        <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="3" HorizontalAlignment="Left" Margin="37,2,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5" Grid.Row="1"/>
-        <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="146,47,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="3" Grid.Column="1">
-            <Canvas.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleY="-1" ScaleX="1"/>
-                    <SkewTransform AngleY="0" AngleX="0"/>
-                    <RotateTransform Angle="0"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Canvas.RenderTransform>
-            <Line Name="triggerLine" 
+        Title="The Simple Oscope" Height="700" Width="1100">
+    <DockPanel>
+        <Border Height="50" DockPanel.Dock="Top" BorderBrush="Black"  BorderThickness="3,3,3,3" x:Name="HeaderBorder" Padding="0,0,0,0" >
+            <DockPanel x:Name="Header" Background="LightSlateGray">
+                <TextBlock xml:space="preserve" Opacity="3" FontFamily="Segoe UI" FontSize="24" FontStretch="Normal" FontWeight="ExtraBold" TextWrapping="Wrap" Foreground="Gold" VerticalAlignment="Bottom" Margin="0,0,0,5">
+                    <Run Foreground="Gold">The Simple Oscope</Run></TextBlock>
+            </DockPanel>
+        </Border>
+        <Border BorderBrush="Black" BorderThickness="3, 0, 3, 3" DockPanel.Dock="Top" Margin="0,0,0,0">
+            <Menu VerticalAlignment="Bottom" Background="#FF419FB9" Foreground="Black" Margin="0,0,0,0">
+                <MenuItem x:Name="com_port_selection" Header="COM Port" Click="scanForCOMPorts"/>
+                <MenuItem x:Name="psoc_connect_button" Header="Connect" Click="psoc_connect_button_click"/>
+                <MenuItem x:Name="psoc_disconnect_button" Header="Disconnect" Click="psoc_disconnect_button_click"/>
+                <MenuItem x:Name="test_button" Header="testing">
+                    <MenuItem x:Name="raw_samples_mode_button" Foreground="Black" Header="Unconverted Samples Mode" Click="rawSamplesMode_Click"/>
+                    <MenuItem x:Name="dump_to_file_button" Foreground="Black" Header="Dump Wave To File" Click="dumpFramesToFileButton_Click" />
+                </MenuItem>
+            </Menu>
+        </Border>
+        <Grid Margin="10,-1,38,-85" Height="575" VerticalAlignment="Top" Width="986">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120*"/>
+                <RowDefinition Height="56*"/>
+                <RowDefinition Height="395*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="145"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="496"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Slider x:Name="DAC_vpp_slider" Grid.Column="4" HorizontalAlignment="Left" Margin="22,8,0,0" Value="2.0" VerticalAlignment="Top" Width="120" Height="22" SmallChange="0.01" ToolTip="Vpp" Maximum="4" ValueChanged="DAC_vpp_updated" Grid.Row="1"/>
+            <Slider x:Name="DAC_voffset_slider" Grid.Column="4" HorizontalAlignment="Left" Margin="22,9,0,0" Value="1.0" VerticalAlignment="Top" Width="120" Height="22" ToolTip="Voffset" SmallChange="0.01" Maximum="4" ValueChanged="DAC_voffset_updated" Grid.Row="2"/>
+            <Slider x:Name="DAC_duty_cycle" Grid.Column="4" HorizontalAlignment="Left" Margin="22,59,0,0" Value="50" VerticalAlignment="Top" Width="120" Height="22" ToolTip="duty cycle" ValueChanged="DAC_duty_cycle_updated" Maximum="100" SmallChange="1" LargeChange="10" Grid.Row="2"/>
+            <TextBox x:Name="Vpp_text_display" Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="153,7,0,0" TextWrapping="Wrap" Text="2.0" VerticalAlignment="Top" Width="62" Grid.Row="1"/>
+            <TextBox x:Name="Voffset_text_display" Grid.Column="4" HorizontalAlignment="Left" Height="22" Margin="153,9,0,0" TextWrapping="Wrap" Text="1.0" VerticalAlignment="Top" Width="62" Grid.Row="2"/>
+            <TextBox x:Name="duty_cycle_text_display" Grid.Column="4" HorizontalAlignment="Left" Height="22" Margin="147,59,0,0" TextWrapping="Wrap" Text="50" VerticalAlignment="Top" Width="62" Grid.Row="2"/>
+            <Slider x:Name="DAC_frequency_slider" Grid.Column="4" HorizontalAlignment="Left" Margin="22,69,0,0" Value="100" VerticalAlignment="Top" RenderTransformOrigin="-11.083,0.227" Width="120" LargeChange="10000" SmallChange="1" Maximum="240000" ValueChanged="DAC_frequency_slider_updated" Height="22" ToolTip="Frequency"/>
+            <TextBox x:Name="DAC_frequency_text_display" Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="153,68,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="62"/>
+            <ComboBox x:Name="DAC_wave_type_list" Grid.Column="4" HorizontalAlignment="Left" Margin="22,127,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22" Grid.Row="2">
+            </ComboBox>
+            <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="4" HorizontalAlignment="Left" Height="25" Margin="25,161,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click" Grid.Row="2"/>
+            <TextBox x:Name="DAC_config_command" Grid.Column="4" HorizontalAlignment="Left" Height="126" Margin="25,259,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" RenderTransformOrigin="0.5,0.5" Grid.Row="2">
+                <TextBox.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-0.153"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </TextBox.RenderTransform>
+            </TextBox>
+            <Label x:Name="label" Content="Function Generator Settings" Grid.Column="4" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
+            <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="1" HorizontalAlignment="Left" Margin="83,276,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Grid.ColumnSpan="2"/>
+            <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="1,47,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="2">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                        <SkewTransform AngleY="0" AngleX="0"/>
+                        <RotateTransform Angle="0"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+                <Line Name="triggerLine" 
                   X1="0" 
                   X2="{Binding ElementName=oscope_window_canvas, Path=ActualWidth,  UpdateSourceTrigger=PropertyChanged}"
                   Y1="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                   Y2="{Binding ElementName=trigger_slider_button, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                   Stroke="DarkGray" StrokeThickness="3" />
-            <Line Name="triggerVerticalLine" 
+                <Line Name="triggerVerticalLine" 
                   Y1="0" 
                   Y2="{Binding ElementName=oscope_window_canvas, Path=ActualHeight,  UpdateSourceTrigger=PropertyChanged}" 
                   X1="{Binding ElementName=vertical_trigger_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
                   X2="{Binding ElementName=vertical_trigger_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                   Stroke="DarkGray" StrokeThickness="3" />
-            <Line Name="voltageMeasurementLine"
+                <Line Name="voltageMeasurementLine"
                   X1="0" 
                   X2="{Binding ElementName=oscope_window_canvas, Path=ActualWidth,  UpdateSourceTrigger=PropertyChanged}"
                   Y1="{Binding ElementName=voltage_measurement_slider, Path=Value, UpdateSourceTrigger=PropertyChanged}" 
@@ -74,102 +94,95 @@
                   StrokeThickness="3"
                   StrokeDashArray="4, 4"
             />
-        </Canvas>
-        <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Margin="221,69,0,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
-        <Button x:Name="Vpp_update_btn" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Height="21" Margin="220,9,0,0" VerticalAlignment="Top" Width="52" Click="Vpp_update_btn_Click" Grid.Row="1"/>
-        <Button x:Name="Voffset_update_btn" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="221,9,0,0" VerticalAlignment="Top" Width="52" Click="Voffset_update_btn_Click" Grid.Row="2"/>
-        <Button x:Name="duty_cycle_update_btn" Content="Apply" Grid.Column="2" HorizontalAlignment="Left" Height="22" Margin="221,59,0,0" VerticalAlignment="Top" Width="52" Click="duty_cycle_update_btn_Click" Grid.Row="2"/>
-        <Label x:Name="Duty_Cycle" Content="Duty Cycle: (%)" Grid.Column="2" HorizontalAlignment="Left" Height="28" Margin="22,31,0,0" VerticalAlignment="Top" Width="120" Grid.Row="2"/>
-        <Label x:Name="label2" Content="Voltage Offset: (V)" Grid.Column="2" HorizontalAlignment="Left" Height="30" Margin="22,35,0,0" VerticalAlignment="Top" Width="120" Grid.Row="1" Grid.RowSpan="2"/>
-        <Label x:Name="label3" Content="Peak-to-Peak Voltage: (V)" Grid.Column="2" HorizontalAlignment="Left" Height="37" Margin="21,96,0,0" VerticalAlignment="Top" Width="148" Grid.RowSpan="2"/>
-        <Label x:Name="label4" Content="Frequency: (Hz)" Grid.Column="2" HorizontalAlignment="Left" Height="29" Margin="22,41,0,0" VerticalAlignment="Top" Width="120"/>
-        <Label x:Name="label5" Content="Wave Type:" Grid.Column="2" HorizontalAlignment="Left" Height="25" Margin="22,90,0,0" VerticalAlignment="Top" Width="173" Grid.Row="2"/>
-        <Label x:Name="label8" Content="Trigger:" HorizontalAlignment="Left" Height="26" Margin="77,14,0,0" VerticalAlignment="Top" Width="77" Grid.Column="1"/>
-        <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="111,8,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" 
+            </Canvas>
+            <Button x:Name="DAC_frequency_update_btn" Content="Apply" Grid.Column="4" HorizontalAlignment="Left" Margin="221,69,-36,0" VerticalAlignment="Top" Width="52" RenderTransformOrigin="0.824,0.545" Height="22" Click="DAC_Frequency_update_btn_click"/>
+            <Button x:Name="Vpp_update_btn" Content="Apply" Grid.Column="4" HorizontalAlignment="Left" Height="21" Margin="220,9,-35,0" VerticalAlignment="Top" Width="52" Click="Vpp_update_btn_Click" Grid.Row="1"/>
+            <Button x:Name="Voffset_update_btn" Content="Apply" Grid.Column="4" HorizontalAlignment="Left" Height="22" Margin="221,9,-36,0" VerticalAlignment="Top" Width="52" Click="Voffset_update_btn_Click" Grid.Row="2"/>
+            <Button x:Name="duty_cycle_update_btn" Content="Apply" Grid.Column="4" HorizontalAlignment="Left" Height="22" Margin="221,59,-36,0" VerticalAlignment="Top" Width="52" Click="duty_cycle_update_btn_Click" Grid.Row="2"/>
+            <Label x:Name="Duty_Cycle" Content="Duty Cycle: (%)" Grid.Column="4" HorizontalAlignment="Left" Height="28" Margin="22,31,0,0" VerticalAlignment="Top" Width="120" Grid.Row="2"/>
+            <Label x:Name="label2" Content="Voltage Offset: (V)" Grid.Column="4" HorizontalAlignment="Left" Height="30" Margin="22,35,0,0" VerticalAlignment="Top" Width="120" Grid.Row="1" Grid.RowSpan="2"/>
+            <Label x:Name="label3" Content="Peak-to-Peak Voltage: (V)" Grid.Column="4" HorizontalAlignment="Left" Height="37" Margin="21,96,0,0" VerticalAlignment="Top" Width="148" Grid.RowSpan="2"/>
+            <Label x:Name="label4" Content="Frequency: (Hz)" Grid.Column="4" HorizontalAlignment="Left" Height="29" Margin="22,41,0,0" VerticalAlignment="Top" Width="120"/>
+            <Label x:Name="label5" Content="Wave Type:" Grid.Column="4" HorizontalAlignment="Left" Height="25" Margin="22,90,0,0" VerticalAlignment="Top" Width="173" Grid.Row="2"/>
+            <Label x:Name="label8" Content="Trigger:" HorizontalAlignment="Left" Height="26" Margin="77,14,0,0" VerticalAlignment="Top" Width="77" Grid.Column="1" Grid.ColumnSpan="2"/>
+            <Slider x:Name="trigger_slider_button" HorizontalAlignment="Left" Margin="-59,6,0,0" VerticalAlignment="Top" Height="32" Width="305" RenderTransformOrigin="0.5,0.5" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}" 
-                LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.Row="2" Grid.ColumnSpan="2" >
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleY="-1" ScaleX="1"/>
-                    <SkewTransform AngleY="0" AngleX="0"/>
-                    <RotateTransform Angle="-89.585"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-        <ComboBox x:Name="trigger_selection" Grid.Column="3" HorizontalAlignment="Left" Margin="36,69,0,0" SelectedIndex="0"  VerticalAlignment="Top" Width="120" SelectionChanged="comboBox_SelectionChanged" Height="22">
-            <ComboBoxItem>Rising Edge</ComboBoxItem>
-            <ComboBoxItem>Falling Edge</ComboBoxItem>
-        </ComboBox>
-        <Label x:Name="label9" Content="Trigger Type:" Grid.Column="3" HorizontalAlignment="Left" Margin="35,40,0,0" VerticalAlignment="Top" Width="119" Height="26"/>
-        <Button x:Name="button1" Content="Apply Configuration" Grid.Column="2" HorizontalAlignment="Left" Margin="23,222,0,0" VerticalAlignment="Top" Width="173" Height="27" Click="button1_Click" Grid.Row="2"/>
-        <Button x:Name="button2" Content="Connect" Grid.Column="3" HorizontalAlignment="Left" Margin="49,226,0,0" VerticalAlignment="Top" Width="190" Height="25" Click="button2_Click" Grid.Row="2"/>
-        <Button x:Name="button3" Content="Stop Function Generator" Grid.Column="2" HorizontalAlignment="Left" Margin="24,192,0,0" VerticalAlignment="Top" Width="171" RenderTransformOrigin="0.5,0.5" Height="25" Click="button3_Click" Grid.Row="2">
-            <Button.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="0.099"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Button.RenderTransform>
-        </Button>
-        <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Right" Margin="0,15,111,0" VerticalAlignment="Top" Width="400" Minimum="0" 
+                LargeChange="10" SmallChange="1" ValueChanged="trigger_slider_button_ValueChanged" Grid.Row="2" Grid.ColumnSpan="3" >
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                        <SkewTransform AngleY="0" AngleX="0"/>
+                        <RotateTransform Angle="-89.585"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
+            <Button x:Name="button1" Content="Apply Configuration" Grid.Column="4" HorizontalAlignment="Left" Margin="23,222,0,0" VerticalAlignment="Top" Width="173" Height="27" Click="button1_Click" Grid.Row="2"/>
+            <Button x:Name="button3" Content="Stop Function Generator" Grid.Column="4" HorizontalAlignment="Left" Margin="24,192,0,0" VerticalAlignment="Top" Width="171" RenderTransformOrigin="0.5,0.5" Height="25" Click="button3_Click" Grid.Row="2">
+                <Button.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="0.099"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Button.RenderTransform>
+            </Button>
+            <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Right" Margin="0,15,111,0" VerticalAlignment="Top" Width="400" Minimum="0" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" 
-                SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22" Grid.Column="1"/>
-        <ComboBox x:Name="COM_port_comboBox" Grid.Column="3" HorizontalAlignment="Left" Height="22" Margin="50,190,0,0" VerticalAlignment="Top" Width="153" SelectionChanged="COM_port_selection_comboBox_SelectionChanged" Grid.Row="2"/>
-        <Label x:Name="label10" Content="COM Port:" Grid.Column="3" HorizontalAlignment="Left" Margin="48,164,0,0" VerticalAlignment="Top" Width="86" Height="26" Grid.Row="2"/>
-        <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="424,194,0,0" VerticalAlignment="Top" Width="126" Grid.Row="2" Grid.Column="1"/>
-        <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="281,207,0,0" VerticalAlignment="Top" Width="96" Grid.Row="2" Grid.Column="1"/>
-        <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="343,242,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97"
+                SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22" Grid.Column="2" Grid.ColumnSpan="2"/>
+            <Label x:Name="label11" Content="Time / Division:" HorizontalAlignment="Left" Height="38" Margin="179,194,0,0" VerticalAlignment="Top" Width="126" Grid.Row="2" Grid.Column="3"/>
+            <Label x:Name="label12" Content="Volts / Division:" HorizontalAlignment="Left" Height="28" Margin="36,207,0,0" VerticalAlignment="Top" Width="96" Grid.Row="2" Grid.Column="3"/>
+            <Slider x:Name="voltsPerDivisionSlider" HorizontalAlignment="Left" Margin="98,242,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Width="97"
                 Maximum="2" 
                 Minimum="0.01" 
-                LargeChange="0.1" 
-                ValueChanged="voltsPerDivisionSlider_ValueChanged" Grid.Row="2" Height="22" Grid.Column="1">
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="-1"/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="89.248"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-        <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Margin="92,204,0,0" VerticalAlignment="Top" Width="94" Grid.Row="2" Height="26" Grid.Column="1"/>
-        <Slider x:Name="voltageOffsetSlider" HorizontalAlignment="Left" Margin="142,228,0,0" VerticalAlignment="Top" Height="33" RenderTransformOrigin="0.5,0.5" LargeChange="0.1" Width="98" Minimum="0" 
+                LargeChange="0.01" 
+                ValueChanged="voltsPerDivisionSlider_ValueChanged" Grid.Row="2" Height="22" Grid.Column="3">
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="89.248"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
+            <Label x:Name="label13" Content="Voltage Offset:" HorizontalAlignment="Left" Margin="3,212,0,0" VerticalAlignment="Top" Width="94" Grid.Row="2" Height="26" Grid.Column="2"/>
+            <Slider x:Name="voltageOffsetSlider" HorizontalAlignment="Left" Margin="55,240,0,0" 
+                VerticalAlignment="Top" Height="33" RenderTransformOrigin="0.5,0.5" 
+                LargeChange="0.01" 
+                Width="98" Minimum="0" 
                 Maximum="5.0"
-                ValueChanged="voltageOffsetSlider_ValueChanged" Grid.Row="2" Grid.Column="1">
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="-1"/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="90.029"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-        <Button x:Name="dumpFramesToFileButton" Content="Dump Frames To File" HorizontalAlignment="Left" Height="32" Margin="437,322,0,0" VerticalAlignment="Top" Width="165" Click="dumpFramesToFileButton_Click" Grid.Row="2" Grid.Column="1"/>
-        <TextBox x:Name="fileToDumpFramesTo" HorizontalAlignment="Left" Height="29" Margin="435,280,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" Grid.Row="2" Grid.Column="1"/>
-        <Button x:Name="button4" ToolTip="Turns off conversion of samples. Intended for dumping raw sample frames from PSoC." Content="Raw Samples Mode" HorizontalAlignment="Left" Height="32" Margin="281,323,0,0" VerticalAlignment="Top" Width="135" Click="rawSamplesMode_Click" Grid.Row="2" Grid.Column="1"/>
-        <Button x:Name="disconnect_request_button" Content="Disconnect from PSoC" Grid.Column="3" HorizontalAlignment="Left" Margin="55,271,0,0" VerticalAlignment="Top" Width="179" Height="24" Click="disconnect_request_button_Click" Grid.Row="2"/>
-        <Slider x:Name="voltage_measurement_slider" 
+                ValueChanged="voltageOffsetSlider_ValueChanged" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90.029"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
+            <Button x:Name="dumpFramesToFileButton" Content="Dump Frames To File" HorizontalAlignment="Left" Height="32" Margin="192,322,0,0" VerticalAlignment="Top" Width="165" Click="dumpFramesToFileButton_Click" Grid.Row="2" Grid.Column="3"/>
+            <TextBox x:Name="fileToDumpFramesTo" HorizontalAlignment="Left" Height="29" Margin="190,280,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" Grid.Row="2" Grid.Column="3"/>
+            <Button x:Name="button4" ToolTip="Turns off conversion of samples. Intended for dumping raw sample frames from PSoC." Content="Raw Samples Mode" HorizontalAlignment="Left" Height="32" Margin="36,323,0,0" VerticalAlignment="Top" Width="135" Click="rawSamplesMode_Click" Grid.Row="2" Grid.Column="3"/>
+            <Slider x:Name="voltage_measurement_slider" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}"
                 LargeChange="10" SmallChange="1" ValueChanged="voltage_measurement_slider_ValueChanged"
-                Grid.Column="1" HorizontalAlignment="Left" Margin="418,1,0,0" VerticalAlignment="Top" Height="36" RenderTransformOrigin="0.5,0.5" Width="302" Grid.Row="2" Grid.ColumnSpan="2">
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="-1"/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="90.249"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-        <ToolBar x:Name="toolBar" Grid.Column="3" HorizontalAlignment="Left" Margin="214,97,0,0" Grid.Row="2" VerticalAlignment="Top" Height="13" Width="24"/>
-        <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="101,10,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <Label x:Name="voltsPerDivisionDisplay" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="285,233,0,0" Grid.Row="2" VerticalAlignment="Top" Width="64"/>
-        <Slider x:Name="time_per_division_selection_slider" Grid.Column="1" HorizontalAlignment="Left" 
-                Margin="430,223,0,0" Grid.Row="2" VerticalAlignment="Top" Width="145" 
+                Grid.Column="3" HorizontalAlignment="Left" Margin="173,1,0,0" VerticalAlignment="Top" Height="36" RenderTransformOrigin="0.5,0.5" Width="302" Grid.Row="2">
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="90.249"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
+            <Label x:Name="voltage_at_window_bottom_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="101,10,0,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Width="38"/>
+            <Label x:Name="voltsPerDivisionDisplay" Content="Label" Grid.Column="3" HorizontalAlignment="Left" Height="25" Margin="40,233,0,0" Grid.Row="2" VerticalAlignment="Top" Width="64"/>
+            <Slider x:Name="time_per_division_selection_slider" Grid.Column="3" HorizontalAlignment="Left" 
+                Margin="185,223,0,0" Grid.Row="2" VerticalAlignment="Top" Width="145" 
                 RenderTransformOrigin="0.5,0.5"
                 TickPlacement="Both"
                 Minimum="0"
@@ -177,30 +190,31 @@
                 IsMoveToPointEnabled="True"
                 IsSelectionRangeEnabled="True"
                 IsSnapToTickEnabled="True"
-                Ticks="0, 1, 2, 3, 4, 5" ValueChanged="time_per_division_selection_slider_ValueChanged" 
+                Ticks="0, 1, 2, 3, 4, 5" ValueChanged="time_per_division_selection_slider_ValueChanged" Height="30" 
                 >
-            <Slider.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-0.026"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Slider.RenderTransform>
-        </Slider>
-        <Label x:Name="time_per_division_display" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Margin="523,196,0,0" Grid.Row="2" VerticalAlignment="Top"/>
-        <Canvas x:Name="voltage_measurement_cursor_canvas" Grid.Column="1" HorizontalAlignment="Left" 
+                <Slider.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-0.026"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Slider.RenderTransform>
+            </Slider>
+            <Label x:Name="time_per_division_display" Content="Label" Grid.Column="3" HorizontalAlignment="Left" Margin="278,196,0,0" Grid.Row="2" VerticalAlignment="Top" Height="26" Width="38"/>
+            <Canvas x:Name="voltage_measurement_cursor_canvas" Grid.Column="3" HorizontalAlignment="Left" 
                 Height="{Binding ElementName=voltage_measurement_slider, Path=Maximum, UpdateSourceTrigger=PropertyChanged}" 
-                Margin="592,26,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="50" RenderTransformOrigin="0.48,0.498" >
-            <Canvas.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="360.312"/>
-                    <TranslateTransform X="-0.003" Y="0.004"/>
-                </TransformGroup>
-            </Canvas.RenderTransform>
-        </Canvas>
-        <Canvas x:Name="trigger_label_canvas" Grid.Column="1" HorizontalAlignment="Left" Height="308" Margin="29,28,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="38"/>
-    </Grid>
+                Margin="347,26,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="50" RenderTransformOrigin="0.48,0.498" >
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="360.312"/>
+                        <TranslateTransform X="-0.003" Y="0.004"/>
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+            </Canvas>
+            <Canvas x:Name="trigger_label_canvas" Grid.Column="1" HorizontalAlignment="Left" Height="308" Margin="29,28,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="38"/>
+        </Grid>
+    </DockPanel>
 </Window>

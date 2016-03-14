@@ -59,8 +59,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataDumper.cs" />
+    <Compile Include="DumpSamplesWindow.xaml.cs">
+      <DependentUpon>DumpSamplesWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LinearInterpolator.cs" />
     <Compile Include="OscopeHorizontalResolutionConfiguration.cs" />
+    <Compile Include="PSOCMessageLogger.cs" />
     <Compile Include="SampleReceiving\ByteReceiver.cs" />
     <Compile Include="SampleReceiving\Impl\ByteReceiverImpl.cs" />
     <Compile Include="SampleReceiving\Impl\SerialPortClient.cs" />
@@ -73,6 +77,10 @@
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameDisplayer.cs" />
     <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />
+    <Page Include="DumpSamplesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -115,6 +123,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="window_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
