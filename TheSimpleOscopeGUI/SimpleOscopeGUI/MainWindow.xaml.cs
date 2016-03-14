@@ -375,7 +375,7 @@ namespace SimpleOscope
             if(dumpSamplesWindow.ShowDialog() == true)
             {
                 string fileName = dumpSamplesWindow.Answer();
-                this.fileDataDumper = new DataDumper(this.fileToDumpFramesTo.Text);
+                this.fileDataDumper = new DataDumper(fileName);
 
                 SampleFrameHookChangedEvent(this
                     , new SampleFrameHookChangedEventArgs(fileDataDumper.dumpNewFrame));
@@ -491,7 +491,6 @@ namespace SimpleOscope
             HorizonalResolutionConfigChangedEvent += oscopeHorizontalResolutionConfigurationChanged;
             HorizonalResolutionConfigChangedEvent += updateHorizontalTriggeringSelector;
             HorizonalResolutionConfigChangedEvent += commandPSOCForNewSamplesPerFrame;
-            HorizonalResolutionConfigChangedEvent += updateSPSDisplayInFileDumpNameBox;
             HorizonalResolutionConfigChangedEvent += updateTimePerDivisionTextDisplay;
 
             initializeVoltageMeasurementCursor();
@@ -555,11 +554,6 @@ namespace SimpleOscope
         {
             MessageBox.Show("PSoC disconnected. Writing to closed serial Port. Error Message: {0}"
                 , args.message);
-        }
-
-        private void updateSPSDisplayInFileDumpNameBox(object sender, HorizontalResolutionConfigChangedEventArgs args)
-        {
-            this.fileToDumpFramesTo.Text = args.config.psocSPS + "sps.txt";
         }
 
         private void updateVoltageOffsetDisplay(object sender, PixelVoltageRelationshipUpdatedEventArgs args)
@@ -785,7 +779,6 @@ namespace SimpleOscope
                 string temp = String.Format("#DW{0}#"
                     , nextFunctionGeneratorConfiguration.getWaveLetter());
                 serialPortClient.SendPsocCommand(temp);
-                this.DAC_config_command.Text = temp;
             }
         }
 
@@ -871,8 +864,6 @@ namespace SimpleOscope
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            this.DAC_config_command.Clear();
-            this.DAC_config_command.Text = nextFunctionGeneratorConfiguration.getConfiguration();
             serialPortClient.SendPsocCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
         }
 

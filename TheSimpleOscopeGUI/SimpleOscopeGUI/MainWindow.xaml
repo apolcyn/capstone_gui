@@ -9,7 +9,7 @@
     x:Class="SimpleOscope.MainWindow"
         mc:Ignorable="d" 
     Closing="window_closing"
-        Title="The Simple Oscope" Height="700" Width="1100">
+        Title="The Simple Oscope" Height="600" Width="1100">
     <DockPanel>
         <Border Height="50" DockPanel.Dock="Top" BorderBrush="Black"  BorderThickness="3,3,3,3" x:Name="HeaderBorder" Padding="0,0,0,0" >
             <DockPanel x:Name="Header" Background="LightSlateGray">
@@ -28,7 +28,7 @@
                 </MenuItem>
             </Menu>
         </Border>
-        <Grid Margin="10,-1,38,-85" Height="575" VerticalAlignment="Top" Width="986">
+        <Grid Margin="10,-1,38,0" Height="561" VerticalAlignment="Top" Width="992">
             <Grid.RowDefinitions>
                 <RowDefinition Height="120*"/>
                 <RowDefinition Height="56*"/>
@@ -52,16 +52,6 @@
             <ComboBox x:Name="DAC_wave_type_list" Grid.Column="4" HorizontalAlignment="Left" Margin="22,127,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22" Grid.Row="2">
             </ComboBox>
             <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="4" HorizontalAlignment="Left" Height="25" Margin="25,161,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click" Grid.Row="2"/>
-            <TextBox x:Name="DAC_config_command" Grid.Column="4" HorizontalAlignment="Left" Height="126" Margin="25,259,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" RenderTransformOrigin="0.5,0.5" Grid.Row="2">
-                <TextBox.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="-0.153"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </TextBox.RenderTransform>
-            </TextBox>
             <Label x:Name="label" Content="Function Generator Settings" Grid.Column="4" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
             <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="1" HorizontalAlignment="Left" Margin="83,276,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Grid.ColumnSpan="2"/>
             <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="1,47,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="2">
@@ -163,9 +153,6 @@
                     </TransformGroup>
                 </Slider.RenderTransform>
             </Slider>
-            <Button x:Name="dumpFramesToFileButton" Content="Dump Frames To File" HorizontalAlignment="Left" Height="32" Margin="192,322,0,0" VerticalAlignment="Top" Width="165" Click="dumpFramesToFileButton_Click" Grid.Row="2" Grid.Column="3"/>
-            <TextBox x:Name="fileToDumpFramesTo" HorizontalAlignment="Left" Height="29" Margin="190,280,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="168" Grid.Row="2" Grid.Column="3"/>
-            <Button x:Name="button4" ToolTip="Turns off conversion of samples. Intended for dumping raw sample frames from PSoC." Content="Raw Samples Mode" HorizontalAlignment="Left" Height="32" Margin="36,323,0,0" VerticalAlignment="Top" Width="135" Click="rawSamplesMode_Click" Grid.Row="2" Grid.Column="3"/>
             <Slider x:Name="voltage_measurement_slider" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualHeight, UpdateSourceTrigger=PropertyChanged}"
                 LargeChange="10" SmallChange="1" ValueChanged="voltage_measurement_slider_ValueChanged"
