@@ -238,6 +238,8 @@ namespace SimpleOscope
 
         private Label triggerValueLabel = new Label();
 
+        private AutoScaler autoScaler = null;
+
         public const int INITIAL_LOWER_SAMPLE = 0, INITIAL_UPPER_SAMPLE = 4095;
         public const double INITIAL_LOWER_VOLTAGE = -5.0, INITIAL_UPPER_VOLTAGE = 5.0;
 
@@ -465,12 +467,100 @@ namespace SimpleOscope
 
         public const string MESSAGE_LOG_DIR = "./message_logs/";
 
+        private void triggerFound(object sender, TriggerFoundEventArgs args)
+        {
+            this.autoScaler.IncrementTriggerCount();
+        }
+
+        private void frameAssembled(object sender, FrameAssembledEventArgs args)
+        {
+            this.autoScaler.IncrementFrameNumber();
+        }
+
+        private delegate void HorizontalConfigChangedDelegateOnUIThreadDelegate(int newHorizontalConfigIndex);
+
+        private void horizontalConfigChangedeOnUIThread(int newHorizontalConfigIndex)
+        {
+            HorizonalResolutionConfigChangedEvent(this,
+                        new HorizontalResolutionConfigChangedEventArgs(
+                            horizontalConfigurations[newHorizontalConfigIndex]));
+        }
+
+        private void horizontalConfigChangedDelegate(int newHorizontalConfigIndex)
+        {
+            this.Dispatcher.BeginInvoke(
+                new HorizontalConfigChangedDelegateOnUIThreadDelegate(horizontalConfigChangedeOnUIThread)
+                , new object[] {newHorizontalConfigIndex});
+        }
+
+        private delegate void TriggerLevelChangedUIThreadDelegate(int newTriggerLevel);
+
+        private void triggerLevelChangedUIThread(int newTriggerLevel)
+        {
+            TriggerLevelChangedEvent(this
+                , new TriggerLevelChangedEventArgs(newTriggerLevel));
+        }
+
+        private void triggerLevelChangedDelegate(int newTriggerLevel)
+        {
+            this.Dispatcher.BeginInvoke(new TriggerLevelChangedUIThreadDelegate(triggerLevelChangedUIThread)
+                , new object[] { newTriggerLevel });
+        }
+
+        private delegate void AutoScalingCompleteUIThreadDelegate(int bestTriggerLevel, int bestConfigIndex);
+
+        private void autoScalingCompleteDelegateUIThread(int bestTriggerLevel, int bestConfigIndex)
+        {
+            horizontalConfigChangedDelegate(bestConfigIndex);
+            triggerLevelChangedDelegate(bestTriggerLevel);
+            this.sampleFrameDisplayer.TriggerFoundEvent -= this.triggerFound;
+            this.sampleFrameDisplayer.FrameAssembledEvent -= this.frameAssembled;
+            this.autoScaler = null;
+            this.trigger_slider_button.Value = bestTriggerLevel;
+            this.time_per_division_selection_slider.Value = bestConfigIndex;
+        }
+
+        private void autoScalingCompleteDelegate(int bestTriggerLevel, int bestConfigIndex)
+        {
+            this.Dispatcher.BeginInvoke(new AutoScalingCompleteDelegate(autoScalingCompleteDelegateUIThread)
+                , new object[] { bestTriggerLevel, bestConfigIndex });
+        }
+
+        private void auto_scale_button_Click(object sender, RoutedEventArgs e)
+        {
+            List<int> triggersToTry = new List<int>();
+            for(int i = (int)this.trigger_slider_button.Minimum
+                ; i < (int)this.trigger_slider_button.Maximum; i += 50)
+            {
+                triggersToTry.Add(i);
+            }
+
+            List<int> configIndices = new List<int>(new int[] { 2, 3, 4 });
+
+            int idealAveNumTriggers = 3;
+
+            SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(1));
+            SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(0.0));
+
+            this.autoScaler = new AutoScaler(configIndices
+                , triggerLevelChangedDelegate
+                , horizontalConfigChangedDelegate
+                , autoScalingCompleteDelegate
+                , triggersToTry
+                , idealAveNumTriggers);
+
+            this.sampleFrameDisplayer.TriggerFoundEvent += this.triggerFound;
+            this.sampleFrameDisplayer.FrameAssembledEvent += this.frameAssembled;
+        }
+
         private void initializePSOCMessageLogger()
         {
             Directory.CreateDirectory(MESSAGE_LOG_DIR);
             string fileName = MESSAGE_LOG_DIR + "psoc-message-log-last-run" + System.DateTime.Now.Hour + ".txt";
             this.psocMessageLogger = new PSOCMessageLogger(fileName);
-        } 
+        }
+
+        private SampleFrameDisplayerImpl sampleFrameDisplayer;
 
         public MainWindow()
         {
@@ -478,7 +568,7 @@ namespace SimpleOscope
 
             // Initialize PSOC sample receiving chain.
             OscopeWindowClient oscopeWindowClient  = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
-            SampleFrameDisplayerImpl sampleFrameDisplayer 
+            this.sampleFrameDisplayer 
                 = SampleFrameDisplayerImpl.newSampleFrameDisplayerImpl(oscopeWindowClient, this);
             SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameDisplayer);
             SampleAssembler sampleAssembler = HighByteFirstSampleAssemblerImpl.newHighByteFirstSampleAssemblerImpl(sampleFrameAssembler

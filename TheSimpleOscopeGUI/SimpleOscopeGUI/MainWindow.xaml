@@ -202,6 +202,7 @@
                 </Canvas.RenderTransform>
             </Canvas>
             <Canvas x:Name="trigger_label_canvas" Grid.Column="1" HorizontalAlignment="Left" Height="308" Margin="29,28,0,0" Grid.RowSpan="3" VerticalAlignment="Top" Width="38"/>
+            <Button x:Name="auto_scale_button" Content="Auto Scale" Grid.Column="3" HorizontalAlignment="Left" Height="35" Margin="193,262,0,0" Grid.Row="2" VerticalAlignment="Top" Width="129" Click="auto_scale_button_Click"/>
         </Grid>
     </DockPanel>
 </Window>

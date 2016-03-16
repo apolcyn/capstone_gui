@@ -11,10 +11,23 @@ using SimpleOscope;
 
 namespace SimpleOscope.SampleReceiving.Impl
 {
+    public class TriggerFoundEventArgs : EventArgs
+    {
+        public TriggerFoundEventArgs() { }
+    }
+
+    public class FrameAssembledEventArgs : EventArgs
+    {
+        public FrameAssembledEventArgs() { }
+    }
+
     public class SampleFrameDisplayerImpl : SampleFrameDisplayer, SampleFrameReceiver
     {
         private HorizontalResolutionConfiguration displayConfig;
         private OscopeWindowClient scopeLineDrawer { get; set; }
+
+        public event EventHandler<TriggerFoundEventArgs> TriggerFoundEvent;
+        public event EventHandler<FrameAssembledEventArgs> FrameAssembledEvent;
 
         private int triggerRelativeDisplayStartIndex;
 
@@ -127,18 +140,12 @@ namespace SimpleOscope.SampleReceiving.Impl
                     + ". num samples: " + numSamples);
             }
 
-            uint lastSample = UInt16.MaxValue;
-            int start = -1;
-
-            for (uint i = this.triggerScanStartIndex; i < this.triggerScanStartIndex + this.triggerScanLength; i++)
+            if(this.FrameAssembledEvent != null)
             {
-                if (lastSample < triggerLevel && samples[i] >= triggerLevel)
-                {
-                    start = (int)i;
-                    break;
-                }
-                lastSample = samples[i];
+                FrameAssembledEvent(this, new FrameAssembledEventArgs());
             }
+
+            int start = FindTriggersInFrame(samples);
 
             if (start >= 0)
             {
@@ -150,7 +157,35 @@ namespace SimpleOscope.SampleReceiving.Impl
             }
         }
 
-        public void DisplaySampleFrame(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples)
+        /// <summary>
+        /// Scans the scan length of the frame and fires the trigger found event for each trigger found.
+        /// returns the index of the first trigger if found, or -1 if none found.
+        /// </summary>
+        private int FindTriggersInFrame(ushort[] samples)
+        {
+            uint lastSample = UInt16.MaxValue;
+            int start = -1;
+
+            for (uint i = this.triggerScanStartIndex; i < this.triggerScanStartIndex + this.triggerScanLength; i++)
+            {
+                if (lastSample < triggerLevel && samples[i] >= triggerLevel)
+                {
+                    if (start == -1)
+                    {
+                        start = (int)i;
+                    }
+                    if(TriggerFoundEvent != null)
+                    {
+                        TriggerFoundEvent(this, new TriggerFoundEventArgs());
+                    }
+                }
+                lastSample = samples[i];
+            }
+
+            return start;
+        }
+
+public void DisplaySampleFrame(uint triggerIndex, uint totalSamplesInFrame, ushort[] samples)
         {
             if(triggerIndex + this.triggerRelativeDisplayStartIndex < 0)
             {
