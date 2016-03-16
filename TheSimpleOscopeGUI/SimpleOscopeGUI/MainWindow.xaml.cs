@@ -935,9 +935,16 @@ namespace SimpleOscope
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            serialPortClient.SendPsocCommand("#DZ#");
-            serialPortClient.SendPsocCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
-            serialPortClient.SendPsocCommand("#DA#");
+            if (nextFunctionGeneratorConfiguration.vpp + nextFunctionGeneratorConfiguration.vOffset > 4)
+            {
+                MessageBox.Show("VPP + VOffset cannot be greater than 4.0");
+            }
+            else
+            {
+                serialPortClient.SendPsocCommand("#DZ#");
+                serialPortClient.SendPsocCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
+                serialPortClient.SendPsocCommand("#DA#");
+            }
         }
 
         private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
