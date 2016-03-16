@@ -518,13 +518,14 @@ namespace SimpleOscope
             this.autoScaler = null;
             this.trigger_slider_button.Value = bestTriggerLevel;
             this.time_per_division_selection_slider.Value = bestConfigIndex;
-            this.Cursor = Cursors.Arrow;
         }
 
         private void autoScalingCompleteDelegate(int bestTriggerLevel, int bestConfigIndex)
         {
             this.Dispatcher.Invoke(new AutoScalingCompleteDelegate(autoScalingCompleteDelegateUIThread)
                 , new object[] { bestTriggerLevel, bestConfigIndex });
+
+            button2_Click(null, null);
         }
 
         private void auto_scale_button_Click(object sender, RoutedEventArgs e)
@@ -615,8 +616,6 @@ namespace SimpleOscope
                 , scalers
                 , windowBottom
                 , windowTop);
-
-            this.Cursor = Cursors.Wait;
 
             this.sampleFrameAssembler.NewFrameWithNewMinMaxEvent 
                 += this.newMinMaxInFrameFoundEventCallback;

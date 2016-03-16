@@ -12,7 +12,7 @@ namespace SimpleOscope
 
     public class VerticalAutoScaler
     {
-        public const int NUM_FRAMES_PER_SETTING = 5;
+        public const int NUM_FRAMES_PER_SETTING = 1;
 
         public const double IDEAL_WINDOW_COVERAGE = 0.5;
 
