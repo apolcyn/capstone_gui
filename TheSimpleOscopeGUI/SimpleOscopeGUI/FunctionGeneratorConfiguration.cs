@@ -55,7 +55,7 @@ namespace SimpleOscope
 
         public const int MIN_FREQ = 0;
         public const int MAX_FREQ = 240000;
-        const int DEFAULT_FREQ = 1;
+        const int DEFAULT_FREQ = 1000;
         public const char FREQUENCY_COMMAND = 'F';
 
         public decimal vOffset { get; set; }
