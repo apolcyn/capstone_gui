@@ -871,12 +871,6 @@ namespace SimpleOscope
         {
             nextFunctionGeneratorConfiguration.waveType 
                 = ((FunctionGeneratorConfiguration.WaveType)this.DAC_wave_type_list.SelectedItem);
-            if (serialPortClient != null  && nextFunctionGeneratorConfiguration.waveType.waveLetter != '\0')
-            {
-                string temp = String.Format("#DW{0}#"
-                    , nextFunctionGeneratorConfiguration.getWaveLetter());
-                serialPortClient.SendPsocCommand(temp);
-            }
         }
 
         private void start_oscope_btn_click(object sender, RoutedEventArgs e)
