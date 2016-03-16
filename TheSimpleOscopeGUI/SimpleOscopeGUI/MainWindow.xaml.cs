@@ -360,10 +360,6 @@ namespace SimpleOscope
             this.DAC_wave_type_list.Items.Add(
                 new FunctionGeneratorConfiguration.WaveType(
                     FunctionGeneratorConfiguration.WaveType.WaveName.Triangle));
-
-            this.DAC_wave_type_list.Items.Add(
-                new FunctionGeneratorConfiguration.WaveType(
-                    FunctionGeneratorConfiguration.WaveType.WaveName.Arbitrary));
         }
 
         private bool connected = false;
@@ -488,7 +484,7 @@ namespace SimpleOscope
 
         private void horizontalConfigChangedDelegate(int newHorizontalConfigIndex)
         {
-            this.Dispatcher.BeginInvoke(
+            this.Dispatcher.Invoke(
                 new HorizontalConfigChangedDelegateOnUIThreadDelegate(horizontalConfigChangedeOnUIThread)
                 , new object[] {newHorizontalConfigIndex});
         }
@@ -503,7 +499,7 @@ namespace SimpleOscope
 
         private void triggerLevelChangedDelegate(int newTriggerLevel)
         {
-            this.Dispatcher.BeginInvoke(new TriggerLevelChangedUIThreadDelegate(triggerLevelChangedUIThread)
+            this.Dispatcher.Invoke(new TriggerLevelChangedUIThreadDelegate(triggerLevelChangedUIThread)
                 , new object[] { newTriggerLevel });
         }
 
@@ -511,18 +507,19 @@ namespace SimpleOscope
 
         private void autoScalingCompleteDelegateUIThread(int bestTriggerLevel, int bestConfigIndex)
         {
-            horizontalConfigChangedDelegate(bestConfigIndex);
-            triggerLevelChangedDelegate(bestTriggerLevel);
+            horizontalConfigChangedeOnUIThread(bestConfigIndex);
+            triggerLevelChangedUIThread(bestTriggerLevel);
             this.sampleFrameDisplayer.TriggerFoundEvent -= this.triggerFound;
             this.sampleFrameDisplayer.FrameAssembledEvent -= this.frameAssembled;
             this.autoScaler = null;
             this.trigger_slider_button.Value = bestTriggerLevel;
             this.time_per_division_selection_slider.Value = bestConfigIndex;
+            this.Cursor = Cursors.Arrow;
         }
 
         private void autoScalingCompleteDelegate(int bestTriggerLevel, int bestConfigIndex)
         {
-            this.Dispatcher.BeginInvoke(new AutoScalingCompleteDelegate(autoScalingCompleteDelegateUIThread)
+            this.Dispatcher.Invoke(new AutoScalingCompleteDelegate(autoScalingCompleteDelegateUIThread)
                 , new object[] { bestTriggerLevel, bestConfigIndex });
         }
 
@@ -538,6 +535,8 @@ namespace SimpleOscope
             List<int> configIndices = new List<int>(new int[] { 2, 3, 4 });
 
             int idealAveNumTriggers = 3;
+
+            this.Cursor = Cursors.Wait;
 
             SampleScalerChangedEvent(this, new SampleScalerChangedEventArgs(1));
             SampleOffsetChangedEvent(this, new SampleOffsetChangedEventArgs(0.0));
@@ -880,11 +879,6 @@ namespace SimpleOscope
             }
         }
 
-        private void DAC_start_btn_click(object sender, RoutedEventArgs e)
-        {
-            serialPortClient.SendPsocCommand("#DA#");
-        }
-
         private void start_oscope_btn_click(object sender, RoutedEventArgs e)
         {
             serialPortClient.SendPsocCommand("#AA#");
@@ -894,21 +888,11 @@ namespace SimpleOscope
         {
             string[] vals = this.DAC_frequency_text_display.Text.Split();
             update_DAC_frequency(int.Parse(vals[0]));
-            if (serialPortClient != null)
-            {
-                serialPortClient.SendPsocCommand(String.Format("#DF{0}#"
-                , nextFunctionGeneratorConfiguration.frequency));
-            }
         }
 
         private void Vpp_update_btn_Click(object sender, RoutedEventArgs e)
         {
             update_DAC_vpp(decimal.Parse(this.Vpp_text_display.Text.Split()[0]));
-            if (serialPortClient != null)
-            {
-                serialPortClient.SendPsocCommand(String.Format("#DV{0}#"
-                , nextFunctionGeneratorConfiguration.vpp));
-            }
         }
 
         private void Voffset_update_btn_Click(object sender, RoutedEventArgs e)
@@ -919,11 +903,6 @@ namespace SimpleOscope
         private void duty_cycle_update_btn_Click(object sender, RoutedEventArgs e)
         {
             update_DAC_duty_cycle(int.Parse(this.duty_cycle_text_display.Text.Split()[0]));
-            if (serialPortClient != null)
-            {
-                serialPortClient.SendPsocCommand(String.Format("#DD{0}#"
-                , nextFunctionGeneratorConfiguration.dutyCycle));
-            }
         }
 
         private void updateTriggerCursorLabelFromPixelToVoltageUpdated(object sender
@@ -962,12 +941,9 @@ namespace SimpleOscope
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            serialPortClient.SendPsocCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
-        }
-
-        private void button3_Click(object sender, RoutedEventArgs e)
-        {
             serialPortClient.SendPsocCommand("#DZ#");
+            serialPortClient.SendPsocCommand("#" + nextFunctionGeneratorConfiguration.getConfiguration() + "#");
+            serialPortClient.SendPsocCommand("#DA#");
         }
 
         private void vertical_trigger_slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

@@ -51,7 +51,6 @@
             <TextBox x:Name="DAC_frequency_text_display" Grid.Column="4" HorizontalAlignment="Left" Height="23" Margin="153,68,0,0" TextWrapping="Wrap" Text="100" VerticalAlignment="Top" Width="62"/>
             <ComboBox x:Name="DAC_wave_type_list" Grid.Column="4" HorizontalAlignment="Left" Margin="22,127,0,0" SelectedIndex="0" VerticalAlignment="Top" Width="173" SelectionChanged="DAC_wavetype_selected" Height="22" Grid.Row="2">
             </ComboBox>
-            <Button x:Name="Start_Function_Generator" Content="Start Function Generator" Grid.Column="4" HorizontalAlignment="Left" Height="25" Margin="25,161,0,0" VerticalAlignment="Top" Width="170" Click="DAC_start_btn_click" Grid.Row="2"/>
             <Label x:Name="label" Content="Function Generator Settings" Grid.Column="4" HorizontalAlignment="Left" Height="33" Margin="22,3,0,0" VerticalAlignment="Top" Width="173"/>
             <Button x:Name="button" Content="Start Oscilloscope" Grid.Column="1" HorizontalAlignment="Left" Margin="83,276,0,0" VerticalAlignment="Top" Width="123" Click="start_oscope_btn_click" Height="22" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Grid.ColumnSpan="2"/>
             <Canvas x:Name="oscope_window_canvas" HorizontalAlignment="Left" Height="301" Margin="1,47,0,0" VerticalAlignment="Top" Width="400" Background="#FF419FB9" RenderTransformOrigin="0.5,0.5" Grid.RowSpan="3" Grid.Column="2" Grid.ColumnSpan="2">
@@ -107,17 +106,7 @@
                     </TransformGroup>
                 </Slider.RenderTransform>
             </Slider>
-            <Button x:Name="button1" Content="Apply Configuration" Grid.Column="4" HorizontalAlignment="Left" Margin="23,222,0,0" VerticalAlignment="Top" Width="173" Height="27" Click="button1_Click" Grid.Row="2"/>
-            <Button x:Name="button3" Content="Stop Function Generator" Grid.Column="4" HorizontalAlignment="Left" Margin="24,192,0,0" VerticalAlignment="Top" Width="171" RenderTransformOrigin="0.5,0.5" Height="25" Click="button3_Click" Grid.Row="2">
-                <Button.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="0.099"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Button.RenderTransform>
-            </Button>
+            <Button x:Name="button1" Content="Output Waveform" Grid.Column="4" HorizontalAlignment="Left" Margin="23,168,0,0" VerticalAlignment="Top" Width="173" Height="27" Click="button1_Click" Grid.Row="2"/>
             <Slider x:Name="vertical_trigger_slider" HorizontalAlignment="Right" Margin="0,16,197,0" VerticalAlignment="Top" Width="400" Minimum="0" 
                 Maximum="{Binding ElementName=oscope_window_canvas, Path=ActualWidth, UpdateSourceTrigger=PropertyChanged}" 
                 SmallChange="1" LargeChange="10" RenderTransformOrigin="0.505,0.909" ValueChanged="vertical_trigger_slider_ValueChanged" Height="22" Grid.Column="1" Grid.ColumnSpan="3"/>
