@@ -5,70 +5,107 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SimpleOscope
-{
+{ 
+    public delegate void AutoScalingCompleteDelegate(int bestTriggerLevel, int bestConfigIndex);
+
+    public delegate void HorizontalResolutionConfigIndexChangedDelegate(int newHorizontalResolutionConfigIndex);
+
+    public delegate void TriggerLevelChangedDelegate(int newTriggerLevel);
+
     public class AutoScaler
     {
-        const int FRAMES_PER_CONFIG = 5;
-        const int IDEAL_AVE_TRIGGERS = 10;
+        public const int FRAMES_PER_TRIGGER_LEVEL = 5;
+        int idealAveTriggers;
 
-        EventHandler<TriggerLevelChangedEventArgs> triggerLevelChangedEvent;
-        EventHandler<HorizontalResolutionConfigChangedEventArgs> horizontalConfigChangedEvent;
+        HorizontalResolutionConfigIndexChangedDelegate horizontalResolutionConfigIndexChangedDelegate;
 
-        List<HorizontalResolutionConfiguration> horizontalResolutionConfigs;
+        TriggerLevelChangedDelegate triggerLevelChangedDelegate;
+
+        AutoScalingCompleteDelegate autoScalingCompleteDelegate;
+
+        List<int> horizontalResolutionConfigIndices;
 
         int curFrameNumber = 0;
         int triggerCount = 0;
 
-        int bestConfigIndex = -1;
-        int bestTriggerLevel = -1;
+        int bestConfigIndicesIndex = -1;
+        int bestTriggerIndex = -1;
 
-        int curConfigIndex = 0;
-        int curTriggerLevel;
+        double bestAveNumTriggersSoFar = 0.0;
 
-        public AutoScaler(List<HorizontalResolutionConfiguration> horizontalResolutionConfigs
-            , EventHandler<TriggerLevelChangedEventArgs> triggerLevelChangedEvent
-            , EventHandler<HorizontalResolutionConfigChangedEventArgs> horizontalConfigChangedEvent
-            , int minTriggerLevel
-            , int maxTriggerLevel)
+        int curConfigIndicesIndex = 0;
+        int curTriggerIndex = 0;
+
+        List<int> triggersToTry;
+
+        private object triggerFrameIncrementLockObject = new object();
+
+        public AutoScaler(List<int> horizontalResolutionConfigIndices
+            , TriggerLevelChangedDelegate triggerLevelChangedDelegate
+            , HorizontalResolutionConfigIndexChangedDelegate horizontalResolutionConfigIndexChangedDelegate
+            , AutoScalingCompleteDelegate autoScalingCompleteDelegate
+            , List<int> triggersToTry
+            , int idealAveTriggers)
         {
-            this.horizontalResolutionConfigs = horizontalResolutionConfigs;
-            this.triggerLevelChangedEvent = triggerLevelChangedEvent;
-            this.horizontalConfigChangedEvent = horizontalConfigChangedEvent;
-            this.curTriggerLevel = minTriggerLevel;
+            this.idealAveTriggers = idealAveTriggers;
+            this.triggersToTry = triggersToTry;
+            this.autoScalingCompleteDelegate = autoScalingCompleteDelegate;
+            this.horizontalResolutionConfigIndices = horizontalResolutionConfigIndices;
+            this.triggerLevelChangedDelegate = triggerLevelChangedDelegate;
+            this.horizontalResolutionConfigIndexChangedDelegate = horizontalResolutionConfigIndexChangedDelegate;
 
-            horizontalConfigChangedEvent(this
-                , new HorizontalResolutionConfigChangedEventArgs(
-                    horizontalResolutionConfigs[this.curConfigIndex++]));
-            triggerLevelChangedEvent(this
-                , new TriggerLevelChangedEventArgs(minTriggerLevel));
+            horizontalResolutionConfigIndexChangedDelegate(horizontalResolutionConfigIndices[0]);
+            triggerLevelChangedDelegate(triggersToTry[0]);
         }
 
         public void IncrementFrameNumber()
         {
-            if(this.curFrameNumber++ >= FRAMES_PER_CONFIG)
+            lock(triggerFrameIncrementLockObject)
             {
-                if(this.curConfigIndex >= horizontalResolutionConfigs.Count)
+                if (++this.curFrameNumber >= FRAMES_PER_TRIGGER_LEVEL)
                 {
-                    setBest();
-                }
-                else
-                {
-                    horizontalConfigChangedEvent(this
-                        , new HorizontalResolutionConfigChangedEventArgs(
-                            horizontalResolutionConfigs[this.curConfigIndex++]));
+                    double aveTriggers = (double)this.triggerCount / FRAMES_PER_TRIGGER_LEVEL;
+                    if (newAveNumTriggersIsBestSoFar(aveTriggers))
+                    {
+                        this.bestAveNumTriggersSoFar = aveTriggers;
+                        this.bestTriggerIndex = this.curTriggerIndex;
+                        this.bestConfigIndicesIndex = this.curConfigIndicesIndex;
+                    }
                     this.curFrameNumber = 0;
+                    this.triggerCount = 0;
+
+                    if (++this.curTriggerIndex >= triggersToTry.Count)
+                    {
+                        if (++this.curConfigIndicesIndex >= horizontalResolutionConfigIndices.Count)
+                        {
+                            autoScalingCompleteDelegate(this.triggersToTry[this.bestTriggerIndex]
+                                , this.horizontalResolutionConfigIndices[this.bestConfigIndicesIndex]);
+                            return;
+                        }
+
+                        horizontalResolutionConfigIndexChangedDelegate(
+                            this.horizontalResolutionConfigIndices[this.curConfigIndicesIndex]);
+
+                        this.curTriggerIndex = 0;
+                    }
+
+                    triggerLevelChangedDelegate(this.triggersToTry[this.curTriggerIndex]);
                 }
             }
         }
 
-        public void setBest()
-        {
-
-        }
-
         public void IncrementTriggerCount()
         {
+            lock(triggerFrameIncrementLockObject)
+            {
+                ++triggerCount;
+            }
+        }
 
+        private bool newAveNumTriggersIsBestSoFar(double aveNumTriggers)
+        {
+            return Math.Abs(aveNumTriggers - this.idealAveTriggers)
+                < Math.Abs(this.bestAveNumTriggersSoFar - this.idealAveTriggers);
         }
     }
 }

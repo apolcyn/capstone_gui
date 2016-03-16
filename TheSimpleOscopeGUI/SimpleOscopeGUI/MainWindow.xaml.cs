@@ -463,7 +463,7 @@ namespace SimpleOscope
 
         private PSOCMessageLogger psocMessageLogger;
 
-        public const string MESSAGE_LOG_DIR = "./frame_dumps/";
+        public const string MESSAGE_LOG_DIR = "./message_logs/";
 
         private void initializePSOCMessageLogger()
         {
@@ -577,6 +577,7 @@ namespace SimpleOscope
         {
             this.psocMessageLogger.appendMessage(args.command);
         }
+
 
         public void scanForCOMPorts(object sender, System.EventArgs args)
         {
