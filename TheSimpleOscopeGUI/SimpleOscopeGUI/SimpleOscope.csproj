@@ -78,6 +78,7 @@
     <Compile Include="SampleReceiving\SampleFrameAssembler.cs" />
     <Compile Include="SampleReceiving\SampleFrameDisplayer.cs" />
     <Compile Include="SampleReceiving\SampleFrameReceiver.cs" />
+    <Compile Include="VerticalAutoScaler.cs" />
     <Page Include="DumpSamplesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -240,6 +240,10 @@ namespace SimpleOscope
 
         private AutoScaler autoScaler = null;
 
+        private VerticalAutoScaler verticalAutoScaler = null;
+
+        private SampleFrameAssemblerImpl sampleFrameAssembler;
+
         public const int INITIAL_LOWER_SAMPLE = 0, INITIAL_UPPER_SAMPLE = 4095;
         public const double INITIAL_LOWER_VOLTAGE = -5.0, INITIAL_UPPER_VOLTAGE = 5.0;
 
@@ -534,7 +538,7 @@ namespace SimpleOscope
 
             List<int> configIndices = new List<int>(new int[] { 2, 3, 4 });
 
-            int idealAveNumTriggers = 3;
+            int idealAveNumTriggers = 4;
 
             this.Cursor = Cursors.Wait;
 
@@ -559,6 +563,65 @@ namespace SimpleOscope
             this.psocMessageLogger = new PSOCMessageLogger(fileName);
         }
 
+        private void updateOffsetAndScalerDelegateUIThread(double offset, double scaler)
+        {
+            voltageOffsetSliderChangedInternal(offset, scaler);
+        }
+
+        private void verticalAutoScalerDoneUIThread(double bestOffset, double bestScaler)
+        {
+            this.voltageOffsetSlider.Value = bestOffset;
+            this.voltsPerDivisionSlider.Value = bestScaler;
+
+            updateOffsetAndScalerDelegateUIThread(bestOffset, bestScaler);
+
+            this.sampleFrameAssembler.NewFrameWithNewMinMaxEvent 
+                -= this.newMinMaxInFrameFoundEventCallback;
+
+            this.verticalAutoScaler = null;
+            this.Cursor = Cursors.Arrow;
+        }
+
+        private void newMinMaxInFrameFoundEventCallback(object sender
+            , NewFrameWithNewMinMaxEventArgs args)
+        {
+            this.verticalAutoScaler.FrameReceived(args.min, args.max);
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateOffsetAndScalerDelegate updateDelegate = delegate (double offset, double scaler)
+            {
+                this.Dispatcher.Invoke(new UpdateOffsetAndScalerDelegate(updateOffsetAndScalerDelegateUIThread)
+                    , new object[] { offset, scaler });
+            };
+
+            VerticalAutoScalerDoneDelegate doneDelegate = delegate (double bestOffest, double bestScaler)
+            {
+                this.Dispatcher.Invoke(new VerticalAutoScalerDoneDelegate(verticalAutoScalerDoneUIThread)
+                    , new object[] { bestOffest, bestScaler });
+            };
+
+            List<double> offsets = new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 5.0});
+
+            List<double> scalers = new List<double>(new double[] { 0.1, 0.25, 0.5, 1.0, 2.0, 5.0});
+
+            int windowTop = (int)this.oscope_window_canvas.ActualHeight;
+            int windowBottom = 0;
+
+            this.verticalAutoScaler = new VerticalAutoScaler(updateDelegate
+                , doneDelegate
+                , offsets
+                , scalers
+                , windowBottom
+                , windowTop);
+
+            this.Cursor = Cursors.Wait;
+
+            this.sampleFrameAssembler.NewFrameWithNewMinMaxEvent 
+                += this.newMinMaxInFrameFoundEventCallback;
+        }
+
         private SampleFrameDisplayerImpl sampleFrameDisplayer;
 
         public MainWindow()
@@ -569,7 +632,7 @@ namespace SimpleOscope
             OscopeWindowClient oscopeWindowClient  = new OscopeWindowClientImpl(this.oscope_window_canvas, this);
             this.sampleFrameDisplayer 
                 = SampleFrameDisplayerImpl.newSampleFrameDisplayerImpl(oscopeWindowClient, this);
-            SampleFrameAssembler sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameDisplayer);
+            this.sampleFrameAssembler = new SampleFrameAssemblerImpl(sampleFrameDisplayer);
             SampleAssembler sampleAssembler = HighByteFirstSampleAssemblerImpl.newHighByteFirstSampleAssemblerImpl(sampleFrameAssembler
                 , this, this.linearInterpolator);
             ByteReceiverImpl byteReceiver = new ByteReceiverImpl(sampleAssembler, sampleFrameAssembler);
@@ -699,12 +762,12 @@ namespace SimpleOscope
                 , INITIAL_UPPER_VOLTAGE, (int)args.NewSize.Height));
         }
 
-        private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void voltageOffsetSliderChangedInternal(double offsetSliderVal, double scalerSliderVal)
         {
             if (PixelVoltageRelationshipChangedEvent != null)
             {
-                double voltagePerDivisionScaler = this.voltsPerDivisionSlider.Value;
-                double voltageDisplayOffset = e.NewValue;
+                double voltagePerDivisionScaler = scalerSliderVal;
+                double voltageDisplayOffset = offsetSliderVal;
                 double newLowerVoltage = (INITIAL_LOWER_VOLTAGE + voltageDisplayOffset)
                     * voltagePerDivisionScaler;
                 double newUpperVoltage = (INITIAL_UPPER_VOLTAGE + voltageDisplayOffset)
@@ -718,18 +781,26 @@ namespace SimpleOscope
             }
         }
 
+        private void voltageOffsetSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(this.voltsPerDivisionSlider != null)
+            {
+                voltageOffsetSliderChangedInternal(e.NewValue, this.voltsPerDivisionSlider.Value);
+            }
+        }
+
         private void PSOC_ready(object sender, PsocReadyEventArgs args)
         {
             MessageBox.Show("PSOC device connected.");
             connected = true;
         }
 
-        private void voltsPerDivisionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void voltsPerDivisionSliderChangedInternal(double offsetSliderValue, double newScaler)
         {
             if (PixelVoltageRelationshipChangedEvent != null)
             {
-                double voltagePerDivisionScaler = e.NewValue;
-                double voltageDisplayOffset = this.voltageOffsetSlider.Value;
+                double voltagePerDivisionScaler = newScaler;
+                double voltageDisplayOffset = offsetSliderValue;
                 double newLowerVoltage = (INITIAL_LOWER_VOLTAGE + voltageDisplayOffset)
                     * voltagePerDivisionScaler;
                 double newUpperVoltage = (INITIAL_UPPER_VOLTAGE + voltageDisplayOffset)
@@ -740,6 +811,14 @@ namespace SimpleOscope
                 PixelVoltageRelationshipChangedEvent(this
                     , new PixelVoltageRelationshipChangedEventArgs(newLowerVoltage, lowerPixel
                     , newUpperVoltage, upperPixel));
+            }
+        }
+
+        private void voltsPerDivisionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(this.voltageOffsetSlider != null)
+            {
+                voltsPerDivisionSliderChangedInternal(this.voltageOffsetSlider.Value, e.NewValue);
             }
         }
 
@@ -933,7 +1012,7 @@ namespace SimpleOscope
             }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void button1_Click(object sefnder, RoutedEventArgs e)
         {
             if (nextFunctionGeneratorConfiguration.vpp + nextFunctionGeneratorConfiguration.vOffset > 4)
             {
@@ -956,6 +1035,7 @@ namespace SimpleOscope
         private void window_closing(object sender, CancelEventArgs e)
         {
             PSoCDisconnectRequestEvent(this, new PSoCDisconnectRequestEventArgs());
+            connected = false;
         }
     }
 }

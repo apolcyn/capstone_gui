@@ -69,6 +69,7 @@
     <Compile Include="BaseTests.cs" />
     <Compile Include="LinearInterpolationTests.cs" />
     <Compile Include="AutoScalerTests.cs" />
+    <Compile Include="VerticalAutoScalerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

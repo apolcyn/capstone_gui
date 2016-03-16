@@ -7,8 +7,21 @@ using System.Threading;
 
 namespace SimpleOscope.SampleReceiving.Impl
 {
+    public class NewFrameWithNewMinMaxEventArgs : EventArgs
+    {
+        public int min;
+        public int max;
+        public NewFrameWithNewMinMaxEventArgs(int min, int max)
+        {
+            this.min = min;
+            this.max = max;
+        }
+    }
+
     public class SampleFrameAssemblerImpl : SampleFrameAssembler
     {
+        public event EventHandler<NewFrameWithNewMinMaxEventArgs> NewFrameWithNewMinMaxEvent;
+
         private SampleFrameReceiver sampleReceiver;
         private uint curBufIndex;
         public const int SAMPLES_BUF_SIZE = 10000;
@@ -16,6 +29,9 @@ namespace SimpleOscope.SampleReceiving.Impl
         private uint numSamplesExpected;
         private Object numSamplesLockingObject = new object();
         private Thread currentThreadCallingSampleAssembled;
+
+        private int minInCurrentFrame = int.MaxValue;
+        private int maxInCurrentFrame = int.MinValue;
 
         public SampleFrameAssemblerImpl(SampleFrameReceiver sampleReceiver)
         {
@@ -53,18 +69,34 @@ namespace SimpleOscope.SampleReceiving.Impl
                 {
                     curBufIndex = 0;
                     sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
+                    fireNewMinMaxFrameEventAndReset();
                 }
 
                 samplesBuf[curBufIndex++] = nextSample;
+                minInCurrentFrame = Math.Min(minInCurrentFrame, nextSample);
+                maxInCurrentFrame = Math.Max(maxInCurrentFrame, nextSample);
 
                 if (curBufIndex >= numSamplesExpected)
                 {
                     curBufIndex = 0;
                     sampleReceiver.FrameAssembled(samplesBuf, numSamplesExpected);
+                    fireNewMinMaxFrameEventAndReset();
                 }
 
                 currentThreadCallingSampleAssembled = null;
             }
+        }
+
+        private void fireNewMinMaxFrameEventAndReset()
+        {
+            if(NewFrameWithNewMinMaxEvent != null)
+            {
+                NewFrameWithNewMinMaxEvent(this
+                    , new NewFrameWithNewMinMaxEventArgs(this.minInCurrentFrame
+                    , this.maxInCurrentFrame));
+            }
+            this.maxInCurrentFrame = int.MinValue;
+            this.minInCurrentFrame = int.MaxValue;
         }
     }
 }
