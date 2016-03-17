@@ -94,7 +94,7 @@ namespace SimpleOscope
 
             // vpp configuration
             config.Append(VPP_COMMAND);
-            config.Append(vpp.ToString(VPP_FORMAT_STR));
+            config.Append((int)(vpp * 100));
 
             // frequency configuration
             config.Append(FREQUENCY_COMMAND);
@@ -102,7 +102,7 @@ namespace SimpleOscope
 
             // vOffset configuration
             config.Append(VOFFSET_COMMAND);
-            config.Append(vOffset.ToString(VOFFSET_FORMAT_STR));
+            config.Append((int)(vOffset * 100));
 
             // duty cycle configuration
             config.Append(DUTY_CYCLE_COMMAND);
