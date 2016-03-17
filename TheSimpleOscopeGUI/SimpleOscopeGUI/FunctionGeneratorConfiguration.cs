@@ -48,7 +48,7 @@ namespace SimpleOscope
         public const decimal MIN_VPP = 0;
         public const decimal MAX_VPP = 4;
         public const string VPP_FORMAT_STR = "F2"; // precion of 10^-2
-        public const decimal DEFAULT_VPP = 0;
+        public const decimal DEFAULT_VPP = 2;
         const char VPP_COMMAND = 'V';
 
         public int frequency { get; set; }
